@@ -1,6 +1,7 @@
 #This the the canonical lab .gitignore file
 
-#ignore temp files
+#ignore temp files and vscode editor files
+*.code-workspace
 *~
 
 #ignore pdf files (just keep source files)
