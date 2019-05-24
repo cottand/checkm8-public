@@ -7,7 +7,7 @@ void load(char path[], void *ptr)
 
   FILE *file = fopen(path,"rb");
 
-  if(!file)
+  if (!file)
   {
     fprintf(stderr, "Error: Unable to read file");
   }
