@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define REGISTER_COUNT  17
-#define MEMORY_SIZE     65536
+#define REG_COUNT 17
+#define MEM_SIZE  65536
 
 #define REG_SP    13
 #define REG_LR    14
@@ -18,8 +18,8 @@
 
 typedef struct s_Emulator
 {
-  uint32_t registers[REGISTER_COUNT];
-  uint32_t memory[MEMORY_SIZE];
+  uint32_t regs[REG_COUNT];
+  uint32_t mem[MEM_SIZE];
 } Emulator;
 
 

@@ -7,14 +7,14 @@
 void emulator_init(Emulator* emulator)
 {
   int i;
-  for (i = 0; i < REGISTER_COUNT; i++)
+  for (i = 0; i < REG_COUNT; i++)
   {
-    emulator->registers[i] = 0;
+    emulator->regs[i] = 0;
   }
 
-  for (i = 0; i < MEMORY_SIZE; i++)
+  for (i = 0; i < MEM_SIZE; i++)
   {
-    emulator->memory[i] = 0;
+    emulator->mem[i] = 0;
   }
 }
 
@@ -24,27 +24,27 @@ void emulate(Emulator* emulator, char* src_file)
 
 uint8_t get_mem_byte(Emulator* emulator, uint8_t addr)
 {
-  return emulator->memory[addr];
+  return emulator->mem[addr];
 }
 
 void set_mem_byte(Emulator* emulator, uint8_t addr, uint32_t val)
 {
-  emulator->memory[addr] = val;
+  emulator->mem[addr] = val;
 }
 
 uint8_t get_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit)
 {
-  return (emulator->registers[reg] >> bit) & 0x0001;
+  return (emulator->regs[reg] >> bit) & 0x0001;
 }
 
 void set_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit)
 {
-  emulator->registers[reg] |= 1 << bit;
+  emulator->regs[reg] |= 1 << bit;
 }
 
 void clr_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit)
 {
-  emulator->registers[reg] &= ~(1 << bit);
+  emulator->regs[reg] &= ~(1 << bit);
 }
 
 
@@ -117,11 +117,11 @@ void print_regs(Emulator* emulator)
   printf("Reg\t\tValue\n");
 
   int i;
-  for (i = 0; i < REGISTER_COUNT; i++)
+  for (i = 0; i < REG_COUNT; i++)
   {
     if (i < 13)
     {
-      printf("[%d]\t=\t0x%x\n", i, emulator->registers[i]);
+      printf("[%d]\t=\t0x%x\n", i, emulator->regs[i]);
     }
     else
     {
@@ -142,7 +142,7 @@ void print_regs(Emulator* emulator)
           break;
       }
 
-      printf("[%s]\t=\t0x%x\n", name, emulator->registers[i]);
+      printf("[%s]\t=\t0x%x\n", name, emulator->regs[i]);
       free(name);
     }
   }
@@ -161,9 +161,9 @@ void print_mem(Emulator* emulator)
   short skipping = 0;
 
   int i;
-  for (i = 0; i < MEMORY_SIZE; i++)
+  for (i = 0; i < MEM_SIZE; i++)
   {
-    if (emulator->memory[i] == 0)
+    if (emulator->mem[i] == 0)
     {
       if (!skipping)
       {
@@ -174,7 +174,7 @@ void print_mem(Emulator* emulator)
     else
     {
       skipping = 0;
-      printf("[0x%x]\t=\t0x%x\n", i, emulator->memory[i]);
+      printf("[0x%x]\t=\t0x%x\n", i, emulator->mem[i]);
     }
   }
 }
