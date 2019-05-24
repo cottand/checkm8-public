@@ -54,6 +54,21 @@ void clr_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit)
   emulator->regs[reg] &= ~(1 << bit);
 }
 
+uint32_t get_PC(Emulator* emulator)
+{
+  return emulator->regs[REG_PC];
+}
+
+void set_PC(Emulator* emulator, uint32_t val)
+{
+  emulator->regs[REG_PC] = val;
+}
+
+void incr_PC(Emulator* emulator)
+{
+  emulator->regs[REG_PC] += sizeof(uint32_t);
+}
+
 
 /* Functions for setting flag bits */
 

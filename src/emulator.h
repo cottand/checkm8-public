@@ -35,6 +35,10 @@ uint8_t get_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit);
 void    set_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit);
 void    clr_reg_bit(Emulator* emulator, uint8_t reg, uint8_t bit);
 
+uint32_t  get_PC(Emulator* emulator);
+void      set_PC(Emulator* emulator, uint32_t val);
+void      inrc_PC(Emulator* emulator);
+
 uint8_t get_flag_N(Emulator* emulator);
 void    set_flag_N(Emulator* emulator);
 void    clr_flag_N(Emulator* emulator);
