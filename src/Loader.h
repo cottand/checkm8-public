@@ -3,4 +3,4 @@
 
 void load(char path[], void *ptr);
 
-#endif /*LOADER_H_*/
+#endif /* LOADER_H_ */

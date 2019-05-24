@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "Loader.h"
+
 void emulator_init(Emulator* emulator)
 {
   int i;
@@ -22,12 +24,17 @@ void emulate(Emulator* emulator, char* src_file)
 {
 }
 
-uint8_t get_mem_byte(Emulator* emulator, uint8_t addr)
+void load_binary(Emulator* emulator, char* src_file)
+{
+  load(src_file, &(emulator->mem));
+}
+
+uint8_t get_mem_byte(Emulator* emulator, uint16_t addr)
 {
   return emulator->mem[addr];
 }
 
-void set_mem_byte(Emulator* emulator, uint8_t addr, uint32_t val)
+void set_mem_byte(Emulator* emulator, uint16_t addr, uint8_t val)
 {
   emulator->mem[addr] = val;
 }

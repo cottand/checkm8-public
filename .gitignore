@@ -38,3 +38,7 @@ assemble
 *.nav
 *.toc
 
+
+#ignore MacOS files
+.DS_Store
+._DS_Store
