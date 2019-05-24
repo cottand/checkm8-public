@@ -1,10 +1,10 @@
-#include "Emulator.h"
+#include "emulator.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "Loader.h"
+#include "loader.h"
 
 void emulator_init(Emulator* emulator)
 {

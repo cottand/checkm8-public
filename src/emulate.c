@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "Emulator.h"
-#include "Loader.h"
+#include "emulator.h"
+#include "loader.h"
 
 int main(int argc, char **argv)
 {
