@@ -46,4 +46,7 @@ uint8_t get_flag_V(Emulator* emulator);
 void    set_flag_V(Emulator* emulator);
 void    clr_flag_V(Emulator* emulator);
 
+void print_regs(Emulator* emulator);
+void print_mem(Emulator* emulator);
+
 #endif /* EMULATOR_H_ */

@@ -1,5 +1,9 @@
 #include "Emulator.h"
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 void emulator_init(Emulator* emulator)
 {
   int i;
@@ -104,4 +108,73 @@ void set_flag_V(Emulator* emulator)
 void clr_flag_V(Emulator* emulator)
 {
   clr_reg_bit(emulator, REG_CPSR, FLAG_BIT_V);
+}
+
+/* Functions for printing */
+
+void print_regs(Emulator* emulator)
+{
+  printf("Reg\t\tValue\n");
+
+  int i;
+  for (i = 0; i < REGISTER_COUNT; i++)
+  {
+    if (i < 13)
+    {
+      printf("[%d]\t=\t0x%x\n", i, emulator->registers[i]);
+    }
+    else
+    {
+      char* name = malloc(4);
+      switch (i)
+      {
+        case 13:
+          strcpy(name, "SP");
+          break;
+        case 14:
+          strcpy(name, "LR");
+          break;
+        case 15:
+          strcpy(name, "PC");
+          break;
+        case 16:
+          strcpy(name, "CPSR");
+          break;
+      }
+
+      printf("[%s]\t=\t0x%x\n", name, emulator->registers[i]);
+      free(name);
+    }
+  }
+
+  uint8_t n = get_flag_N(emulator);
+  uint8_t z = get_flag_Z(emulator);
+  uint8_t c = get_flag_C(emulator);
+  uint8_t v = get_flag_V(emulator);
+  printf("N:%d | Z:%d | C:%d | V:%d\n", n, z, c, v);
+}
+
+void print_mem(Emulator* emulator)
+{
+  printf("Addr\t\tValue\n");
+
+  short skipping = 0;
+
+  int i;
+  for (i = 0; i < MEMORY_SIZE; i++)
+  {
+    if (emulator->memory[i] == 0)
+    {
+      if (!skipping)
+      {
+        skipping = 1;
+        printf("...\t\t0x0\n");
+      }
+    }
+    else
+    {
+      skipping = 0;
+      printf("[0x%x]\t=\t0x%x\n", i, emulator->memory[i]);
+    }
+  }
 }
