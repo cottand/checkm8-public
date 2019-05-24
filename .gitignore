@@ -19,6 +19,7 @@
 
 #ignore junk files from compiling C code
 *.o
+*.dSYM
 emulate
 assemble
 
