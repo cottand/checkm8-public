@@ -13,10 +13,10 @@ enum p_state {
 
 typedef struct s_Pipeline
 {
-  uint16_t top;
-  uint16_t med_coded;
-  Decoded_Instr med_decoded;
-  uint16_t bottom;
+  Decoded_Instr executing;
+  Decoded_Instr decoded;
+  uint16_t to_decode;
+  uint16_t fetching;
   enum p_state current_state;
   Emulator *emulator;
 } Pipeline;
