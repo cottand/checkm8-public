@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include "emulator.h"
 
-Pipeline pipeline_init(Emulator *emulator)
+Pipeline pipeline_init(Emulator *emulator, Pipeline *pipeline)
 {
-
+  pipeline->current_state = Empty;
+  pipeline->emulator = emulator;
 }
 
 void cycle(Pipeline *pipeline){
