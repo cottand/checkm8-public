@@ -62,4 +62,7 @@ typedef struct s_Decoded_Instr
   Branch_Instr *branch_instr;
 } Decoded_Instr;
 
+decoded_instr_init(Decoded_Instr* instr);
+decoded_instr_free(Decoded_Instr* instr);
+
 #endif /* INSTRUCTION_H_ */
