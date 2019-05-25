@@ -5,7 +5,7 @@ void load(char path[], void *ptr)
 {
   unsigned long fileLen;
 
-  FILE *file = fopen(path,"rb");
+  FILE *file = fopen(path, "rb");
 
   if (!file)
   {
