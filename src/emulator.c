@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
 #include "loader.h"
+#include <assert.h>
 
 void emulator_init(Emulator *emulator)
 {
@@ -133,13 +133,12 @@ void clr_flag_V(Emulator *emulator)
 
 uint16_t get_PC_addr(Emulator *emulator)
 {
-  uint16_t least_signf;
-  uint16_t *most_signf;
-
   uint32_t PC_content = get_PC(emulator);
-
-  least_signf = (uint16_t) PC_content;
-  static_assert(PC_content <= UINT16_MAX)
+  /*
+  It would be nice if we could find a way of checking
+  PC_content <= UINT16_MAX
+  */
+  return (uint16_t) PC_content;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
@@ -147,9 +146,10 @@ void set_PC_addr(Emulator *emulator, uint16_t addr)
   set_PC(emulator, (uint32_t) addr);
 }
 
-uint32_t fetch_instr(Emulator *emulator)
+/*uint32_t fetch_instr(Emulator *emulator)
 {
-}
+
+} */
 
 /* Functions for printing */
 
