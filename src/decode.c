@@ -34,6 +34,25 @@ Decoded_Instr decode_instr(uint32_t instr)
 
   return decoded;
 }
+/**
+ * The following decode functions do a few things:
+ *  - They dynamically allocate memory depending on which
+ * instruction we are talking about, so all the different
+ * instructions can coexist in the abstrate struct instruction
+ *  -They assign the bitfield values of their
+ * respective types, creating a new more specific struct,
+ * located on the stack
+ *  - The memcpy this recently created struct to the dynamically
+ * alocated space we claimed earlier, and return the address
+ * of that allocation.
+ * 
+ *  This allows us to have an abstract struct 'instruction' for
+ * all inststructions with pointers to every type as members.
+ * Depending on the actual kind of instruction, only one of the 
+ * pointers points towards the informtion we want, enabling 
+ * a pretty efficient abstraction.
+ * 
+ */
 
 Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
 {
