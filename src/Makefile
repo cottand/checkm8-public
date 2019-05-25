@@ -10,7 +10,7 @@ all: assemble emulate
 assemble: assemble.o
 
 emulate: emulate.o
-	$(CC) $(CFLAGS) emulate.c emulator.c loader.c
+	$(CC) $(CFLAGS) emulate.c emulator.c loader.c -I .
 
 clean:
 	rm -f $(wildcard *.o)
