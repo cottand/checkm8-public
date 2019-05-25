@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "loader.h"
-#include <assert.h>
 
 void emulator_init(Emulator *emulator)
 {

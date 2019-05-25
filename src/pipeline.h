@@ -1,4 +1,4 @@
-#ifdef PIPELINE_H_
+#ifndef PIPELINE_H_
 #define PIPELINE_H_
 
 #include <stdint.h>
@@ -6,10 +6,10 @@
 #include "decoded_instr.h"
 
 enum p_state {
-  Empty = 0;
-  Half = 1;
-  Full = 2;
-}
+  Empty = 0,
+  Half = 1,
+  Full = 2,
+};
 
 typedef struct s_Pipeline
 {
@@ -18,9 +18,12 @@ typedef struct s_Pipeline
   Decoded_Instr med_decoded;
   uint16_t bottom;
   enum p_state current_state;
+  Emulator *emulator;
 } Pipeline;
 
-void cycle(Pipeline *pipeline);
 
+Pipeline pipeline_init(Emulator *emulator);
+
+void cycle_p(Pipeline *pipeline);
 
 #endif

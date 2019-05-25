@@ -1,5 +1,5 @@
 
-#ifdef DECODED_INSTR
+#ifndef DECODED_INSTR
 #define DECODED_INSTR_H_
 
 #include <stdint.h>
