@@ -4,6 +4,7 @@
 #define ONES_SIZE12 0xfff
 #define ONES_SIZE24 0xffffff
 #define INSTR_LEN 34
+#include <stdio.h>
 
 Decoded_Instr decode_instr(uint32_t instr)
 {
@@ -93,4 +94,22 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
 
 instr_type get_instr_type(uint32_t instr)
 {
+  if (!(~instr & 0x0A000000))
+  {
+    return Branch;
+  }
+  if (!(~instr & 0x04000000))
+  {
+    return Data_Trans;
+  }
+  if (!(~instr & 0x00000090))
+  {
+    return Mul;
+  }
+  if (!(instr & 0x0))
+  {
+    return Data_Proc;
+  }
+
+  return -1;
 }

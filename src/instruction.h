@@ -11,16 +11,6 @@ typedef enum e_instr_type
   Branch
 } instr_type;
 
-typedef struct s_Decoded_Instr
-{
-  instr_type type;
-
-  Data_Proc_Instr *data_proc_instr;
-  Mul_Instr *mul_instr;
-  Data_Trans_Instr *data_trans_instr;
-  Branch_Instr *branch_instr;
-} Decoded_Instr;
-
 typedef struct s_Data_Proc_Instr
 {
   unsigned int cond : 4;
@@ -61,5 +51,15 @@ typedef struct s_Branch_Instr
   unsigned int cond : 4;
   unsigned int offset : 24;
 } Branch_Instr;
+
+typedef struct s_Decoded_Instr
+{
+  instr_type type;
+
+  Data_Proc_Instr *data_proc_instr;
+  Mul_Instr *mul_instr;
+  Data_Trans_Instr *data_trans_instr;
+  Branch_Instr *branch_instr;
+} Decoded_Instr;
 
 #endif /* INSTRUCTION_H_ */
