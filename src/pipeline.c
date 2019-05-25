@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "emulator.h"
 
-Pipeline pipeline_init(Emulator *emulator, Pipeline *pipeline)
+Pipeline pipeline_init(Pipeline *pipeline, Emulator *emulator)
 {
   pipeline->current_state = Empty;
   pipeline->emulator = emulator;

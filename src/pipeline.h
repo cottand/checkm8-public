@@ -22,7 +22,7 @@ typedef struct s_Pipeline
 } Pipeline;
 
 
-Pipeline pipeline_init(Emulator *emulator);
+Pipeline pipeline_init(Pipeline *pipeline, Emulator *emulator);
 
 void cycle_p(Pipeline *pipeline);
 
