@@ -57,7 +57,7 @@ void    clr_flag_V(Emulator *emulator);
  * PC (32bit-sized) will store our 16 bit addresses on the
  * 16 least significant bits, and the rest will be left alone
  */
-uint16_t get_PC_addr(Emulator *emulator);
+uint32_t fetch(Emulator *emulator);
 void     set_PC_addr(Emulator *emulator, uint16_t addr);
 
 void print_regs(Emulator *emulator);

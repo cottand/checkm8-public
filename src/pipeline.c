@@ -33,7 +33,7 @@ void cycle(Pipeline *pipeline)
     I am not sure whether incrementing the PC is too??
     If so, is it after or before the pipeline cycle?
    */
-  pipeline->fetching = get_PC_addr(pipeline->emulator);
+  pipeline->fetching = fetch(pipeline->emulator);
 
   switch (pipeline->current_state)
   {
