@@ -3,13 +3,13 @@
 
 #include <stdint.h>
 #include "emulator.h"
-#include "decoded_instr.h"
+#include "instruction.h"
 
-enum p_state {
+typedef enum e_p_state {
   Empty = 0,
   Half = 1,
   Full = 2,
-};
+} p_state;
 
 typedef struct s_Pipeline
 {
@@ -17,7 +17,7 @@ typedef struct s_Pipeline
   Decoded_Instr decoded;
   uint16_t to_decode;
   uint16_t fetching;
-  enum p_state current_state;
+  p_state current_state;
   Emulator *emulator;
 } Pipeline;
 
@@ -26,4 +26,4 @@ void pipeline_init(Pipeline *pipeline, Emulator *emulator);
 
 void cycle_p(Pipeline *pipeline);
 
-#endif
+#endif /* PIPELINE_H_ */
