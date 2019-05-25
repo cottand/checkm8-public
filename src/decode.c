@@ -5,6 +5,8 @@
 #define ONES_SIZE24 0xffffff
 #define INSTR_LEN 34
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 Decoded_Instr decode_instr(uint32_t instr)
 {
@@ -42,7 +44,7 @@ Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
 
   /* decoded.cond=.... */
 
-  memcpy(ret, decoded, sizeof(decoded));
+  memcpy(ret, &decoded, sizeof(decoded));
   return ret;
 }
 
@@ -55,7 +57,7 @@ Mul_Instr *decode_mul_instr(uint32_t instr)
 
   /* decoded.cond=.... */
 
-  memcpy(ret, decoded, sizeof(decoded));
+  memcpy(ret, &decoded, sizeof(decoded));
   return ret;
 }
 
@@ -68,7 +70,7 @@ Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 
   /* decoded.cond=.... */
 
-  memcpy(ret, decoded, sizeof(decoded));
+  memcpy(ret, &decoded, sizeof(decoded));
   return ret;
 }
 
@@ -90,7 +92,7 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
   decoded.cond = (instr >> 28) & ONES_SIZE4;
   decoded.offset = (instr >> 0) & ONES_SIZE24;
 
-  memcpy(ret, decoded, sizeof(decoded));
+  memcpy(ret, &decoded, sizeof(decoded));
   return ret;
 }
 
