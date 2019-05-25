@@ -79,6 +79,6 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
   return ret;
 }
 
-instr_type *get_instr_type(uint32_t instr)
+instr_type get_instr_type(uint32_t instr)
 {
 }
