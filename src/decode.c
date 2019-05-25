@@ -84,6 +84,8 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
    * we shift right n and to a bitwise AND size t.
    * So if want the 4 bits at bit 28, we shift
    * right 28 and do AND 1111(binary) = 0xf
+   * 
+   * NOT TESTED :3
    */
   decoded.cond = (instr >> 28) & ONES_SIZE4;
   decoded.offset = (instr >> 0) & ONES_SIZE24;
