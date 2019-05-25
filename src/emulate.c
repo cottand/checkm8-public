@@ -10,4 +10,6 @@ int main(int argc, char **argv)
   load_binary(&em, argv[1]);
 
   print_mem(&em);
+
+  return EXIT_SUCCESS;
 }
