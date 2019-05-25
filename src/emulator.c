@@ -131,11 +131,13 @@ void clr_flag_V(Emulator *emulator)
   clr_reg_bit(emulator, REG_CPSR, FLAG_BIT_V);
 }
 
-uint16_t get_PC_addr(Emulator *emulator)
+uint32_t fetch(Emulator *emulator)
 {
   uint32_t PC_content = get_PC(emulator);
+  uint32_t instr;
   assert(PC_content <= UINT16_MAX);
-  return (uint16_t) PC_content;
+  memcpy(&instr, &(emulator->mem[PC_content]), sizeof(uint32_t));
+  return instr;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
@@ -143,7 +145,6 @@ void set_PC_addr(Emulator *emulator, uint16_t addr)
   /* This cast should be safe */
   set_PC(emulator, (uint32_t) addr);
 }
-
 
 /* Functions for printing */
 
