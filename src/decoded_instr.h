@@ -6,6 +6,7 @@
 
 typedef struct s_Decoded_Instr
 {
+   uint16_t type;
    /* TODO */
 } Decoded_Instr;
 
