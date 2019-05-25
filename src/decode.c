@@ -29,23 +29,54 @@ Decoded_Instr decode_instr(uint32_t instr)
 
 Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
 {
-  Data_Proc_Instr *ret =
-    malloc(sizeof(Data_Proc_Instr));
+  Data_Proc_Instr decoded;
+  Data_Proc_Instr *ret = malloc(sizeof(Data_Proc_Instr));
 
+  /* TODO edit struct fields*/
+
+  /* decoded.cond=.... */
+
+  memcpy(ret, decoded, sizeof(decoded));
+  return ret;
 }
 
 Mul_Instr *decode_mul_instr(uint32_t instr)
 {
-  return malloc(sizeof(decode_mul_instr));
+  Mul_Instr decoded;
+  Mul_Instr *ret = malloc(sizeof(Mul_Instr));
+
+  /* TODO edit struct fields*/
+
+  /* decoded.cond=.... */
+
+  memcpy(ret, decoded, sizeof(decoded));
+  return ret;
 }
 
 Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 {
+  Data_Trans_Instr decoded;
+  Data_Trans_Instr *ret = malloc(sizeof(Data_Trans_Instr));
+
+  /* TODO edit struct fields*/
+
+  /* decoded.cond=.... */
+
+  memcpy(ret, decoded, sizeof(decoded));
+  return ret;
 }
 
 Branch_Instr *decode_branch_instr(uint32_t instr)
 {
-  return malloc(decode_branch_instr);
+  Branch_Instr decoded;
+  Branch_Instr *ret = malloc(sizeof(Branch_Instr));
+
+  /* TODO edit struct fields*/
+
+  /* decoded.cond=.... */
+
+  memcpy(ret, decoded, sizeof(decoded));
+  return ret;
 }
 
 instr_type *get_instr_type(uint32_t instr)
