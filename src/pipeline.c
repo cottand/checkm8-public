@@ -11,5 +11,45 @@ Pipeline pipeline_init(Emulator *emulator, Pipeline *pipeline)
   pipeline->emulator = emulator;
 }
 
-void cycle(Pipeline *pipeline){
+void cycle_first(Pipeline *pipeline)
+{
+/* TODO */
+}
+
+void cycle_after_jump(Pipeline *Pipeline)
+{
+  /* TODO */
+}
+
+void cycle_normal(Pipeline *Pipeline)
+{
+ /* TODO */ 
+}
+
+
+void cycle(Pipeline *pipeline)
+{
+  /* The fetch step is common to all cycles.
+    I am not sure whether incrementing the PC is too??
+    If so, is it after or before the pipeline cycle?
+   */
+  pipeline->fetching = get_PC_addr(pipeline->emulator);
+
+  switch (pipeline->current_state)
+  {
+  case Empty:
+    cycle_first(pipeline);
+    break;
+  case Half:
+    cycle_after_jump(pipeline);
+    break;
+  case Full:
+    cycle_normal(pipeline);
+    break;
+  default:
+  /*Should never happen*/
+      break;
+  }
+
+
 }

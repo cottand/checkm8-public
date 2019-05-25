@@ -60,13 +60,6 @@ void    clr_flag_V(Emulator *emulator);
 uint16_t get_PC_addr(Emulator *emulator);
 void     set_PC_addr(Emulator *emulator, uint16_t addr);
 
-/**
- * Fetches and increments from PC
- * @emulator our emulator
- * @return the instruction on memory at the address stored in PC
- */
-uint16_t fetch_instr(Emulator *emulator);
-
 void print_regs(Emulator *emulator);
 void print_mem(Emulator *emulator);
 
