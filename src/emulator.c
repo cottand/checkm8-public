@@ -131,6 +131,26 @@ void clr_flag_V(Emulator *emulator)
   clr_reg_bit(emulator, REG_CPSR, FLAG_BIT_V);
 }
 
+uint16_t get_PC_addr(Emulator *emulator)
+{
+  uint16_t least_signf;
+  uint16_t *most_signf;
+
+  uint32_t PC_content = get_PC(emulator);
+
+  least_signf = (uint16_t) PC_content;
+  static_assert(PC_content <= UINT16_MAX)
+}
+
+void set_PC_addr(Emulator *emulator, uint16_t addr)
+{
+  set_PC(emulator, (uint32_t) addr);
+}
+
+uint32_t fetch_instr(Emulator *emulator)
+{
+}
+
 /* Functions for printing */
 
 void print_regs(Emulator *emulator)
