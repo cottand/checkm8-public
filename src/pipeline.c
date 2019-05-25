@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "emulator.h"
 
-Pipeline pipeline_init(Pipeline *pipeline, Emulator *emulator)
+void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 {
   pipeline->current_state = Empty;
   pipeline->emulator = emulator;
@@ -13,7 +13,7 @@ Pipeline pipeline_init(Pipeline *pipeline, Emulator *emulator)
 
 void cycle_first(Pipeline *pipeline)
 {
-/* TODO */
+  /* TODO */
 }
 
 void cycle_after_jump(Pipeline *Pipeline)
@@ -23,7 +23,7 @@ void cycle_after_jump(Pipeline *Pipeline)
 
 void cycle_normal(Pipeline *Pipeline)
 {
- /* TODO */ 
+ /* TODO */
 }
 
 
@@ -47,8 +47,8 @@ void cycle(Pipeline *pipeline)
     cycle_normal(pipeline);
     break;
   default:
-  /*Should never happen*/
-      break;
+    /*Should never happen*/
+    break;
   }
 
 
