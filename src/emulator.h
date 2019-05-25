@@ -65,7 +65,7 @@ void     set_PC_addr(Emulator *emulator, uint16_t addr);
  * @emulator our emulator
  * @return the instruction on memory at the address stored in PC
  */
-uint32_t fetch_instr(Emulator *emulator);
+uint16_t fetch_instr(Emulator *emulator);
 
 void print_regs(Emulator *emulator);
 void print_mem(Emulator *emulator);

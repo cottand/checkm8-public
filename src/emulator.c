@@ -146,10 +146,12 @@ void set_PC_addr(Emulator *emulator, uint16_t addr)
   set_PC(emulator, (uint32_t) addr);
 }
 
-/*uint32_t fetch_instr(Emulator *emulator)
+uint16_t fetch_instr(Emulator *emulator)
 {
-
-} */
+  uint16_t to_ret = get_PC_addr(emulator);
+  incr_PC(emulator);
+  return to_ret;
+}
 
 /* Functions for printing */
 
