@@ -51,6 +51,17 @@ uint8_t get_flag_V(Emulator *emulator);
 void    set_flag_V(Emulator *emulator);
 void    clr_flag_V(Emulator *emulator);
 
+/**
+ * Fetches and increments from PC
+ * @emulator our emulator
+ * @return the instruction on memory at the address stored in PC
+ * 
+ * PC stores a 32bit number but addresses are 16 bits, so we
+ * will be storing our address on the least 16 significant bits
+ * of PC, and the rest will be zeroes.
+ */
+uint32_t fetch_instr(Emulator *emulator);
+
 void print_regs(Emulator *emulator);
 void print_mem(Emulator *emulator);
 
