@@ -1,16 +1,19 @@
 #include "decode.h"
-#define ONES_SIZE1 1
-#define ONES_SIZE4 0xf
-#define ONES_SIZE12 0xfff
-#define ONES_SIZE24 0xffffff
-#define INSTR_LEN 34
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#define ONES_SIZE1 1
+#define ONES_SIZE4 0xf
+#define ONES_SIZE12 0xfff
+#define ONES_SIZE24 0xffffff
+
+
 Decoded_Instr decode_instr(uint32_t instr)
 {
   Decoded_Instr decoded;
+  decoded_instr_init(&decoded);
+
   decoded.type = get_instr_type(instr);
 
   switch (decoded.type)
@@ -34,69 +37,43 @@ Decoded_Instr decode_instr(uint32_t instr)
 
   return decoded;
 }
-/**
- * The following decode functions do a few things:
- *  - They dynamically allocate memory depending on which
- * instruction we are talking about, so all the different
- * instructions can coexist in the abstrate struct instruction
- *  -They assign the bitfield values of their
- * respective types, creating a new more specific struct,
- * located on the stack
- *  - The memcpy this recently created struct to the dynamically
- * alocated space we claimed earlier, and return the address
- * of that allocation.
- * 
- *  This allows us to have an abstract struct 'instruction' for
- * all inststructions with pointers to every type as members.
- * Depending on the actual kind of instruction, only one of the 
- * pointers points towards the informtion we want, enabling 
- * a pretty efficient abstraction.
- * 
- */
 
 Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
 {
-  Data_Proc_Instr decoded;
-  Data_Proc_Instr *ret = malloc(sizeof(Data_Proc_Instr));
+  Data_Proc_Instr *decoded = malloc(sizeof(Data_Proc_Instr));
 
   /* TODO edit struct fields*/
 
-  /* decoded.cond=.... */
+  /* decoded->cond=.... */
 
-  memcpy(ret, &decoded, sizeof(decoded));
-  return ret;
+  return decoded;
 }
 
 Mul_Instr *decode_mul_instr(uint32_t instr)
 {
-  Mul_Instr decoded;
-  Mul_Instr *ret = malloc(sizeof(Mul_Instr));
+  Mul_Instr *decoded = malloc(sizeof(Mul_Instr));
 
   /* TODO edit struct fields*/
 
-  /* decoded.cond=.... */
+  /* decoded->cond=.... */
 
-  memcpy(ret, &decoded, sizeof(decoded));
-  return ret;
+  return decoded;
 }
 
 Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 {
-  Data_Trans_Instr decoded;
-  Data_Trans_Instr *ret = malloc(sizeof(Data_Trans_Instr));
+  Data_Trans_Instr *decoded = malloc(sizeof(Data_Trans_Instr));
 
   /* TODO edit struct fields*/
 
-  /* decoded.cond=.... */
+  /* decoded->cond=.... */
 
-  memcpy(ret, &decoded, sizeof(decoded));
-  return ret;
+  return decoded;
 }
 
 Branch_Instr *decode_branch_instr(uint32_t instr)
 {
-  Branch_Instr decoded;
-  Branch_Instr *ret = malloc(sizeof(Branch_Instr));
+  Branch_Instr *decoded = malloc(sizeof(Branch_Instr));
 
   /**
    * Bit into bitfield extraxtion example:
@@ -108,16 +85,15 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
    * 
    * NOT TESTED :3
    */
-  decoded.cond = (instr >> 28) & ONES_SIZE4;
-  decoded.offset = (instr >> 0) & ONES_SIZE24;
+  decoded->cond = (instr >> 28) & ONES_SIZE4;
+  decoded->offset = (instr >> 0) & ONES_SIZE24;
 
-  memcpy(ret, &decoded, sizeof(decoded));
-  return ret;
+  return decoded;
 }
 
 instr_type get_instr_type(uint32_t instr)
 {
-  if (!(~instr & 0x0A000000))
+  if (!(~instr & 0x0a000000))
   {
     return Branch;
   }
