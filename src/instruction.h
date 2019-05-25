@@ -24,6 +24,7 @@ typedef struct s_Decoded_Instr
 typedef struct s_Data_Proc_Instr
 {
   unsigned int cond : 4;
+  unsigned int i : 1;
   unsigned int opcode : 4;
   unsigned int s : 1;
   unsigned int rn : 4;
