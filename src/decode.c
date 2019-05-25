@@ -1,4 +1,9 @@
 #include "decode.h"
+#define ONES_SIZE1 1
+#define ONES_SIZE4 0xf
+#define ONES_SIZE12 0xfff
+#define ONES_SIZE24 0xffffff
+#define INSTR_LEN 34
 
 Decoded_Instr decode_instr(uint32_t instr)
 {
@@ -71,9 +76,16 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
   Branch_Instr decoded;
   Branch_Instr *ret = malloc(sizeof(Branch_Instr));
 
-  /* TODO edit struct fields*/
-
-  /* decoded.cond=.... */
+  /**
+   * Bit into bitfield extraxtion example:
+   * if we're looking for t bits at the nth position
+   * from the right,
+   * we shift right n and to a bitwise AND size t.
+   * So if want the 4 bits at bit 28, we shift
+   * right 28 and do AND 1111(binary) = 0xf
+   */
+  decoded.cond = (instr >> 28) & ONES_SIZE4;
+  decoded.offset = (instr >> 0) & ONES_SIZE24;
 
   memcpy(ret, decoded, sizeof(decoded));
   return ret;
