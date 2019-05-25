@@ -3,11 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ONES_SIZE1 1
-#define ONES_SIZE4 0xf
-#define ONES_SIZE12 0xfff
-#define ONES_SIZE24 0xffffff
-
 
 Decoded_Instr decode_instr(uint32_t instr)
 {
@@ -42,9 +37,13 @@ Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
 {
   Data_Proc_Instr *decoded = malloc(sizeof(Data_Proc_Instr));
 
-  /* TODO edit struct fields*/
-
-  /* decoded->cond=.... */
+  decoded->cond       = instr >> 28;
+  decoded->i          = instr >> 25;
+  decoded->opcode     = instr >> 21;
+  decoded->s          = instr >> 20;
+  decoded->rn         = instr >> 16;
+  decoded->rd         = instr >> 12;
+  decoded->operand_2  = instr >> 0;
 
   return decoded;
 }
@@ -53,9 +52,13 @@ Mul_Instr *decode_mul_instr(uint32_t instr)
 {
   Mul_Instr *decoded = malloc(sizeof(Mul_Instr));
 
-  /* TODO edit struct fields*/
-
-  /* decoded->cond=.... */
+  decoded->cond = instr >> 28;
+  decoded->a    = instr >> 21;
+  decoded->s    = instr >> 20;
+  decoded->rd   = instr >> 16;
+  decoded->rn   = instr >> 12;
+  decoded->rs   = instr >> 8;
+  decoded->rm   = instr >> 0;
 
   return decoded;
 }
@@ -64,9 +67,14 @@ Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 {
   Data_Trans_Instr *decoded = malloc(sizeof(Data_Trans_Instr));
 
-  /* TODO edit struct fields*/
-
-  /* decoded->cond=.... */
+  decoded->cond   = instr >> 28;
+  decoded->i      = instr >> 25;
+  decoded->p      = instr >> 24;
+  decoded->u      = instr >> 23;
+  decoded->l      = instr >> 20;
+  decoded->rn     = instr >> 16;
+  decoded->rd     = instr >> 12;
+  decoded->offset = instr >> 0;
 
   return decoded;
 }
@@ -75,18 +83,8 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
 {
   Branch_Instr *decoded = malloc(sizeof(Branch_Instr));
 
-  /**
-   * Bit into bitfield extraxtion example:
-   * if we're looking for t bits at the nth position
-   * from the right,
-   * we shift right n and to a bitwise AND size t.
-   * So if want the 4 bits at bit 28, we shift
-   * right 28 and do AND 1111(binary) = 0xf
-   * 
-   * NOT TESTED :3
-   */
-  decoded->cond = (instr >> 28) & ONES_SIZE4;
-  decoded->offset = (instr >> 0) & ONES_SIZE24;
+  decoded->cond   = instr >> 28;
+  decoded->offset = instr >> 0;
 
   return decoded;
 }

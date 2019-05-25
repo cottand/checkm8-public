@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-decoded_instr_init(Decode_Instr* instr)
+void decoded_instr_init(Decoded_Instr* instr)
 {
   instr->data_proc_instr  = 0;
   instr->mul_instr        = 0;
@@ -12,7 +12,7 @@ decoded_instr_init(Decode_Instr* instr)
   instr->branch_instr     = 0;
 }
 
-decoded_instr_free(Decode_Instr* instr)
+void decoded_instr_free(Decoded_Instr* instr)
 {
   if (instr->data_proc_instr)
   {
