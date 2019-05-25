@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "loader.h"
+#include <assert.h>
 
 void emulator_init(Emulator *emulator)
 {
@@ -133,15 +134,13 @@ void clr_flag_V(Emulator *emulator)
 uint16_t get_PC_addr(Emulator *emulator)
 {
   uint32_t PC_content = get_PC(emulator);
-  /*
-  It would be nice if we could find a way of checking
-  PC_content <= UINT16_MAX
-  */
+  assert(PC_content <= UINT16_MAX);
   return (uint16_t) PC_content;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
 {
+  /* This cast should be safe */
   set_PC(emulator, (uint32_t) addr);
 }
 
