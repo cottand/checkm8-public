@@ -15,8 +15,12 @@ int main(int argc, char **argv)
   em.regs[1] = 0x00000004; // Rs
   em.regs[2] = 0x00000004; // Rm
 
-  uint32_t instr = 0xe0130192; // No acc
+  // Mul instructions
+  //uint32_t instr = 0xe0130192; // No acc
   //uint32_t instr = 0xe0330192; // acc
+
+  // Branch instructions
+  uint32_t instr = 0xea000001;
 
   Decoded_Instr decoded = decode_instr(instr);
   exec_instr(&em, &decoded);

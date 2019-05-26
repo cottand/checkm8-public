@@ -74,6 +74,12 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
 void exec_branch_instr(Emulator *emulator, Branch_Instr *instr)
 {
   if (!is_cond_true(emulator, instr->cond)) { return; }
+
+  uint32_t offset = instr->offset << 2;
+  uint32_t pc = get_PC(emulator);
+  pc += offset;
+
+  set_PC(emulator, pc);
 }
 
 uint8_t is_cond_true(Emulator *emulator, uint8_t cond)
