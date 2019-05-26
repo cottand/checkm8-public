@@ -133,11 +133,11 @@ void clr_flag_V(Emulator *emulator)
 
 uint32_t fetch(Emulator *emulator)
 {
-  uint32_t PC_content = get_PC(emulator);
-  uint32_t instr;
-  assert(PC_content <= UINT16_MAX);
-  memcpy(&instr, &(emulator->mem[PC_content]), sizeof(uint32_t));
-  return instr;
+  /* TODO
+   * given an emulator, takes the address contained in PC (use get_PC(emulator))
+   * and returns the uint32_t (so 4bytes) in the *memory* contained at that addr
+   * (use emulator->mem[address here] to access memory)
+   */
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
