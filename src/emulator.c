@@ -138,6 +138,7 @@ uint32_t fetch(Emulator *emulator)
    * and returns the uint32_t (so 4bytes) in the *memory* contained at that addr
    * (use emulator->mem[address here] to access memory)
    */
+  return 0;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
