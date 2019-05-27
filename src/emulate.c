@@ -53,7 +53,9 @@ int main(int argc, char **argv)
   for(int i = 0; i<3; i++)
   {
   cycle_p(&pip);
-  
+
   }
+  print_regs(&em);
+  print_mem(&em);
   return EXIT_SUCCESS;
 }
