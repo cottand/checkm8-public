@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include "emulator.h"
 #include "decode.h"
+#include "execute.h"
 
 void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 {
@@ -15,7 +16,6 @@ void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 void cycle_first(Pipeline *pipeline)
 {
   Emulator* em = pipeline->emulator;
-  /* Happens only in the very first cycle*/
   pipeline->fetching = fetch(em);
   inrc_PC(em);
 }
@@ -26,18 +26,16 @@ void cycle_after_jump(Pipeline *pipeline)
   cycle_first(pipeline);
 }
 
-void cycle_normal(Pipeline *Pipeline)
+void cycle_normal(Pipeline *pipeline)
 {
- 
+ pipeline->executing = pipeline->decoded;
+ exec_instr(pipeline->emulator, &(pipeline->executing));
+ cycle_after_jump(pipeline);
 }
 
 
 void cycle_p(Pipeline *pipeline)
 {
-  /* The fetch step is common to all cycles.
-    I am not sure whether incrementing the PC is too??
-    If so, is it after or before the pipeline cycle?
-   */
   pipeline->fetching = fetch(pipeline->emulator);
 
   switch (pipeline->current_state)
