@@ -16,7 +16,7 @@ void cycle_first(Pipeline *pipeline)
 {
   Emulator* em = pipeline->emulator;
   pipeline->fetching = fetch(em);
-  inrc_PC(em);
+  incr_PC(em);
 }
 
 void cycle_after_jump(Pipeline *pipeline)
