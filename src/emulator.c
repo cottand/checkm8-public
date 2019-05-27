@@ -131,14 +131,18 @@ void clr_flag_V(Emulator *emulator)
   clr_reg_bit(emulator, REG_CPSR, FLAG_BIT_V);
 }
 
+/**
+ * Returns the instruction at the address in memory stored in PC
+ */
 uint32_t fetch(Emulator *emulator)
 {
-  /* TODO
-   * given an emulator, takes the address contained in PC (use get_PC(emulator))
-   * and returns the uint32_t (so 4bytes) in the *memory* contained at that addr
-   * (use emulator->mem[address here] to access memory)
-   */
-  return 0;
+  uint16_t pc_addr = (uint16_t) get_PC(emulator);
+  uint8_t i_bits[4];
+  for(int i=0; i<4; i++){
+    i_bits[i] = get_mem_byte(emulator, pc_addr+(3-i));
+  }
+  uint32_t* instr = (uint32_t*) &i_bits[0];
+  return *instr;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)

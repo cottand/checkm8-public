@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   Emulator em;
   emulator_init(&em);
   load_binary(&em, argv[1]);
-
+/*
   em.regs[0] = 0x00000001; // Rn
   em.regs[1] = 0x00000004; // Rs
   em.regs[2] = 0x00000004; // Rm
@@ -29,9 +29,22 @@ int main(int argc, char **argv)
 
   Decoded_Instr decoded = decode_instr(instr);
   exec_instr(&em, &decoded);
+*/
+/* Fetch testing rubbish
 
   print_regs(&em);
-  print_mem(&em);
 
+  print_mem(&em);
+  uint16_t pc_addr = (uint16_t) get_PC(&em);
+  printf("\nPC contains %x atm \n", pc_addr);
+  uint8_t i_bits[4];
+  for(int i=0; i<4; i++){
+    i_bits[i] = get_mem_byte(&em, pc_addr+(3-i));
+    printf("\n Current instrbit n. %d at %x is %x\n", i, (pc_addr+i), i_bits[i]);
+  }
+  uint32_t* instr = (uint32_t*) &i_bits[0];
+  printf("Instruction therefore is: %x \n", *instr);
+
+*/
   return EXIT_SUCCESS;
 }
