@@ -11,7 +11,7 @@ int main(int argc, char **argv)
   Emulator em;
   emulator_init(&em);
   load_binary(&em, argv[1]);
-
+/*
   em.regs[0] = 0x00000001; // Rn
   em.regs[1] = 0x00000004; // Rs
   em.regs[2] = 0x00000004; // Rm
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
   Decoded_Instr decoded = decode_instr(instr);
   exec_instr(&em, &decoded);
-
+*/
   print_regs(&em);
   print_mem(&em);
 
