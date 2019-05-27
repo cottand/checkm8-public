@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "emulator.h"
+#include "decode.h"
 
 void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 {
@@ -14,24 +15,24 @@ void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 void cycle_first(Pipeline *pipeline)
 {
   Emulator* em = pipeline->emulator;
-  /* TODO 
-    Happens only in the very first cycle*/
+  /* Happens only in the very first cycle*/
   pipeline->fetching = fetch(em);
   inrc_PC(em);
 }
 
-void cycle_after_jump(Pipeline *Pipeline)
+void cycle_after_jump(Pipeline *pipeline)
 {
-  /* TODO */
+  pipeline->decoded = decode_instr(pipeline->fetching);
+  cycle_first(pipeline);
 }
 
 void cycle_normal(Pipeline *Pipeline)
 {
- /* TODO */
+ 
 }
 
 
-void cycle(Pipeline *pipeline)
+void cycle_p(Pipeline *pipeline)
 {
   /* The fetch step is common to all cycles.
     I am not sure whether incrementing the PC is too??
