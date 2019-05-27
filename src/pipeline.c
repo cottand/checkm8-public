@@ -13,7 +13,11 @@ void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 
 void cycle_first(Pipeline *pipeline)
 {
-  /* TODO */
+  Emulator* em = pipeline->emulator;
+  /* TODO 
+    Happens only in the very first cycle*/
+  pipeline->fetching = fetch(em);
+  inrc_PC(em);
 }
 
 void cycle_after_jump(Pipeline *Pipeline)
