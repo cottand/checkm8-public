@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "emulator.h"
+//#include "emulator.h" it's in pipeline
 #include "loader.h"
-#include "decode.h"
-#include "execute.h"
+//#include "decode.h"  in pipeline
+//#include "execute.h"   in pipeline
+#include "pipeline.h"
 
 int main(int argc, char **argv)
 {
@@ -46,5 +47,13 @@ int main(int argc, char **argv)
   printf("Instruction therefore is: %x \n", *instr);
 
 */
+  Pipeline pip;
+  pipeline_init(&pip, &em);
+  print_regs(&em);
+  for(int i = 0; i<3; i++)
+  {
+  cycle_p(&pip);
+  
+  }
   return EXIT_SUCCESS;
 }
