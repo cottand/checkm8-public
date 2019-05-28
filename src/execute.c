@@ -1,5 +1,6 @@
 #include "execute.h"
 #include <stdio.h>
+#include "data_proc.h"
 
 void exec_instr(Emulator *emulator, Decoded_Instr *instr)
 {
@@ -20,10 +21,10 @@ void exec_instr(Emulator *emulator, Decoded_Instr *instr)
   }
 }
 
-void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
-{
-  if (!is_cond_true(emulator, instr->cond)) { return; }
-}
+// void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
+// {
+  // if (!is_cond_true(emulator, instr->cond)) { return; }
+// }
 
 void exec_mul_instr(Emulator *emulator, Mul_Instr *instr)
 {

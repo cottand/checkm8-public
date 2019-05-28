@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 void load(char path[], void *ptr)
 {
   unsigned long fileLen;
 
   FILE *file = fopen(path, "rb");
-
   if (!file)
   {
-    fprintf(stderr, "Error: Unable to read file");
+    fprintf(stderr, "Error: Invalid file path\n");
+    exit(0);
   }
 
   /* Get file length */

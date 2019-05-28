@@ -1,31 +1,15 @@
 #include <stdlib.h>
+#include "Emulator.h"
+#include "Loader.h"
+#include "data_proc.h"
+
 #include <stdio.h>
-#include <string.h>
-#include "emulator.h"
-#include "loader.h"
-#include "decode.h"
-#include "execute.h"
 
 int main(int argc, char **argv)
 {
-  Emulator em;
-  emulator_init(&em);
-
-  em.regs[0] = 0x00000001; // Rn
-  em.regs[1] = 0x00000004; // Rs
-  em.regs[2] = 0x00000004; // Rm
-
-  // Mul instructions
-  //uint32_t instr = 0xe0130192; // No acc
-  //uint32_t instr = 0xe0330192; // acc
-
-  // Branch instructions
-  uint32_t instr = 0xea000001;
-
-  Decoded_Instr decoded = decode_instr(instr);
-  exec_instr(&em, &decoded);
-
-  print_regs(&em);
-
-  return EXIT_SUCCESS;
+  // char *path = argv[1];
+  // Emulator em;
+  // emulator_init(&em);
+  
+  // load(path, em.mem);
 }

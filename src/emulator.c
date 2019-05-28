@@ -131,14 +131,20 @@ void clr_flag_V(Emulator *emulator)
   clr_reg_bit(emulator, REG_CPSR, FLAG_BIT_V);
 }
 
+// Memory in small endian, output in big endian
 uint32_t fetch(Emulator *emulator)
 {
-  /* TODO
-   * given an emulator, takes the address contained in PC (use get_PC(emulator))
-   * and returns the uint32_t (so 4bytes) in the *memory* contained at that addr
-   * (use emulator->mem[address here] to access memory)
-   */
-  return 0;
+  uint32_t pc = get_PC(emulator);
+
+  // More 'parallel' processing due to use of local vars.
+  uint32_t b0 = emulator->mem[pc];
+  uint32_t b1 = emulator->mem[pc + 1] << 8;
+  uint32_t b2 = emulator->mem[pc + 2] << 16;
+  uint32_t b3 = emulator->mem[pc + 3] << 24;
+
+  uint32_t inst = b0 | b1 | b2 | b3;
+  
+  return inst;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
