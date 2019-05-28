@@ -25,6 +25,8 @@ Decoded_Instr decode_instr(uint32_t instr)
   case Branch:
     decoded.branch_instr = decode_branch_instr(instr);
     break;
+  case Halt:
+    /*No decoding necessary */
   default:
     printf("Error: invalid instr type");
     break;
@@ -91,6 +93,12 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
 
 instr_type get_instr_type(uint32_t instr)
 {
+
+  if (instr == 0x0)
+  { //We found a halt instruction
+    return Halt;
+  }
+
   if (!(~instr & 0x0a000000))
   {
     return Branch;

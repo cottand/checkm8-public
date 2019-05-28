@@ -1,14 +1,16 @@
 #include "emulator.h"
 
+#include "loader.h"
+#include "pipeline.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "loader.h"
 #include <assert.h>
 
 void emulator_init(Emulator *emulator)
 {
   int i;
+  emulator->halt = 0;
   for (i = 0; i < REG_COUNT; i++)
   {
     emulator->regs[i] = 0;
@@ -22,6 +24,15 @@ void emulator_init(Emulator *emulator)
 
 void emulate(Emulator *emulator, char *src_file)
 {
+  load_binary(emulator, src_file);
+
+  Pipeline pipeline;
+  pipeline_init(&pipeline, emulator);
+
+  while (!emulator->halt)
+  {
+    cycle_p(&pipeline);
+  }
 }
 
 void load_binary(Emulator *emulator, char *src_file)

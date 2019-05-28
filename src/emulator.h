@@ -20,6 +20,7 @@ typedef struct s_Emulator
 {
   uint32_t regs[REG_COUNT];
   uint8_t mem[MEM_SIZE];
+  uint8_t halt;
 } Emulator;
 
 void emulator_init(Emulator *emulator);

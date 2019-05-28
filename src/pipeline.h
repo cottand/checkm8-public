@@ -5,7 +5,8 @@
 #include "emulator.h"
 #include "instruction.h"
 
-typedef enum e_p_state {
+typedef enum e_p_state
+{
   Empty = 0,
   Half = 1,
   Full = 2,
@@ -19,6 +20,7 @@ typedef struct s_Pipeline
   uint16_t fetching;
   p_state current_state;
   Emulator *emulator;
+  uint16_t addresses_bottom_to_top[3];
 } Pipeline;
 
 
