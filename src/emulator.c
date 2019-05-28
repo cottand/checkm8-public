@@ -33,6 +33,12 @@ void emulate(Emulator *emulator, char *src_file)
   {
     cycle_p(&pipeline);
   }
+  /**
+   *  We don't increment PC on the very last "halt" instruction
+   * but pipeline increases it at every cycle, so we're decreasing
+   * it at the end of runtime 
+   */
+  set_PC(emulator, get_PC(emulator) - sizeof(uint32_t));
 }
 
 void load_binary(Emulator *emulator, char *src_file)
@@ -147,7 +153,7 @@ void clr_flag_V(Emulator *emulator)
  */
 uint32_t fetch(Emulator *emulator)
 {
-  uint16_t pc_addr = (uint16_t) get_PC(emulator);
+  uint16_t pc_addr = (uint16_t)get_PC(emulator);
   /*uint8_t i_bits[4];
   for(int i = 0; i < 4; i++)
   {
@@ -164,7 +170,7 @@ uint32_t fetch(Emulator *emulator)
 void set_PC_addr(Emulator *emulator, uint16_t addr)
 {
   /* This cast should be safe */
-  set_PC(emulator, (uint32_t) addr);
+  set_PC(emulator, (uint32_t)addr);
 }
 
 /* Functions for printing */
@@ -180,7 +186,7 @@ void print_regs(Emulator *emulator)
     {
       printf("$%-3d:\t%3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
     }
-    else if(i != 13 && i != 14)
+    else if (i != 13 && i != 14)
     {
       char *name = malloc(4);
       switch (i)

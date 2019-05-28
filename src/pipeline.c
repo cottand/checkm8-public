@@ -40,7 +40,6 @@ void cycle_normal(Pipeline *pipeline)
     pipeline->current_state = Half;
   }
   pipeline->addresses_bottom_to_top[2] = pipeline->addresses_bottom_to_top[1];
-  //assert(pipeline->addresses_bottom_to_top[0] == (pipeline->addresses_bottom_to_top[2] + 2 * sizeof(uint32_t));
 }
 
 void cycle_p(Pipeline *pipeline)
