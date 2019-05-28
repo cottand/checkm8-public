@@ -8,7 +8,8 @@ typedef enum e_instr_type
   Data_Proc,
   Mul,
   Data_Trans,
-  Branch
+  Branch,
+  Halt
 } instr_type;
 
 typedef struct s_Data_Proc_Instr

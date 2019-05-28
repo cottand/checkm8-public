@@ -9,6 +9,7 @@
 void emulator_init(Emulator *emulator)
 {
   int i;
+  emulator->halt = 0;
   for (i = 0; i < REG_COUNT; i++)
   {
     emulator->regs[i] = 0;
