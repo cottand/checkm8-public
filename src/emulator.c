@@ -213,25 +213,14 @@ void print_regs(Emulator *emulator)
 
 void print_mem(Emulator *emulator)
 {
-  printf("Addr\t\tValue\n");
-
-  short skipping = 0;
+  printf("Non-zero memory:\n");
 
   int i;
   for (i = 0; i < MEM_SIZE; i++)
   {
-    if (emulator->mem[i] == 0)
+    if (emulator->mem[i] != 0)
     {
-      if (!skipping)
-      {
-        skipping = 1;
-        printf("...\t\t0x0\n");
-      }
-    }
-    else
-    {
-      skipping = 0;
-      printf("[0x%x]\t=\t0x%x\n", i, emulator->mem[i]);
+      printf("0x%08x: 0x%08x\n", i, emulator->mem[i]);
     }
   }
 }
