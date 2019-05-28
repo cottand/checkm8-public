@@ -4,6 +4,8 @@
 #include "execute.h"
 #include "shift.h"
 
+#include <stdio.h>
+
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 {
   if (!is_cond_true(emulator, instr->cond))
@@ -16,6 +18,8 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   int32_t op1 = emulator->regs[instr->rn];
   int32_t op2 = get_operand2(emulator, instr->operand_2, instr->i, &c_flag);
   int32_t res = 0;
+
+  printf("op2: %x\n", op2);
 
   operation operator = decode_opcode(instr->opcode);
 
@@ -88,7 +92,6 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
     }
     res = (uint32_t)res_64;
     break;
-
   default:
     break;
   }
@@ -122,13 +125,11 @@ uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
 {
   if (I_flag)
   {
-    uint32_t imm_mask = (1 << 8) - 1;
-    uint32_t rot_mask = (1 << 4) - 1;
+    uint32_t immediate = op2 & 0xff;
+    uint32_t rotate = op2 >> 8;
+    rotate *= 2;
 
-    uint32_t imm = op2 ^ imm_mask;
-    uint8_t rotate = (op2 >> 8) ^ rot_mask;
-
-    return ror(imm, rotate * 2, carry);
+    return ror(immediate, rotate, carry);
   }
 
   return compute_offset_from_reg(emulator, op2, carry);

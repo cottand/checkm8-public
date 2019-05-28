@@ -43,6 +43,7 @@ Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
   Data_Proc_Instr *decoded = malloc(sizeof(Data_Proc_Instr));
 
   decoded->cond       = instr >> 28;
+  printf("%x\n", decoded->cond);
   decoded->i          = instr >> 25;
   decoded->opcode     = instr >> 21;
   decoded->s          = instr >> 20;
