@@ -216,11 +216,21 @@ void print_mem(Emulator *emulator)
   printf("Non-zero memory:\n");
 
   int i;
-  for (i = 0; i < MEM_SIZE; i++)
+  for (i = 0; i < MEM_SIZE-4; i += 4)
   {
+    uint32_t memory_content;
+    uint8_t *memory_array = malloc(4 * sizeof(uint8_t*));
+    int j, k;
+    k = 0;
+    for(j = 3; j >= 0; j--)
+    {
+      memory_array[k] = emulator->mem[i+j];
+      k++;
+    }
+    memcpy(&memory_content, memory_array, 4);
     if (emulator->mem[i] != 0)
     {
-      printf("0x%08x: 0x%08x\n", i, emulator->mem[i]);
+      printf("0x%08x: 0x%08x\n", i, memory_content);
     }
   }
 }
