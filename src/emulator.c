@@ -27,11 +27,11 @@ void emulate(Emulator *emulator, char *src_file)
   load_binary(emulator, src_file);
 
   Pipeline pipeline;
-  pipeline_init(pipeline, emulator);
+  pipeline_init(&pipeline, emulator);
 
   while (!emulator->halt)
   {
-    cycle_p(pipeline);
+    cycle_p(&pipeline);
   }
 }
 
