@@ -10,8 +10,8 @@ all: assemble emulate
 assemble: assemble.o
 
 
-emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o
-	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o -o emulate
+emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o
+	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o -o emulate
 
 emulator.o: emulator.c
 	$(CC) $(CFLAGS) emulator.c -c -o emulator.o
@@ -30,6 +30,9 @@ execute.o: execute.c
 
 instruction.o: instruction.c
 	$(CC) $(CFLAGS) instruction.c -c -o instruction.o
+
+shift.o: shift.c
+	$(CC) $(CFLAGS) shift.c -c -o shift.o
 
 
 clean:

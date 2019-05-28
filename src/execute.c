@@ -1,4 +1,5 @@
 #include "execute.h"
+#include "shift.h"
 #include <stdio.h>
 
 void exec_instr(Emulator *emulator, Decoded_Instr *instr)
@@ -99,30 +100,16 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
     switch (shift_type)
     {
     case 0x0: /* Logical left */
-      offset = reg_contents << shift_amount;
+      offset = lsl(reg_contents, shift_amount);
       break;
     case 0x1: /* Logical right */
-      offset = reg_contents >> shift_amount;
+      offset = lsr(reg_contents, shift_amount);
       break;
     case 0x2: /* Arithmetic right */
-      if (reg_contents >> 31) /* if the number is negative */
-      {
-        offset = ~(~reg_contents >> shift_amount);
-      }
-      else
-      {
-        offset = reg_contents >> shift_amount;
-      }
+      offset = asr(reg_contents, shift_amount);
       break;
     case 0x3: /* Rotate right */
-      if (!(shift_amount &= 31))
-      {
-        offset = reg_contents;
-      }
-      else
-      {
-        offset = (reg_contents >> shift_amount) | (reg_contents << (32 - shift_amount));
-      }
+      offset = ror(reg_contents, shift_amount);
       break;
     default:
       printf("Error: invalid shift type for data trans instr type");
