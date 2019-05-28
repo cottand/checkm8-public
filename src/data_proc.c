@@ -4,11 +4,6 @@
 #include "execute.h"
 #include "shift.h"
 
-
-// static const struct s_Bit_Block write_res_block = {.size = 2, .lsb_loc = 2};
-// static const struct s_Bit_Block n_bit_block = {.size = 1, .lsb_loc = 31};
-// static const struct s_Bit_Block Imm_block = {.size = 8, .lsb_loc = 0};
-
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 {
   if (!is_cond_true(emulator, instr->cond))
@@ -18,7 +13,7 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 
   int c_flag = 0;
 
-  int32_t op1 = emulator->regs[instr->rn];  
+  int32_t op1 = emulator->regs[instr->rn];
   int32_t op2 = get_operand2(emulator, instr->operand_2, instr->i, &c_flag);
   int32_t res = 0;
 
@@ -132,7 +127,7 @@ uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
 
     uint32_t imm = op2 ^ imm_mask;
     uint8_t rotate = (op2 >> 8) ^ rot_mask;
-    
+
     return ror(imm, rotate * 2, carry);
   }
 

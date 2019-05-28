@@ -11,6 +11,8 @@ Decoded_Instr decode_instr(uint32_t instr)
 
   decoded.type = get_instr_type(instr);
 
+  printf("Executing instr type: %x\n", decoded.type);
+
   switch (decoded.type)
   {
   case Data_Proc:
@@ -27,8 +29,9 @@ Decoded_Instr decode_instr(uint32_t instr)
     break;
   case Halt:
     /*No decoding necessary */
+    break;
   default:
-    printf("Error: invalid instr type");
+    printf("Error: invalid instr type\n");
     break;
   }
 
@@ -93,9 +96,9 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
 
 instr_type get_instr_type(uint32_t instr)
 {
-
+  //We found a halt instruction
   if (instr == 0x0)
-  { //We found a halt instruction
+  {
     return Halt;
   }
 
