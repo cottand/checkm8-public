@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 {
     Emulator em;
     emulator_init(&em);
-    emulate(&em, argv[0]);
+    emulate(&em, argv[1]);
     print_regs(&em);
     print_mem(&em);
     return EXIT_SUCCESS;
