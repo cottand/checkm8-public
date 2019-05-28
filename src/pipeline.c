@@ -1,9 +1,10 @@
 #include "pipeline.h"
 
-#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 #include "emulator.h"
+#include "decode.h"
+#include "execute.h"
 
 void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 {
@@ -13,26 +14,27 @@ void pipeline_init(Pipeline *pipeline, Emulator *emulator)
 
 void cycle_first(Pipeline *pipeline)
 {
-  /* TODO */
+  Emulator* em = pipeline->emulator;
+  pipeline->fetching = fetch(em);
+  incr_PC(em);
 }
 
-void cycle_after_jump(Pipeline *Pipeline)
+void cycle_after_jump(Pipeline *pipeline)
 {
-  /* TODO */
+  pipeline->decoded = decode_instr(pipeline->fetching);
+  cycle_first(pipeline);
 }
 
-void cycle_normal(Pipeline *Pipeline)
+void cycle_normal(Pipeline *pipeline)
 {
- /* TODO */
+ pipeline->executing = pipeline->decoded;
+ exec_instr(pipeline->emulator, &(pipeline->executing));
+ cycle_after_jump(pipeline);
 }
 
 
-void cycle(Pipeline *pipeline)
+void cycle_p(Pipeline *pipeline)
 {
-  /* The fetch step is common to all cycles.
-    I am not sure whether incrementing the PC is too??
-    If so, is it after or before the pipeline cycle?
-   */
   pipeline->fetching = fetch(pipeline->emulator);
 
   switch (pipeline->current_state)
