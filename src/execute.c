@@ -25,11 +25,6 @@ void exec_instr(Emulator *emulator, Decoded_Instr *instr)
   }
 }
 
-// void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
-// {
-  // if (!is_cond_true(emulator, instr->cond)) { return; }
-// }
-
 void exec_mul_instr(Emulator *emulator, Mul_Instr *instr)
 {
   if (!is_cond_true(emulator, instr->cond)) { return; }
@@ -78,7 +73,8 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
   uint32_t offset = 0;
   if (instr->i) /* Offset is shifted register */
   {
-    offset = compute_offset_from_reg(emulator, instr->offset);
+    int carry = 0;
+    offset = compute_offset_from_reg(emulator, instr->offset, &carry);
   }
   else /* Offset is unsigned 12 bit immediate offset */
   {
@@ -111,7 +107,7 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
 /* This function computes the offset for the case where the offset is strored
  * as a shifted register. Used by data_proc and data_trans
  */
-uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field)
+uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field, int *carry)
 {
   uint32_t offset = 0;
 
@@ -141,16 +137,16 @@ uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field)
   switch (shift_type)
   {
     case 0x0: /* Logical left */
-      offset = lsl(reg_contents, shift_amount);
+      offset = lsl(reg_contents, shift_amount, carry);
       break;
     case 0x1: /* Logical right */
-      offset = lsr(reg_contents, shift_amount);
+      offset = lsr(reg_contents, shift_amount, carry);
       break;
     case 0x2: /* Arithmetic right */
-      offset = asr(reg_contents, shift_amount);
+      offset = asr(reg_contents, shift_amount, carry);
       break;
     case 0x3: /* Rotate right */
-      offset = ror(reg_contents, shift_amount);
+      offset = ror(reg_contents, shift_amount, carry);
       break;
     default:
       printf("Error: invalid shift type for data trans instr type");

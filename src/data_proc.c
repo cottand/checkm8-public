@@ -2,10 +2,12 @@
 #include "instruction.h"
 #include "data_proc.h"
 #include "execute.h"
+#include "shift.h"
 
-static const struct s_Bit_Block write_res_block = {.size = 2, .lsb_loc = 2};
-static const struct s_Bit_Block n_bit_block = {.size = 1, .lsb_loc = 31};
-static const struct s_Bit_Block Imm_block = {.size = 8, .lsb_loc = 0};
+
+// static const struct s_Bit_Block write_res_block = {.size = 2, .lsb_loc = 2};
+// static const struct s_Bit_Block n_bit_block = {.size = 1, .lsb_loc = 31};
+// static const struct s_Bit_Block Imm_block = {.size = 8, .lsb_loc = 0};
 
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 {
@@ -104,7 +106,7 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
       set_flag_Z(emulator);
     }
 
-    if (get_bit_block(res, n_bit_block, 0))
+    if (res >> 31)
     {
       set_flag_N(emulator);
     }
@@ -113,26 +115,28 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
       clr_flag_N(emulator);
     }
   }
-
-  int write_result = get_bit_block(instr->opcode, write_res_block, 0) != 2;
+  uint8_t write_result = (instr->opcode >> 2) != 2;
   if (write_result)
   {
     emulator->regs[instr->rd] = res;
   }
 }
 
-uint32_t get_operand2(Emulator *emulator, unsigned int op2, unsigned int I_flag,
+uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
                       int *carry)
 {
   if (I_flag)
   {
-    uint32_t imm = get_bit_block(op2, Imm_block, 0);
-    uint8_t rotate = get_bit_block(op2, Imm_block, 1);
-    return rotate_right(imm, rotate * 2, carry);
+    uint32_t imm_mask = (1 << 8) - 1;
+    uint32_t rot_mask = (1 << 4) - 1;
+
+    uint32_t imm = op2 ^ imm_mask;
+    uint8_t rotate = (op2 >> 8) ^ rot_mask;
+    
+    return ror(imm, rotate * 2, carry);
   }
 
-  return compute_offset_from_reg(emulator, op2);
-
+  return compute_offset_from_reg(emulator, op2, carry);
 }
 
 
@@ -156,37 +160,7 @@ unsigned int get_bit_block(unsigned int original, struct s_Bit_Block block,
   return bit_block;
 }
 
-uint32_t rotate_right(uint32_t original, int shift_amount, int *carry)
-{
-  *carry = (original >> shift_amount) & 1;
-  uint32_t shifted = original >> shift_amount;
-  uint32_t rotated = original << (32 - shift_amount);
-
-  return shifted | rotated;
-}
-
-uint32_t shift_logical_left(uint32_t original, unsigned int shift_shift_amount,
-                            int *carry)
-{
-  *carry = (original >> shift_shift_amount) & 1;
-  return original << shift_shift_amount;
-}
-
-uint32_t shift_logical_right(uint32_t original, unsigned int shift_shift_amount,
-                             int *carry)
-{
-  *carry = (original >> (32 - shift_shift_amount)) & 1;
-  return original << shift_shift_amount;
-}
-
-uint32_t shift_arithmetic_right(int original, unsigned int shift_shift_amount,
-                                int *carry)
-{
-  *carry = ((unsigned)original >> (32 - shift_shift_amount)) & 1;
-  return original >> shift_shift_amount;
-}
-
-operation decode_opcode(unsigned int code)
+operation decode_opcode(uint8_t code)
 {
   switch (code)
   {

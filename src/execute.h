@@ -13,6 +13,6 @@ void exec_branch_instr(Emulator *emulator, Branch_Instr *instr);
 
 uint8_t is_cond_true(Emulator *emulator, uint8_t cond);
 
-uint32_t compute_offset_from_reg(Emulator* emulator, uint16_t field);
+uint32_t compute_offset_from_reg(Emulator* emulator, uint16_t field, int *carry);
 
 #endif /* EXECUTE_H_ */
