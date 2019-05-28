@@ -6,12 +6,6 @@
 static const struct s_Bit_Block write_res_block = {.size = 2, .lsb_loc = 2};
 static const struct s_Bit_Block n_bit_block = {.size = 1, .lsb_loc = 31};
 static const struct s_Bit_Block Imm_block = {.size = 8, .lsb_loc = 0};
-static const struct s_Bit_Block Rm_block = {.size = 4, .lsb_loc = 0};
-static const struct s_Bit_Block use_reg_block = {.size = 1, .lsb_loc = 0};
-static const struct s_Bit_Block shift_type_block = {.size = 2, .lsb_loc = 1};
-static const struct s_Bit_Block integer_block = {.size = 5, .lsb_loc = 3};
-static const struct s_Bit_Block Rs_block = {.size = 4, .lsb_loc = 4};
-static const struct s_Bit_Block Rs_bottom_byte_block = {.size = 8, .lsb_loc = 0};
 
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 {
@@ -26,7 +20,7 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   int32_t op2 = get_operand2(emulator, instr->operand_2, instr->i, &c_flag);
   int32_t res = 0;
 
-  enum e_operation operator= decode_opcode(instr->opcode);
+  operation operator = decode_opcode(instr->opcode);
 
   if (operator== and || operator== eor || operator== orr || operator== teq ||
       operator== tst ||
@@ -127,7 +121,7 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   }
 }
 
-int32_t get_operand2(Emulator *emulator, unsigned int op2, unsigned int I_flag,
+uint32_t get_operand2(Emulator *emulator, unsigned int op2, unsigned int I_flag,
                       int *carry)
 {
   if (I_flag)
@@ -137,53 +131,8 @@ int32_t get_operand2(Emulator *emulator, unsigned int op2, unsigned int I_flag,
     return rotate_right(imm, rotate * 2, carry);
   }
 
-  unsigned int Rm = get_bit_block(op2, Rm_block, 0);
-  unsigned int Shift = get_bit_block(op2, Rm_block, 1);
-  uint32_t Rm_value = emulator->regs[Rm];
+  return compute_offset_from_reg(emulator, op2);
 
-  uint8_t use_reg = get_bit_block(Shift, use_reg_block, 0);
-
-  unsigned int shift_shift_amount = 0;
-
-  //Shift by a constant shift_amount
-  if (!use_reg)
-  {
-    unsigned int integer = get_bit_block(Shift, integer_block, 1);
-    shift_shift_amount = integer;
-  }
-  //Shift specified by a register
-  else
-  {
-    unsigned int Rs = get_bit_block(Shift, Rs_block, 1);
-    shift_shift_amount = get_bit_block(emulator->regs[Rs], Rs_bottom_byte_block, 0);
-  }
-
-  unsigned int shift_code = get_bit_block(Shift, shift_type_block, 0);
-  int32_t op2_val = 0;
-
-  switch (decode_shift_type(shift_code))
-  {
-  case lsl:
-    op2_val = shift_logical_left(Rm_value, shift_shift_amount, carry);
-    break;
-
-  case lsr:
-    op2_val = shift_logical_right(Rm_value, shift_shift_amount, carry);
-    break;
-
-  case asr:
-    op2_val = shift_arithmetic_right(Rm_value, shift_shift_amount, carry);
-    break;
-
-  case ror:
-    op2_val = rotate_right(Rm_value, shift_shift_amount, carry);
-    break;
-
-  default:
-    break;
-  }
-
-  return op2_val;
 }
 
 
@@ -237,12 +186,7 @@ uint32_t shift_arithmetic_right(int original, unsigned int shift_shift_amount,
   return original >> shift_shift_amount;
 }
 
-enum e_shift_type decode_shift_type(unsigned int code)
-{
-  return (enum e_shift_type)code;
-}
-
-enum e_operation decode_opcode(unsigned int code)
+operation decode_opcode(unsigned int code)
 {
   switch (code)
   {
