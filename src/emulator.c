@@ -171,26 +171,26 @@ void set_PC_addr(Emulator *emulator, uint16_t addr)
 
 void print_regs(Emulator *emulator)
 {
-  printf("Reg\t\tValue\n");
+  printf("Registers:");
 
   int i;
   for (i = 0; i < REG_COUNT; i++)
   {
     if (i < 13)
     {
-      printf("[%d]\t=\t0x%x\n", i, emulator->regs[i]);
+      printf("$%d\t:\t%d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
     }
-    else
+    else if(i != 13 && i != 14)
     {
       char *name = malloc(4);
       switch (i)
       {
-      case 13:
+      /*case 13:
         strcpy(name, "SP");
         break;
       case 14:
         strcpy(name, "LR");
-        break;
+        break;*/
       case 15:
         strcpy(name, "PC");
         break;
@@ -199,16 +199,16 @@ void print_regs(Emulator *emulator)
         break;
       }
 
-      printf("[%s]\t=\t0x%x\n", name, emulator->regs[i]);
+      printf("%s\t:\t%d (x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
       free(name);
     }
   }
 
-  uint8_t n = get_flag_N(emulator);
+  /*uint8_t n = get_flag_N(emulator);
   uint8_t z = get_flag_Z(emulator);
   uint8_t c = get_flag_C(emulator);
   uint8_t v = get_flag_V(emulator);
-  printf("N:%d | Z:%d | C:%d | V:%d\n", n, z, c, v);
+  printf("N:%d | Z:%d | C:%d | V:%d\n", n, z, c, v);*/
 }
 
 void print_mem(Emulator *emulator)
