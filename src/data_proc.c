@@ -3,16 +3,15 @@
 #include "data_proc.h"
 #include "execute.h"
 
-
-static const struct BitBlock write_res_block = {.size = 2, .lsb_loc = 2};
-static const struct BitBlock n_bit_block = {.size = 1, .lsb_loc = 31};
-static const struct BitBlock Imm_block = {.size = 8, .lsb_loc = 0};
-static const struct BitBlock Rm_block = {.size = 4, .lsb_loc = 0};
-static const struct BitBlock use_reg_block = {.size = 1, .lsb_loc = 0};
-static const struct BitBlock shift_type_block = {.size = 2, .lsb_loc = 1};
-static const struct BitBlock integer_block = {.size = 5, .lsb_loc = 3};
-static const struct BitBlock Rs_block = {.size = 4, .lsb_loc = 4};
-static const struct BitBlock Rs_bottom_byte_block = {.size = 8, .lsb_loc = 0};
+static const struct s_Bit_Block write_res_block = {.size = 2, .lsb_loc = 2};
+static const struct s_Bit_Block n_bit_block = {.size = 1, .lsb_loc = 31};
+static const struct s_Bit_Block Imm_block = {.size = 8, .lsb_loc = 0};
+static const struct s_Bit_Block Rm_block = {.size = 4, .lsb_loc = 0};
+static const struct s_Bit_Block use_reg_block = {.size = 1, .lsb_loc = 0};
+static const struct s_Bit_Block shift_type_block = {.size = 2, .lsb_loc = 1};
+static const struct s_Bit_Block integer_block = {.size = 5, .lsb_loc = 3};
+static const struct s_Bit_Block Rs_block = {.size = 4, .lsb_loc = 4};
+static const struct s_Bit_Block Rs_bottom_byte_block = {.size = 8, .lsb_loc = 0};
 
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 {
@@ -188,13 +187,13 @@ int32_t get_operand2(Emulator *emulator, unsigned int op2, unsigned int I_flag,
 }
 
 
-unsigned int make_block_mask(struct BitBlock block)
+unsigned int make_block_mask(struct s_Bit_Block block)
 {
   unsigned int mask = (1 << block.size) - 1;
   return mask << block.lsb_loc;
 }
 
-unsigned int get_bit_block(unsigned int original, struct BitBlock block,
+unsigned int get_bit_block(unsigned int original, struct s_Bit_Block block,
                            int invert)
 {
   unsigned int mask = make_block_mask(block);
