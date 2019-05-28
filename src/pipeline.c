@@ -32,9 +32,9 @@ void cycle_normal(Pipeline *pipeline)
   pipeline->executing = pipeline->decoded;
   exec_instr(pipeline->emulator, &(pipeline->executing));
   cycle_after_jump(pipeline);
-  if(pipeline->executing.type==Branch)
+  if (pipeline->executing.type == Branch)
   {
-    pipeline->current_state=Half;
+    pipeline->current_state = Half;
   }
 }
 
