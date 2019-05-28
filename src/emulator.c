@@ -148,13 +148,17 @@ void clr_flag_V(Emulator *emulator)
 uint32_t fetch(Emulator *emulator)
 {
   uint16_t pc_addr = (uint16_t) get_PC(emulator);
-  uint8_t i_bits[4];
+  /*uint8_t i_bits[4];
   for(int i = 0; i < 4; i++)
   {
     i_bits[i] = get_mem_byte(emulator, pc_addr+(3-i));
   }
   uint32_t *instr = (uint32_t *) &i_bits[0];
-  return *instr;
+  */
+  uint32_t instr;
+  uint8_t *memory_byte = &(emulator->mem[pc_addr]);
+  memcpy(&instr, memory_byte, 4);
+  return instr;
 }
 
 void set_PC_addr(Emulator *emulator, uint16_t addr)
