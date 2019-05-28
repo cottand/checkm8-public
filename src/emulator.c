@@ -171,14 +171,14 @@ void set_PC_addr(Emulator *emulator, uint16_t addr)
 
 void print_regs(Emulator *emulator)
 {
-  printf("Registers:");
+  printf("Registers:\n");
 
   int i;
   for (i = 0; i < REG_COUNT; i++)
   {
     if (i < 13)
     {
-      printf("$%d\t:\t%d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
+      printf("$%-3d:\t%3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
     }
     else if(i != 13 && i != 14)
     {
@@ -199,7 +199,7 @@ void print_regs(Emulator *emulator)
         break;
       }
 
-      printf("%s\t:\t%d (x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
+      printf("%-4s:\t%3d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
       free(name);
     }
   }
