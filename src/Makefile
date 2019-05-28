@@ -9,9 +9,11 @@ all: assemble emulate
 
 assemble: assemble.o
 
-
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o emulate
+
+ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
+	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o ptest
 
 emulator.o: emulator.c
 	$(CC) $(CFLAGS) emulator.c -c -o emulator.o

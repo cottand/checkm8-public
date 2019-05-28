@@ -18,9 +18,10 @@ typedef enum e_operation
   mov
 } operation;
 
-typedef struct s_Bit_Block {
-   uint32_t size;
-   uint32_t lsb_loc;
+typedef struct s_Bit_Block
+{
+  uint32_t size;
+  uint32_t lsb_loc;
 } Bit_Block;
 
 

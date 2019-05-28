@@ -22,6 +22,7 @@
 *.dSYM
 emulate
 assemble
+ptest
 
 #ignore junk files from compiling Haskell code
 *.hi
@@ -42,3 +43,6 @@ assemble
 #ignore MacOS files
 .DS_Store
 ._DS_Store
+
+#personal source test file
+ptest.c
