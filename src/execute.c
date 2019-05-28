@@ -20,7 +20,7 @@ void exec_instr(Emulator *emulator, Decoded_Instr *instr)
     exec_branch_instr(emulator, instr->branch_instr);
     break;
   case Halt:
-     emulator->halt = 1; 
+     emulator->halt = 1;
   break;
   }
 }
@@ -78,47 +78,7 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
   uint32_t offset = 0;
   if (instr->i) /* Offset is shifted register */
   {
-    /* The register is obtained with the last 4 bits */
-    uint8_t reg = instr->offset & 0x0f;
-    uint32_t reg_contents = emulator->regs[reg];
-
-    /* Shift type is bits 5 and 6 of offset */
-    uint8_t shift_type    = (instr->offset >> 5) & 0x3;
-    /* Bit 4 determines whether the shift amount is in a reg or is a const */
-    uint8_t use_shift_reg = (instr->offset >> 4) & 0x1;
-
-    uint8_t shift_amount = 0;
-    if (use_shift_reg)
-    {
-      uint8_t shift_reg = (instr->offset >> 8) & 0xf;
-
-      /* Shit amount is last byte of shift reg */
-      shift_amount = emulator->regs[shift_reg];
-    }
-    else
-    {
-      /* Shift amount is bits 7-11 of offset instr offset field */
-      shift_amount = (instr->offset >> 7) & 0x1f;
-    }
-
-    switch (shift_type)
-    {
-    case 0x0: /* Logical left */
-      offset = lsl(reg_contents, shift_amount);
-      break;
-    case 0x1: /* Logical right */
-      offset = lsr(reg_contents, shift_amount);
-      break;
-    case 0x2: /* Arithmetic right */
-      offset = asr(reg_contents, shift_amount);
-      break;
-    case 0x3: /* Rotate right */
-      offset = ror(reg_contents, shift_amount);
-      break;
-    default:
-      printf("Error: invalid shift type for data trans instr type");
-      return;
-    }
+    offset = compute_offset_from_reg(emulator, instr->offset);
   }
   else /* Offset is unsigned 12 bit immediate offset */
   {
@@ -146,6 +106,58 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
   /* Save the new values into regs */
   emulator->regs[instr->rn] = base;
   emulator->regs[instr->rd] = dst;
+}
+
+/* This function computes the offset for the case where the offset is strored
+ * as a shifted register. Used by data_proc and data_trans
+ */
+uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field)
+{
+  uint32_t offset = 0;
+
+  /* The register is obtained with the last 4 bits */
+  uint8_t reg = field & 0x0f;
+  uint32_t reg_contents = emulator->regs[reg];
+
+  /* Shift type is bits 5 and 6 of offset */
+  uint8_t shift_type    = (field >> 5) & 0x3;
+  /* Bit 4 determines whether the shift amount is in a reg or is a const */
+  uint8_t use_shift_reg = (field >> 4) & 0x1;
+
+  uint8_t shift_amount = 0;
+  if (use_shift_reg)
+  {
+    uint8_t shift_reg = (field >> 8) & 0xf;
+
+    /* Shit amount is last byte of shift reg */
+    shift_amount = emulator->regs[shift_reg];
+  }
+  else
+  {
+    /* Shift amount is bits 7-11 of offset instr offset field */
+    shift_amount = (field >> 7) & 0x1f;
+  }
+
+  switch (shift_type)
+  {
+    case 0x0: /* Logical left */
+      offset = lsl(reg_contents, shift_amount);
+      break;
+    case 0x1: /* Logical right */
+      offset = lsr(reg_contents, shift_amount);
+      break;
+    case 0x2: /* Arithmetic right */
+      offset = asr(reg_contents, shift_amount);
+      break;
+    case 0x3: /* Rotate right */
+      offset = ror(reg_contents, shift_amount);
+      break;
+    default:
+      printf("Error: invalid shift type for data trans instr type");
+      return 0;
+  }
+
+  return offset;
 }
 
 void exec_branch_instr(Emulator *emulator, Branch_Instr *instr)
