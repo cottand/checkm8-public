@@ -35,8 +35,6 @@ void cycle_normal(Pipeline *pipeline)
 
 void cycle_p(Pipeline *pipeline)
 {
-  pipeline->fetching = fetch(pipeline->emulator);
-
   switch (pipeline->current_state)
   {
   case Empty:

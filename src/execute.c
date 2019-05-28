@@ -18,7 +18,7 @@ void exec_instr(Emulator *emulator, Decoded_Instr *instr)
     exec_branch_instr(emulator, instr->branch_instr);
     break;
   case Halt:
-     emulator->halt = 1;
+     emulator->halt = 1; 
   break;
   }
 }
