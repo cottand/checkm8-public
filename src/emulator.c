@@ -1,14 +1,16 @@
 #include "emulator.h"
 
+#include "loader.h"
+#include "pipeline.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include "loader.h"
+#include <assert.h>
 
 void emulator_init(Emulator *emulator)
 {
   int i;
+  emulator->halt = 0;
   for (i = 0; i < REG_COUNT; i++)
   {
     emulator->regs[i] = 0;
@@ -22,6 +24,15 @@ void emulator_init(Emulator *emulator)
 
 void emulate(Emulator *emulator, char *src_file)
 {
+  load_binary(emulator, src_file);
+
+  Pipeline pipeline;
+  pipeline_init(&pipeline, emulator);
+
+  while (!emulator->halt)
+  {
+    cycle_p(&pipeline);
+  }
 }
 
 void load_binary(Emulator *emulator, char *src_file)
@@ -129,6 +140,27 @@ void set_flag_V(Emulator *emulator)
 void clr_flag_V(Emulator *emulator)
 {
   clr_reg_bit(emulator, REG_CPSR, FLAG_BIT_V);
+}
+
+/**
+ * Returns the instruction at the address in memory stored in PC
+ */
+uint32_t fetch(Emulator *emulator)
+{
+  uint16_t pc_addr = (uint16_t) get_PC(emulator);
+  uint8_t i_bits[4];
+  for(int i = 0; i < 4; i++)
+  {
+    i_bits[i] = get_mem_byte(emulator, pc_addr+(3-i));
+  }
+  uint32_t *instr = (uint32_t *) &i_bits[0];
+  return *instr;
+}
+
+void set_PC_addr(Emulator *emulator, uint16_t addr)
+{
+  /* This cast should be safe */
+  set_PC(emulator, (uint32_t) addr);
 }
 
 /* Functions for printing */

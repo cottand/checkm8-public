@@ -20,6 +20,7 @@ typedef struct s_Emulator
 {
   uint32_t regs[REG_COUNT];
   uint8_t mem[MEM_SIZE];
+  uint8_t halt;
 } Emulator;
 
 void emulator_init(Emulator *emulator);
@@ -36,7 +37,7 @@ void    clr_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
 
 uint32_t get_PC(Emulator *emulator);
 void     set_PC(Emulator *emulator, uint32_t val);
-void     inrc_PC(Emulator *emulator);
+void     incr_PC(Emulator *emulator);
 
 uint8_t get_flag_N(Emulator *emulator);
 void    set_flag_N(Emulator *emulator);
@@ -50,6 +51,15 @@ void    clr_flag_C(Emulator *emulator);
 uint8_t get_flag_V(Emulator *emulator);
 void    set_flag_V(Emulator *emulator);
 void    clr_flag_V(Emulator *emulator);
+
+
+/**
+ *   PC-speceific instructions
+ * PC (32bit-sized) will store our 16 bit addresses on the
+ * 16 least significant bits, and the rest will be left alone
+ */
+uint32_t fetch(Emulator *emulator);
+void     set_PC_addr(Emulator *emulator, uint16_t addr);
 
 void print_regs(Emulator *emulator);
 void print_mem(Emulator *emulator);
