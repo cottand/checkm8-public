@@ -20,6 +20,7 @@ typedef struct s_Pipeline
   uint16_t fetching;
   p_state current_state;
   Emulator *emulator;
+  uint16_t addresses_bottom_to_top[3];
 } Pipeline;
 
 
