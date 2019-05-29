@@ -33,6 +33,7 @@ void emulate(Emulator *emulator, char *src_file)
   {
     cycle_p(&pipeline);
   }
+  set_PC(emulator, get_PC(emulator) - sizeof(uint32_t));
 }
 
 void load_binary(Emulator *emulator, char *src_file)
@@ -178,7 +179,7 @@ void print_regs(Emulator *emulator)
   {
     if (i < 13)
     {
-      printf("$%-3d:\t%3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
+      printf("$%-3d:        %3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
     }
     else if(i != 13 && i != 14)
     {
@@ -199,7 +200,7 @@ void print_regs(Emulator *emulator)
         break;
       }
 
-      printf("%-4s:\t%3d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
+      printf("%-4s:        %3d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
       free(name);
     }
   }
@@ -216,11 +217,17 @@ void print_mem(Emulator *emulator)
   printf("Non-zero memory:\n");
 
   int i;
-  for (i = 0; i < MEM_SIZE; i++)
+  for (i = 0; i < MEM_SIZE; i+=4)
   {
-    if (emulator->mem[i] != 0)
+    uint32_t instr = 0;
+    for (uint8_t j = 0; j < 4; j++)
     {
-      printf("0x%08x: 0x%08x\n", i, emulator->mem[i]);
+      instr |= emulator->mem[i + 3 - j] << (j * 8);
+    }
+
+    if (instr != 0)
+    {
+      printf("0x%08x: 0x%08x\n", i, instr);
     }
   }
 }
