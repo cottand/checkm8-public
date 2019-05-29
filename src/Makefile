@@ -7,7 +7,8 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic
 
 all: assemble emulate
 
-assemble: assemble.o
+assemble: assemble.c assembler.o writer.o
+	$(CC) $(CFLAGS) assemble.c assembler.o writer.o -o assemble
 
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o emulate
@@ -38,6 +39,12 @@ instruction.o: instruction.c
 
 shift.o: shift.c
 	$(CC) $(CFLAGS) shift.c -c -o shift.o
+
+assembler.o: assembler.c
+	$(CC) $(CFLAGS) assembler.c -c -o assembler.o
+
+writer.o: writer.c
+	$(CC) $(CFLAGS) writer.c -c -o writer.o
 
 
 clean:

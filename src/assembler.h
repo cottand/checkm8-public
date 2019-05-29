@@ -1,5 +1,5 @@
 #ifndef ASSEMBLER_H_
-#define ASSEMBLER_H
+#define ASSEMBLER_H_
 
 #define BIN_SIZE 1 //TO FIX
 #define PROG_SIZE 1
