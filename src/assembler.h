@@ -16,7 +16,6 @@ void assemble(char *src_program_file, char *dest_bin_file);
 
 uint8_t *read_src(char *src_program_file);
 
-
 uint8_t *open_bin(char *dest_bin_file);
 int close_bin(char *src_program_file, uint8_t *src_array);
 
