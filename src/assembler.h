@@ -2,6 +2,7 @@
 #define ASSEMBLER_H_
 
 #include <stdint.h>
+#include <stdio.h>
 #include "instruction.h"
 
 typedef struct s_Assembler

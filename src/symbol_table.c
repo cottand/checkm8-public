@@ -23,12 +23,12 @@ static void st_delete_item(Symbol_Item *item)
 static int st_hash(char *s, int a, int m)
 {
     long hash = 0;
-    const int len_s = strlen(s);
-    for (int i = 0; i < len_s; i++)
+   // const int len_s = strlen(s);
+   /* for (int i = 0; i < len_s; i++)
     {
         hash += (long)pow(a, len_s - (i + 1)) * s[i];
         hash = hash % m;
-    }
+    } */ //TODO NOT USE long :) or pow really
     return (int)hash;
 }
 

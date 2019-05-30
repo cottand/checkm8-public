@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-void load(char path[], void *ptr)
+void load(char *path, void *ptr)
 {
   unsigned long fileLen;
 
@@ -21,4 +21,22 @@ void load(char path[], void *ptr)
   fread(ptr, fileLen, 1, file);
 
   fclose(file);
+}
+
+uint32_t get_filesize(char *path)
+{
+  uint32_t to_ret;
+  FILE *file = fopen(path, "rb");
+  if (!file)
+  {
+    fprintf(stderr, "Error: Invalid file path\n");
+    exit(0);
+  }
+
+  /* Get file length */
+  fseek(file, 0, SEEK_END);
+  to_ret = ftell(file);
+
+  fclose(file);
+  return to_ret;
 }
