@@ -2,6 +2,11 @@
 
 #ignore temp files and vscode editor files
 *.code-workspace
+.idea
+.idea/
+.idea/**
+CMakeLists.txt
+cmake-build-debug/
 *~
 .vscode
 .vscode/
