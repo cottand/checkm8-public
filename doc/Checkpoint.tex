@@ -1,30 +1,77 @@
 \documentclass[11pt]{article}
 
-\usepackage{fullpage}
+%\usepackage{fullpage}
+\usepackage{forest}
 
 \begin{document}
 
-\title{ARM Checkpoint... }
-\author{TODO}
+\title{
+  ARM Checkpoint \\
+  \large \emph{Implementation of an ARM emulator in C}}
+\author{Lancelot Blanchard \and Nico D'Cotta \and Kacper Kazaniecki \and William Profit}
 
 \maketitle
 
 \section{Group Organisation}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+As a first approach to the task, we decided to meet in the labs and to read through the specs
+together in order to make sure every one of us understood correctly what was expected and to share 
+our first ideas of implementation. Our first focus was centered on the first task of the project, 
+being the implementation of an ARM emulator. We broke down the task into several modules and subproblems 
+that could be easier to solve and that would generate an adequate level of abstraction for the implementation of 
+the more general problem. These modules are described in the next section. We then distributed the workload 
+between the members of the group and started to work.
+
+The group is using \emph{Slack} in order to communicate during the whole project period. We agreed on meeting 
+three times a week to coordinate the work and plan the future tasks, while still working on several bits of the 
+code separately. We also agreed on a common codestyle (\emph{Microsoft C++ codestyle}) and an important focus of us 
+is to make our code as clear as possible.
+
+%HOW WELL WE WORKED - WHAT WE COULD CHANGE (more conventional use of git? ahaha)
+Our first deadline was to have completed the first emulator task by Wednesday, May 29th. By this date, our emulator was 
+completed and passed 30 tests out of 63. We therefore believe we have worked efficiently, although we could probably have 
+debugged the emulator faster in order to pass all the tests on Wednesday. 
 
 \section{Implementation Strategies}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+%MODULES
+Breaking down the task into subsequent modules was from the start a priority for all of us. We wanted to make sure 
+our code was to be easily understandable and reach a high level of abstraction in order to simplify the later task 
+of implementing the assembler. After reflection, we ended up chosing the implementing the following structure:  
+
+\bigskip
+
+\hspace*{\fill}
+\begin{forest}  
+    [\textbf{Emulate}
+        [Emulator, for parent={draw, rounded corners}
+            [Pipeline, for parent={draw, rounded corners} 
+                [1. \emph{fetch}, for parent={draw, rounded corners}]
+                [2. Decode, for tree={draw, rounded corners}]
+                [3. Execute 
+                    [\emph{data\_proc}, for parent={draw, rounded corners}, for tree={draw, rounded corners}]
+                    [\emph{mul}]
+                    [\emph{data\_trans}]
+                    [\emph{branch}]
+                    [Shift, for tree={draw, rounded corners}]
+                ]
+                [Instruction, for tree={draw, rounded corners}]
+            ]
+            [Loader, for tree={draw, rounded corners}]
+        ]
+    ]
+\end{forest}
+
+\hspace*{\fill}
+
+\bigskip
+
+%WHAT PARTS OF THE EMULATOR WE ARE GOING TO USE FOR THE ASSEMBLER
+Our team believes that the next task (implementing an ARM assembler) will very probably use some bits of code that 
+we already wrote, such as instruction.h and loader.h. As far as we have started the next task, we have used our loader function in order to create a binary file writer and we are fairly certain that a major part of our \emph{decode} module is going to be useful in the conversion from the assembler file to the binary file.
+
+%WHAT IS GOING TO BE HARD NEXT? WHAT ARE WE GOING TO APPROACH THESE?
+We are fairly confident on the implementation of the following tasks. Our main focus is save as much time as possible for the 
+extension, on which we are genuinely eager to work on.
 
 \end{document}
