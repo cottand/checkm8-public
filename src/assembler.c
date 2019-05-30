@@ -9,16 +9,11 @@ void assemble(char *src_program_file, char *dest_bin_file)
     Assembler asse;
     asse.src = read_src(src_program_file);
 
-    /**
-     * TODO:
-     * load both files into arrays, src as read_only,
-     * Then assign those arrays to the struct Assembler
-     */
 
     free(asse.src);
     if (close_bin(dest_bin_file, *(asse.bin)) != 1)
     {
-        printf("Save to bin unsuccsessful");
+        printf("Save to bin file unsuccsessful");
     }
 }
 
@@ -40,19 +35,23 @@ uint8_t load_to_bin(Assembler *asse, char *bin_path)
 
 uint8_t get_bin_byte(Assembler *assembler, uint16_t addr)
 {
+    //TODO
     return 0;
 }
 void set_bin_byte(Assembler *assembler, uint16_t addr, uint8_t val)
 {
+    //TODO
 }
 
 uint32_t get_bin_instr(Assembler *assembler, uint16_t addr)
 {
+    //TODO
     return 0;
 }
 
 void set_bin_instr(Assembler *assembler, uint16_t addr, uint32_t val)
 {
+    //TODO
 }
 
 void set_next_bin_instr(Assembler *assembler, uint32_t val){
