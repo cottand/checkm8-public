@@ -8,6 +8,7 @@ void load_from_src(Assembler *assembler, char *src_program_file)
 {
     //load(src_program_file, &(assembler->src));
     load(src_program_file, (void *) assembler->src);
+    //wtf why is this not linking pls halp
 }
 
 uint8_t open_bin(Assembler *asse)
