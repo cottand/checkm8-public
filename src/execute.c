@@ -9,11 +9,9 @@ void exec_instr(Emulator *emulator, Decoded_Instr *instr)
   switch (instr->type)
   {
   case Data_Proc:
-    // fprintf(stderr, "data: %x\n", instr->type);
     exec_data_proc_instr(emulator, instr->data_proc_instr);
     break;
   case Mul:
-    // fprintf(stderr, "mult: %x\n", instr->type);
     exec_mul_instr(emulator, instr->mul_instr);
     break;
   case Data_Trans:
@@ -76,7 +74,7 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
   uint32_t offset = 0;
   if (instr->i) /* Offset is shifted register */
   {
-    int carry = 0;
+    uint32_t carry = 0;
     offset = compute_offset_from_reg(emulator, instr->offset, &carry);
   }
   else /* Offset is unsigned 12 bit immediate offset */
@@ -110,7 +108,7 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
 /* This function computes the offset for the case where the offset is strored
  * as a shifted register. Used by data_proc and data_trans
  */
-uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field, int *carry)
+uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field, uint32_t *carry)
 {
   uint32_t offset = 0;
 
@@ -136,7 +134,7 @@ uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field, int *carry)
     /* Shift amount is bits 7-11 of offset instr offset field */
     shift_amount = (field >> 7) & 0x1f;
   }
-
+  
   switch (shift_type)
   {
     case 0x0: /* Logical left */
