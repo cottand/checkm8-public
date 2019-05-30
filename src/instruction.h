@@ -53,7 +53,7 @@ typedef struct s_Branch_Instr
   unsigned int offset : 24;
 } Branch_Instr;
 
-typedef struct s_Decoded_Instr
+typedef struct s_Instr
 {
   instr_type type;
 
@@ -61,9 +61,9 @@ typedef struct s_Decoded_Instr
   Mul_Instr *mul_instr;
   Data_Trans_Instr *data_trans_instr;
   Branch_Instr *branch_instr;
-} Decoded_Instr;
+} Instr;
 
-void decoded_instr_init(Decoded_Instr* instr);
-void decoded_instr_free(Decoded_Instr* instr);
+void decoded_instr_init(Instr* instr);
+void decoded_instr_free(Instr* instr);
 
 #endif /* INSTRUCTION_H_ */

@@ -6,7 +6,7 @@
 #include "instruction.h"
 
 
-uint32_t encode_instr(Decoded_Instr *instr)
+uint32_t encode_instr(Instr *instr)
 {
     //TODO
     return 0;

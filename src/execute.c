@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "data_proc.h"
 
-void exec_instr(Emulator *emulator, Decoded_Instr *instr)
+void exec_instr(Emulator *emulator, Instr *instr)
 {
 
   switch (instr->type)

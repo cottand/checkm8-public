@@ -3,7 +3,7 @@
 
 #include "instruction.h"
 
-Decoded_Instr decode_instr(uint32_t instr);
+Instr decode_instr(uint32_t instr);
 
 Data_Proc_Instr *decode_data_proc_instr(uint32_t instr);
 Mul_Instr *decode_mul_instr(uint32_t instr);

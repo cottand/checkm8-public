@@ -14,8 +14,8 @@ typedef enum e_p_state
 
 typedef struct s_Pipeline
 {
-  Decoded_Instr executing;
-  Decoded_Instr decoded;
+  Instr executing;
+  Instr decoded;
   uint32_t to_decode;
   uint32_t fetching;
   p_state current_state;

@@ -4,9 +4,9 @@
 #include <string.h>
 
 
-Decoded_Instr decode_instr(uint32_t instr)
+Instr decode_instr(uint32_t instr)
 {
-  Decoded_Instr decoded;
+  Instr decoded;
   decoded_instr_init(&decoded);
 
   decoded.type = get_instr_type(instr);

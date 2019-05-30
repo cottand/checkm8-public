@@ -4,7 +4,7 @@
 #include "emulator.h"
 #include "instruction.h"
 
-void exec_instr(Emulator *emulator, Decoded_Instr *instr);
+void exec_instr(Emulator *emulator, Instr *instr);
 
 // void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr);
 void exec_mul_instr(Emulator *emulator, Mul_Instr *instr);
