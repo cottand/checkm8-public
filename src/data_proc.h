@@ -28,8 +28,8 @@ typedef struct s_Bit_Block
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr);
 
 unsigned int make_block_mask(struct s_Bit_Block block);
-uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
-                      int *carry);
+uint32_t get_operand2(Emulator *emulator, uint16_t op2, uint32_t I_flag,
+                      uint32_t *carry);
 unsigned int get_bit_block(unsigned int original, struct s_Bit_Block block,
                            int invert);
 operation decode_opcode(uint8_t code);

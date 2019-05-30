@@ -12,39 +12,25 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   {
     return;
   }
-  // printf("opcode: %x \n", instr->opcode);
-  // printf("pc %x \n", get_PC(emulator));
-  int c_flag = 0;
+  uint32_t c_flag = 1;
+  uint32_t c_shift = 0;
 
   int32_t op1 = emulator->regs[instr->rn];
-  int32_t op2 = get_operand2(emulator, instr->operand_2, instr->i, &c_flag);
+  int32_t op2 = get_operand2(emulator, instr->operand_2, instr->i, &c_shift);
   int32_t res = 0;
-  
-  operation operator = decode_opcode(instr->opcode);
+  operation operator= decode_opcode(instr->opcode);
 
-  if (operator== and || operator== eor || operator== orr || operator== teq ||
-      operator== tst ||
+  if (operator== and || operator== eor || operator== teq || operator== tst ||
       operator== mov)
   {
-    // printf("c flag: %x \n", c_flag);
-    if (c_flag)
-    {
-      set_flag_C(emulator);
-    }
-    else
-    {
-      clr_flag_C(emulator);
-    }
+    c_flag = c_shift;
   }
 
-  clr_flag_C(emulator);
   int64_t res_64 = 0;
 
   switch (operator)
   {
   case and:
-    // printf("op1: %x \n", op1);
-    // printf("op2: %x \n", op2);
     res = op1 & op2;
     break;
   case eor:
@@ -57,53 +43,50 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
     res = op1 ^ op2;
     break;
   case tst:
-    res = op1 ^ op2;
+    res = op1 & op2;
     break;
   case mov:
     res = op2;
     break;
+
   case add:
-    res_64 = op1 + op2;
+    res_64 = (uint64_t)op1 + (uint64_t)op2;
     if (res_64 > INT32_MAX)
     {
       set_flag_C(emulator);
     }
     res = (uint32_t)res_64;
     break;
+  case cmp:
   case sub:
+
+    printf("op1: %x  op2: %x \n", op1, op2);
     res_64 = op1 - op2;
-    if (res_64 < INT32_MIN)
-    {
-      set_flag_C(emulator);
-    }
+    c_flag = op1 >= op2;
     res = (uint32_t)res_64;
+    printf("c_flag: %x\n", c_flag);
+    printf("res: %x\n", res);
     break;
   case rsb:
     res_64 = op2 - op1;
-    if (res_64 < INT32_MIN)
-    {
-      set_flag_C(emulator);
-    }
+    c_flag = op2 >= op1;
     res = (uint32_t)res_64;
     break;
-  case cmp:
-    res_64 = op1 - op2;
-    if (res_64 < INT32_MIN)
-    {
-      set_flag_C(emulator);
-    }
-    res = (uint32_t)res_64;
-    break;
+
   default:
     break;
   }
 
   //Set CPSR
-  if (!instr->s)
+  if (instr->s)
   {
     if (res == 0)
     {
       set_flag_Z(emulator);
+    }
+    else
+    {
+      clr_flag_Z(emulator);
     }
 
     if (res >> 31)
@@ -114,18 +97,26 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
     {
       clr_flag_N(emulator);
     }
+
+    if (c_flag)
+    {
+      set_flag_C(emulator);
+    }
+    else
+    {
+      clr_flag_C(emulator);
+    }
   }
   uint8_t write_result = (instr->opcode >> 2) != 2;
+
   if (write_result)
   {
-    // printf("res: %x\n", res);
-    // printf("rd: %x\n", instr->rd);
     emulator->regs[instr->rd] = res;
   }
 }
 
-uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
-                      int *carry)
+uint32_t get_operand2(Emulator *emulator, uint16_t op2, uint32_t I_flag,
+                      uint32_t *carry)
 {
   if (I_flag)
   {
@@ -138,7 +129,6 @@ uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
 
   return compute_offset_from_reg(emulator, op2, carry);
 }
-
 
 unsigned int make_block_mask(struct s_Bit_Block block)
 {

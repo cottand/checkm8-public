@@ -184,7 +184,7 @@ void print_regs(Emulator *emulator)
   {
     if (i < 13)
     {
-      printf("$%-3d:        %3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
+      printf("$%-3d: %10d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
     }
     else if (i != 13 && i != 14)
     {
@@ -205,16 +205,10 @@ void print_regs(Emulator *emulator)
         break;
       }
 
-      printf("%-4s:        %3d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
+      printf("%-4s: %10d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
       free(name);
     }
   }
-
-  /*uint8_t n = get_flag_N(emulator);
-  uint8_t z = get_flag_Z(emulator);
-  uint8_t c = get_flag_C(emulator);
-  uint8_t v = get_flag_V(emulator);
-  printf("N:%d | Z:%d | C:%d | V:%d\n", n, z, c, v);*/
 }
 
 void print_mem(Emulator *emulator)
