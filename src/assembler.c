@@ -17,9 +17,9 @@ void assemble(char *src_program_file, char *dest_bin_file)
     }
 }
 
-char **read_src(char *src_program_file)
+void load_from_src(Assembler *assembler, char *src_program_file)
 {
-    //TODO
+    load(src_program_file, &(assembler->src));
 }
 
 

@@ -1,9 +1,6 @@
 #ifndef ASSEMBLER_H_
 #define ASSEMBLER_H
 
-#define BIN_SIZE 1 //TO FIX
-#define PROG_SIZE 1
-
 #include <stdint.h>
 
 typedef struct s_Assembler
@@ -15,7 +12,7 @@ typedef struct s_Assembler
 
 void assemble(char *src_program_file, char *dest_bin_file);
 
-char **read_src(char *src_program_file);
+void load_from_src(Assembler *assembler, char *src_program_file);
 
 uint8_t load_to_bin(Assembler *asse, char *bin_path);
 
