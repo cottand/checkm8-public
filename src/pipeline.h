@@ -16,8 +16,8 @@ typedef struct s_Pipeline
 {
   Decoded_Instr executing;
   Decoded_Instr decoded;
-  uint16_t to_decode;
-  uint16_t fetching;
+  uint32_t to_decode;
+  uint32_t fetching;
   p_state current_state;
   Emulator *emulator;
   uint16_t addresses_bottom_to_top[3];

@@ -184,7 +184,7 @@ void print_regs(Emulator *emulator)
   {
     if (i < 13)
     {
-      printf("$%-3d:\t%3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
+      printf("$%-3d:        %3d (0x%08x)\n", i, emulator->regs[i], emulator->regs[i]);
     }
     else if (i != 13 && i != 14)
     {
@@ -205,7 +205,7 @@ void print_regs(Emulator *emulator)
         break;
       }
 
-      printf("%-4s:\t%3d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
+      printf("%-4s:        %3d (0x%08x)\n", name, emulator->regs[i], emulator->regs[i]);
       free(name);
     }
   }
@@ -222,21 +222,17 @@ void print_mem(Emulator *emulator)
   printf("Non-zero memory:\n");
 
   int i;
-  for (i = 0; i < MEM_SIZE-4; i += 4)
+  for (i = 0; i < MEM_SIZE; i+=4)
   {
-    uint32_t memory_content;
-    uint8_t *memory_array = malloc(4 * sizeof(uint8_t*));
-    int j, k;
-    k = 0;
-    for(j = 3; j >= 0; j--)
+    uint32_t instr = 0;
+    for (uint8_t j = 0; j < 4; j++)
     {
-      memory_array[k] = emulator->mem[i+j];
-      k++;
+      instr |= emulator->mem[i + 3 - j] << (j * 8);
     }
-    memcpy(&memory_content, memory_array, 4);
-    if (emulator->mem[i] != 0)
+
+    if (instr != 0)
     {
-      printf("0x%08x: 0x%08x\n", i, memory_content);
+      printf("0x%08x: 0x%08x\n", i, instr);
     }
   }
 }

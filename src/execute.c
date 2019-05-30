@@ -5,12 +5,15 @@
 
 void exec_instr(Emulator *emulator, Decoded_Instr *instr)
 {
+
   switch (instr->type)
   {
   case Data_Proc:
+    // fprintf(stderr, "data: %x\n", instr->type);
     exec_data_proc_instr(emulator, instr->data_proc_instr);
     break;
   case Mul:
+    // fprintf(stderr, "mult: %x\n", instr->type);
     exec_mul_instr(emulator, instr->mul_instr);
     break;
   case Data_Trans:

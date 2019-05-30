@@ -11,8 +11,6 @@ Decoded_Instr decode_instr(uint32_t instr)
 
   decoded.type = get_instr_type(instr);
 
-  printf("Executing instr type: %x\n", decoded.type);
-
   switch (decoded.type)
   {
   case Data_Proc:
@@ -102,19 +100,30 @@ instr_type get_instr_type(uint32_t instr)
     return Halt;
   }
 
-  if (!(~instr & 0x0a000000))
+  uint32_t branch_mask = 0x0f000000;
+  uint32_t branch_pattern = 0x0a000000;
+  if (!((instr & branch_mask) ^ branch_pattern))
   {
     return Branch;
   }
-  if (!(~instr & 0x04000000))
+
+  uint32_t data_trans_mask = 0x0c600000;
+  uint32_t data_trans_pattern = 0x04000000;
+  if (!((instr & data_trans_mask) ^ data_trans_pattern))
   {
     return Data_Trans;
   }
-  if (!(~instr & 0x00000090))
+
+  uint32_t mult_mask = 0x0fc000f0;
+  uint32_t mult_pattern = 0x00000090;
+  if (!((instr & mult_mask) ^ mult_pattern))
   {
     return Mul;
   }
-  if (!(instr & 0x0))
+  
+  uint32_t data_proc_mask = 0x0c000000;
+  uint32_t data_proc_pattern = 0x00000000;
+  if (!((instr & data_proc_mask) ^ data_proc_pattern))
   {
     return Data_Proc;
   }

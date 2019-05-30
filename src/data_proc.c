@@ -4,25 +4,29 @@
 #include "execute.h"
 #include "shift.h"
 
+#include <stdio.h>
+
 void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
 {
   if (!is_cond_true(emulator, instr->cond))
   {
     return;
   }
-
+  // printf("opcode: %x \n", instr->opcode);
+  // printf("pc %x \n", get_PC(emulator));
   int c_flag = 0;
 
   int32_t op1 = emulator->regs[instr->rn];
   int32_t op2 = get_operand2(emulator, instr->operand_2, instr->i, &c_flag);
   int32_t res = 0;
-
+  
   operation operator = decode_opcode(instr->opcode);
 
   if (operator== and || operator== eor || operator== orr || operator== teq ||
       operator== tst ||
       operator== mov)
   {
+    // printf("c flag: %x \n", c_flag);
     if (c_flag)
     {
       set_flag_C(emulator);
@@ -39,6 +43,8 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   switch (operator)
   {
   case and:
+    // printf("op1: %x \n", op1);
+    // printf("op2: %x \n", op2);
     res = op1 & op2;
     break;
   case eor:
@@ -88,7 +94,6 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
     }
     res = (uint32_t)res_64;
     break;
-
   default:
     break;
   }
@@ -113,6 +118,8 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   uint8_t write_result = (instr->opcode >> 2) != 2;
   if (write_result)
   {
+    // printf("res: %x\n", res);
+    // printf("rd: %x\n", instr->rd);
     emulator->regs[instr->rd] = res;
   }
 }
@@ -122,13 +129,11 @@ uint32_t get_operand2(Emulator *emulator, uint16_t op2, unsigned int I_flag,
 {
   if (I_flag)
   {
-    uint32_t imm_mask = (1 << 8) - 1;
-    uint32_t rot_mask = (1 << 4) - 1;
+    uint32_t immediate = op2 & 0xff;
+    uint32_t rotate = op2 >> 8;
+    rotate *= 2;
 
-    uint32_t imm = op2 ^ imm_mask;
-    uint8_t rotate = (op2 >> 8) ^ rot_mask;
-
-    return ror(imm, rotate * 2, carry);
+    return ror(immediate, rotate, carry);
   }
 
   return compute_offset_from_reg(emulator, op2, carry);
