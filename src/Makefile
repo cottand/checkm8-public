@@ -7,14 +7,14 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o -o assemble
+assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o
+	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o -o assemble
 
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o emulate
 
-ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
-	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o ptest
+ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o token.o token_stream.o
+	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o token.o token_stream.o -o ptest
 
 emulator.o: emulator.c
 	$(CC) $(CFLAGS) emulator.c -c -o emulator.o
@@ -48,6 +48,12 @@ writer.o: writer.c
 
 symbol_table.o: symbol_table.c
 	$(CC) $(CFLAGS) symbol_table.c -c -o symbol_table.o
+
+token_stream.o: token_stream.c
+	$(CC) $(CFLAGS) token_stream.c -c -o token_stream.o
+
+token.o: token.c
+	$(CC) $(CFLAGS) token.c -c -o token.o
 
 clean:
 	rm -f $(wildcard *.o)
