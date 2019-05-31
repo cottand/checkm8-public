@@ -172,7 +172,7 @@ char* token_stream_parse_hex(char** str)
 {
   uint8_t char_count = 0;
 
-  while (isdigit(**str) || **str == 'x')
+  while (isxdigit(**str) || **str == 'x')
   {
     char_count++;
     (*str)++;
