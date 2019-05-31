@@ -8,7 +8,7 @@
 typedef struct s_Parsed_src
 {
   Symbol_Table table;
-  uint32_t *instructions;
+  char **instructions;
 } Parsed_src;
 
 Parsed_src parse_src(Assembler *asse);
