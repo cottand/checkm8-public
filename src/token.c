@@ -19,6 +19,6 @@ void token_free(Token *tok)
 
 void token_print(Token *tok)
 {
-  printf("Token -> symbol: %d | value: %s | next: %p"
+  printf("Token -> symbol: %d | value: %s | next: %p\n"
       , tok->symb, tok->value, (void *) tok->next);
 }

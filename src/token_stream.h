@@ -20,8 +20,10 @@ Token *token_stream_read(Token_Stream *stream);
 
 uint8_t token_stream_tokenize_char(char **str, Token *tok);
 uint8_t token_stream_tokenize_register(char **str, Token *tok);
-uint8_t token_stream_tokenize_constant(char **str, Token *tok);
+uint8_t token_stream_tokenize_immediate(char **str, Token *tok);
 uint8_t token_stream_tokenize_address(char **str, Token *tok);
 uint8_t token_stream_tokenize_opcode(char **str, Token *tok);
+
+void token_stream_print(Token_Stream *stream);
 
 #endif /* TOKEN_STREAM_H_ */

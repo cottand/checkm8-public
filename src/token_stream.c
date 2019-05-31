@@ -30,23 +30,26 @@ void token_stream_tokenize(Token_Stream *stream, char *str)
   Token *curr = malloc(sizeof(Token));
   token_init(curr);
 
-  /* First token acts as dummy token so curr_tok points to next */
+  Token *prev = NULL;
+
+  /* First token acts as dummy token */
   stream->first_tok = curr;
-  stream->curr_tok  = stream->first_tok->next;
+  stream->curr_tok  = stream->first_tok;
 
   while (*str)
   {
     curr->next = malloc(sizeof(Token));
+    prev = curr;
     curr = curr->next;
     token_init(curr);
 
     if (token_stream_tokenize_char(&str, curr))      { continue; }
     if (token_stream_tokenize_register(&str, curr))  { continue; }
-    if (token_stream_tokenize_constant(&str, curr))  { continue; }
+    if (token_stream_tokenize_immediate(&str, curr)) { continue; }
     if (token_stream_tokenize_opcode(&str, curr))    { continue; }
 
-    printf("Error in tokenizing: %s", str);
-    return;
+    free(curr->next);
+    curr = prev;
   }
 }
 
@@ -66,6 +69,8 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
     tok->value = malloc(sizeof(char));
     strcpy(tok->value, "[");
 
+    (*str)++;
+
     return 1;
   }
 
@@ -74,6 +79,8 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
     tok->symb  = RBracket;
     tok->value = malloc(sizeof(char));
     strcpy(tok->value, "]");
+
+    (*str)++;
 
     return 1;
   }
@@ -107,7 +114,7 @@ uint8_t token_stream_tokenize_register(char **str, Token* tok)
   return 0;
 }
 
-uint8_t token_stream_tokenize_constant(char **str, Token *tok)
+uint8_t token_stream_tokenize_immediate(char **str, Token *tok)
 {
   if (**str == '#')
   {
@@ -148,6 +155,8 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
 
     size_t size = char_count * sizeof(char);
     strncpy(tok->value, *str - size, size);
+
+    return 1;
   }
 
   return 0;
@@ -164,4 +173,21 @@ Token *token_stream_read(Token_Stream *stream)
   stream->curr_tok = ret;
 
   return ret;
+}
+
+void token_stream_print(Token_Stream *stream)
+{
+  printf("Token stream:\n");
+  Token *curr = stream->first_tok->next;
+
+  if (!curr)
+  {
+    return;
+  }
+
+  while (curr)
+  {
+    token_print(curr);
+    curr = curr->next;
+  }
 }
