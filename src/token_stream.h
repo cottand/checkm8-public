@@ -25,6 +25,8 @@ uint8_t token_stream_tokenize_immediate(char **str, Token *tok);
 uint8_t token_stream_tokenize_address(char **str, Token *tok);
 uint8_t token_stream_tokenize_opcode(char **str, Token *tok);
 
+char* token_stream_parse_hex(char **str);
+
 void token_stream_print(Token_Stream *stream);
 
 #endif /* TOKEN_STREAM_H_ */

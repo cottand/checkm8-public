@@ -46,6 +46,7 @@ void token_stream_tokenize(Token_Stream *stream, char *str)
     if (token_stream_tokenize_char(&str, curr))      { continue; }
     if (token_stream_tokenize_register(&str, curr))  { continue; }
     if (token_stream_tokenize_immediate(&str, curr)) { continue; }
+    if (token_stream_tokenize_address(&str, curr))   { continue; }
     if (token_stream_tokenize_opcode(&str, curr))    { continue; }
 
     free(curr->next);
@@ -118,20 +119,25 @@ uint8_t token_stream_tokenize_immediate(char **str, Token *tok)
 {
   if (**str == '#')
   {
-    uint8_t char_count = 0;
     (*str)++;
 
-    while (isdigit(**str) || **str == 'x')
-    {
-      char_count++;
-      (*str)++;
-    }
-
     tok->symb  = Immediate;
-    tok->value = malloc(sizeof(char) * char_count);
+    tok->value = token_stream_parse_hex(str);
 
-    size_t size = char_count * sizeof(char);
-    strncpy(tok->value, *str - size, size);
+    return 1;
+  }
+
+  return 0;
+}
+
+uint8_t token_stream_tokenize_address(char **str, Token *tok)
+{
+  if (**str == '$')
+  {
+    (*str)++;
+
+    tok->symb  = Address;
+    tok->value = token_stream_parse_hex(str);
 
     return 1;
   }
@@ -160,6 +166,24 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
   }
 
   return 0;
+}
+
+char* token_stream_parse_hex(char** str)
+{
+  uint8_t char_count = 0;
+
+  while (isdigit(**str) || **str == 'x')
+  {
+    char_count++;
+    (*str)++;
+  }
+
+  char *ret = malloc(sizeof(char) * char_count);
+
+  size_t size = char_count * sizeof(char);
+  strncpy(ret, *str - size, size);
+
+  return ret;
 }
 
 Token *token_stream_peak(Token_Stream *stream)
