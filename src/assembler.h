@@ -15,9 +15,14 @@ typedef struct s_Assembler
 
 void assemble(char *src_program_file, const char *dest_bin_file);
 
-void load_from_src(Assembler *assembler, char *src_program_file);
 
 void set_next_bin_instr(Assembler *assembler, uint32_t *instr);
 
 uint16_t get_last_written_address_bin(Assembler *assembler);
+
+void assembler_init(Assembler *assembler, char *src_program_file,
+                    char const *dest_bin_file);
+
+uint8_t close_bin(Assembler *asse);
+
 #endif /* ASSEMBLER_H_ */
