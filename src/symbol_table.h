@@ -3,17 +3,17 @@
 
 #define DEFAULT_SYMBOL_TABLE_SIZE 13
 
-typedef struct s_Symbol_Item
+typedef struct s_Table_Item
 {
     char *label;
     int memory_addr;
-} Symbol_Item;
+} Table_Item;
 
 typedef struct s_Symbol_Table
 {
-    int size;
-    int count;
-    Symbol_Item **items;
+    int max_size;
+    int elements;
+    Table_Item **items;
 } Symbol_Table;
 
 Symbol_Table *st_create(void);
