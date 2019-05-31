@@ -7,9 +7,9 @@
 Instr decode_instr(uint32_t instr)
 {
   Instr decoded;
-  decoded_instr_init(&decoded);
+  instr_init(&decoded);
 
-  decoded.type = get_instr_type(instr);
+  decoded.type = get_instr_type_from_uint(instr);
 
   switch (decoded.type)
   {
@@ -92,7 +92,7 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
   return decoded;
 }
 
-instr_type get_instr_type(uint32_t instr)
+instr_type get_instr_type_from_uint(uint32_t instr)
 {
   //We found a halt instruction
   if (instr == 0x0)
@@ -120,7 +120,7 @@ instr_type get_instr_type(uint32_t instr)
   {
     return Mul;
   }
-  
+
   uint32_t data_proc_mask = 0x0c000000;
   uint32_t data_proc_pattern = 0x00000000;
   if (!((instr & data_proc_mask) ^ data_proc_pattern))
