@@ -175,6 +175,20 @@ Token *token_stream_read(Token_Stream *stream)
   return ret;
 }
 
+Token *token_stream_expect(Token_Stream *stream, symbol symb, char *error_msg)
+{
+  Token *tok = token_stream_read(stream);
+
+  if (tok && tok->symb == symb)
+  {
+    return tok;
+  }
+
+  token_error(tok, error_msg);
+
+  return 0;
+}
+
 void token_stream_print(Token_Stream *stream)
 {
   printf("Token stream:\n");

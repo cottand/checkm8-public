@@ -17,6 +17,7 @@ void token_stream_tokenize(Token_Stream *stream, char *str);
 
 Token *token_stream_peak(Token_Stream *stream);
 Token *token_stream_read(Token_Stream *stream);
+Token *token_stream_expect(Token_Stream *stream, symbol symb, char *error_msg);
 
 uint8_t token_stream_tokenize_char(char **str, Token *tok);
 uint8_t token_stream_tokenize_register(char **str, Token *tok);

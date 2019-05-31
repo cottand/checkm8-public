@@ -14,6 +14,8 @@ typedef struct s_Token
 void token_init(Token *tok);
 void token_free(Token *tok);
 
+void token_error(Token *tok, char *msg);
+
 void token_print(Token *tok);
 
 #endif /* TOKEN_H_ */

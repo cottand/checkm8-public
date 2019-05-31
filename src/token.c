@@ -17,6 +17,12 @@ void token_free(Token *tok)
   }
 }
 
+void token_error(Token *tok, char *msg)
+{
+  printf("Token error: %s\n", msg);
+  token_print(tok);
+}
+
 void token_print(Token *tok)
 {
   printf("Token -> symbol: %d | value: %s | next: %p\n"
