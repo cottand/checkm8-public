@@ -25,5 +25,7 @@ typedef struct s_Node {
 
 char *llist_remove_first(LList *list);
 void llist_add_last(LList *list, char *str);
+void llist_remove_nth(LList *list, uint8_t n);
+void llist_destroy(LList *list);
 
 #endif /* DYN_ARRAY_H_ */
