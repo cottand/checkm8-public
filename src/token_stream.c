@@ -93,7 +93,7 @@ uint8_t token_stream_tokenize_register(char **str, Token* tok)
   /* Registers are of the form rNumber */
   if (**str == 'r' && isdigit(*(*str + 1)))
   {
-    uint8_t char_count = 1;
+    uint8_t char_count = 0;
     (*str)++;
 
     while (isdigit(**str))
