@@ -1,6 +1,11 @@
 #include "dyn_llist.h"
+#include <stdio.h>
 
 const uint16_t NODE_SIZE = sizeof(char *) * 3;
+
+void llist_init(LList *list){
+  list->empty = 1;
+}
 
 void llist_add_last(LList *list, char *str)
 {
@@ -11,13 +16,14 @@ void llist_add_last(LList *list, char *str)
     list->first->str = str;
     list->empty = 0;
   }
-  else
+  else if (list->empty == 0)
   {
     Node *new_last = malloc(NODE_SIZE);
+    new_last->str = str;
     list->last->next = new_last;
     list->last = new_last;
     list->last->next = 0;
-  }
+  } else printf("INVALID VAUE");
 }
 
 void llist_remove_nth(LList *list, uint8_t n)
@@ -35,7 +41,6 @@ void llist_remove_nth(LList *list, uint8_t n)
   prev->next = current->next;
   free(current);
 }
-
 /**
  * removes first element of list and returns removed element,
  * allows easy iteration and memory freeing.

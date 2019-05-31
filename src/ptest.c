@@ -3,14 +3,18 @@
 #include "emulator.h"
 #include "execute.h"
 #include "decode.h"
+#include "dyn_llist.h"
+#include <assert.h>
 
 int main(int argc, char **argv)
 {
-  Emulator em;
-  emulator_init(&em);
-  emulate(&em, argv[1]);
-  print_mem(&em);
-  print_regs(&em);
-
+  LList list;
+  llist_init(&list);
+  llist_add_last(&list, "hello");
+  llist_add_last(&list,"there");
+  char * str = llist_remove_first(&list);
+  printf("String: %s\n", str);
+  str = llist_remove_first(&list);
+  printf("String: %s\n", str);
   return EXIT_SUCCESS;
 }
