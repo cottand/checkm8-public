@@ -189,6 +189,20 @@ Token *token_stream_expect(Token_Stream *stream, symbol symb, char *error_msg)
   return 0;
 }
 
+uint8_t token_stream_tokens_left(Token_Stream *stream)
+{
+  uint8_t count = 0;
+
+  Token *curr = stream->curr_tok;
+  while (curr->next)
+  {
+    curr = curr->next;
+    count++;
+  }
+
+  return count;
+}
+
 void token_stream_print(Token_Stream *stream)
 {
   printf("Token stream:\n");

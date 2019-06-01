@@ -1,7 +1,7 @@
 #include "execute.h"
 #include "shift.h"
 #include <stdio.h>
-#include "data_proc.h"
+#include "execute_data_proc.h"
 
 void exec_instr(Emulator *emulator, Instr *instr)
 {
