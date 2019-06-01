@@ -101,6 +101,8 @@ uint32_t data_trans_instr_to_uint32(Data_Trans_Instr *instr)
 uint32_t branch_instr_to_uint32(Branch_Instr *instr)
 {
   uint32_t bin = instr->cond << 28;
+  bin |= 0xa << 24;
+  bin |= instr->offset;
 
   return bin;
 }
