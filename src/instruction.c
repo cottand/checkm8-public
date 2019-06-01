@@ -86,6 +86,14 @@ uint32_t mul_instr_to_uint32(Mul_Instr *instr)
 uint32_t data_trans_instr_to_uint32(Data_Trans_Instr *instr)
 {
   uint32_t bin = instr->cond << 28;
+  bin |= 0x1 << 26;
+  bin |= instr->i << 25;
+  bin |= instr->p << 24;
+  bin |= instr->u << 23;
+  bin |= instr->l << 20;
+  bin |= instr->rn << 16;
+  bin |= instr->rd << 12;
+  bin |= instr->offset;
 
   return bin;
 }
