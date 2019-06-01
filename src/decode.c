@@ -85,9 +85,9 @@ Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 Branch_Instr *decode_branch_instr(uint32_t instr)
 {
   Branch_Instr *decoded = malloc(sizeof(Branch_Instr));
-
-  decoded->cond   = instr >> 28;
-  decoded->offset = instr >> 0;
+  decoded->cond  = instr >> 28;
+  //Since offset 24 bits and instr, instr will be auto truncated as desired. 
+  decoded->offset = instr;
 
   return decoded;
 }

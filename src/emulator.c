@@ -51,9 +51,28 @@ uint8_t get_mem_byte(Emulator *emulator, uint16_t addr)
   return emulator->mem[addr];
 }
 
+uint32_t get_mem(Emulator *emulator, uint16_t addr)
+{
+  uint32_t mem = 0;
+  for (uint8_t j = 0; j < 4; j++)
+  {
+    mem |= emulator->mem[addr + j] << (j * 8);
+  }
+  return mem;
+}
+
 void set_mem_byte(Emulator *emulator, uint16_t addr, uint8_t val)
 {
   emulator->mem[addr] = val;
+}
+
+void set_mem(Emulator *emulator, uint16_t addr, uint32_t val)
+{
+  for (uint8_t j = 0; j < 4; j++)
+  {
+    uint8_t byte = (val >> (j * 8)) & 0xff;
+    emulator->mem[addr + j] = byte;
+  }
 }
 
 uint8_t get_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit)
@@ -87,6 +106,15 @@ void incr_PC(Emulator *emulator)
 }
 
 /* Functions for setting flag bits */
+
+uint8_t get_flags(Emulator *em)
+{
+  uint8_t flags = get_flag_N(em);
+  flags |= get_flag_Z(em);
+  flags |= get_flag_C(em);
+  flags |= get_flag_V(em);
+  return flags;
+}
 
 uint8_t get_flag_N(Emulator *emulator)
 {
@@ -216,7 +244,7 @@ void print_mem(Emulator *emulator)
   printf("Non-zero memory:\n");
 
   int i;
-  for (i = 0; i < MEM_SIZE; i+=4)
+  for (i = 0; i < MEM_SIZE; i += 4)
   {
     uint32_t instr = 0;
     for (uint8_t j = 0; j < 4; j++)

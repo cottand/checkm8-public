@@ -50,7 +50,7 @@ typedef struct s_Data_Trans_Instr
 typedef struct s_Branch_Instr
 {
   unsigned int cond : 4;
-  unsigned int offset : 24;
+  signed int offset : 24;
 } Branch_Instr;
 
 typedef struct s_Instr

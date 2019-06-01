@@ -29,7 +29,9 @@ void emulate(Emulator *emulator, char *src_file);
 void load_binary(Emulator *emulator, char *src_file);
 
 uint8_t get_mem_byte(Emulator *emulator, uint16_t addr);
+uint32_t get_mem(Emulator *emulator, uint16_t addr);
 void    set_mem_byte(Emulator *emulator, uint16_t addr, uint8_t val);
+void set_mem(Emulator *emulator, uint16_t addr, uint32_t val);
 
 uint8_t get_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
 void    set_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);

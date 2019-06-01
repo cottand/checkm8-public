@@ -20,8 +20,8 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
   int32_t res = 0;
   operation operator= decode_opcode(instr->opcode);
 
-  if (operator== and || operator== eor || operator== teq || operator== tst ||
-      operator== mov)
+  if (operator == and || operator== eor || operator== teq || operator== tst ||
+      operator == mov)
   {
     c_flag = c_shift;
   }
@@ -59,13 +59,9 @@ void exec_data_proc_instr(Emulator *emulator, Data_Proc_Instr *instr)
     break;
   case cmp:
   case sub:
-
-    printf("op1: %x  op2: %x \n", op1, op2);
-    res_64 = op1 - op2;
+    res_64 = (uint64_t)op1 - (uint64_t)op2;
     c_flag = op1 >= op2;
     res = (uint32_t)res_64;
-    printf("c_flag: %x\n", c_flag);
-    printf("res: %x\n", res);
     break;
   case rsb:
     res_64 = op2 - op1;
