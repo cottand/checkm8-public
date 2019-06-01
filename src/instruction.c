@@ -72,6 +72,13 @@ uint32_t data_proc_instr_to_uint32(Data_Proc_Instr *instr)
 uint32_t mul_instr_to_uint32(Mul_Instr *instr)
 {
   uint32_t bin = instr->cond << 28;
+  bin |= instr->a << 21;
+  bin |= instr->s << 20;
+  bin |= instr->rd << 16;
+  bin |= instr->rn << 12;
+  bin |= instr->rs << 8;
+  bin |= 0x9 << 4;
+  bin |= instr->rm;
 
   return bin;
 }
