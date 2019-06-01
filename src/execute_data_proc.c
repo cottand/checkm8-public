@@ -1,6 +1,6 @@
+#include "execute_data_proc.h"
 #include "emulator.h"
 #include "instruction.h"
-#include "data_proc.h"
 #include "execute.h"
 #include "shift.h"
 

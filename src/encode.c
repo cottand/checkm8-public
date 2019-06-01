@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "encode_data_proc.h"
 
 Instr encode_instr(Token_Stream *instr)
 {
@@ -28,15 +29,6 @@ Instr encode_instr(Token_Stream *instr)
     printf("Invalid instr type");
     break;
   }
-
-  return encoded;
-}
-
-Data_Proc_Instr *encode_data_proc_instr(Token_Stream *instr)
-{
-  Data_Proc_Instr *encoded = malloc(sizeof(Data_Proc_Instr));
-
-  /* TODO */
 
   return encoded;
 }

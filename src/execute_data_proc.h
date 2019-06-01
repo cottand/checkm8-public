@@ -1,5 +1,5 @@
-#ifndef DATA_PROC_H_
-#define DATA_PROC_H_
+#ifndef EXECUTE_DATA_PROC_H_
+#define EXECUTE_DATA_PROC_H_
 
 #include "emulator.h"
 #include "instruction.h"
@@ -34,4 +34,4 @@ unsigned int get_bit_block(unsigned int original, struct s_Bit_Block block,
                            int invert);
 operation decode_opcode(uint8_t code);
 
-#endif /* DATA_PROC_H_ */
+#endif /* EXECUTE_DATA_PROC_H_ */

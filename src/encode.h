@@ -6,7 +6,6 @@
 
 Instr encode_instr(Token_Stream *instr);
 
-Data_Proc_Instr *encode_data_proc_instr(Token_Stream *instr);
 Mul_Instr *encode_mul_instr(Token_Stream *instr);
 Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr);
 Branch_Instr *encode_branch_instr(Token_Stream *instr);
