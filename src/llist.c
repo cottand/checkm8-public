@@ -1,9 +1,10 @@
-#include "dyn_llist.h"
+#include "llist.h"
 #include <stdio.h>
 
 const uint16_t NODE_SIZE = sizeof(char *) * 3;
 
-void llist_init(LList *list){
+void llist_init(LList *list)
+{
   list->empty = 1;
 }
 
@@ -23,10 +24,12 @@ void llist_add_last(LList *list, char *str)
     list->last->next = new_last;
     list->last = new_last;
     list->last->next = 0;
-  } else printf("INVALID VAUE");
+  }
+  else
+    printf("INVALID VAUE");
 }
 
-void llist_remove_nth(LList *list, uint8_t n)
+void llist_remove(LList *list, uint8_t n)
 {
   Node *current = list->first;
   Node *prev;
@@ -59,16 +62,27 @@ char *llist_remove_first(LList *list)
   }
   Node *old_first = list->first;
   list->first = old_first->next;
-  char *str = old_first->str;
-  free(old_first);
+  char *str = old_first->str; //segfault here TODO debug
+  //free(old_first);  for some reason this is seen as double free?? TODO debug
   return str;
 }
 
 void llist_destroy(LList *list)
 {
-  while(list->empty != 0)
+  while (list->empty != 0)
   {
     llist_remove_first(list);
   }
-  free (list);
+  free(list);
+}
+
+char *llist_peek(LList *list, uint8_t n)
+{
+  int i = 0;
+  Node *current = list->first;
+  for(; i < n; i++)
+  {
+    current = current->next;
+  }
+  return current->str;
 }

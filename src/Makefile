@@ -7,14 +7,14 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o -o assemble
+assemble: assemble.c assembler.o writer.o symbol_table.o loader.o llist.o
+	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o llist.o -o assemble
 
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o emulate
 
-ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o dyn_llist.o
-	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o dyn_llist.o -o ptest
+ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o llist.o
+	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o llist.o -o ptest
 
 emulator.o: emulator.c
 	$(CC) $(CFLAGS) emulator.c -c -o emulator.o
@@ -49,8 +49,8 @@ writer.o: writer.c
 symbol_table.o: symbol_table.c
 	$(CC) $(CFLAGS) symbol_table.c -c -o symbol_table.o
 
-dyn_llist.o: dyn_llist.c
-	$(CC) $(CFLAGS) dyn_llist.c -c -o dyn_llist.o
+llist.o: llist.c
+	$(CC) $(CFLAGS) llist.c -c -o llist.o
 
 clean:
 	rm -f $(wildcard *.o)

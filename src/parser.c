@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "llist.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,20 +13,23 @@
  * of lines in the program
  */
 // TODO : test
-char **get_instruction_array(Assembler *asse)
+
+/** Takes an empty list
+ * and to the lsit adds every line of the program in order
+ * PRE: assumes the list to be empty and uninitialised
+ */
+void get_instruction_array(Assembler *asse, LList *list)
 {
   char *src = asse->src;
-  char **array_of_strings = malloc(BIN_SIZE_ASSUMPTION * sizeof(char *));
   char *pch;
   pch = strtok(src, "\n");
   register int i = 1;
   while (pch != NULL)
-  {
-    array_of_strings[i++] = pch;
+  { 
+    llist_add_last(list, pch);
     pch = strtok(NULL, " ,.-");
   }
-  array_of_strings[0] = (char *)i - 1;
-  return array_of_strings;
+  return;
   // TODO : free() ret of get_instruction_array
 }
 //TODO parse replace and add $ before 0x0....
@@ -39,9 +43,9 @@ Symbol_Table get_table(Assembler *asse, char **instr_array)
   {
     char *current = instr_array[i];
     //If current line is a label
-    if (current[strlen(current) -1 ] == ':')
+    if (current[strlen(current) - 1] == ':')
     {
-        st_insert(&table, current, mem_addr);
+      st_insert(&table, current, mem_addr);
     }
     mem_addr += sizeof(uint32_t);
   }
