@@ -63,7 +63,13 @@ typedef struct s_Instr
   Branch_Instr *branch_instr;
 } Instr;
 
-void instr_init(Instr* instr);
-void instr_free(Instr* instr);
+void instr_init(Instr *instr);
+void instr_free(Instr *instr);
+
+uint32_t instr_to_uint32(Instr *instr);
+uint32_t data_proc_instr_to_uint32(Data_Proc_Instr *instr);
+uint32_t mul_instr_to_uint32(Mul_Instr *instr);
+uint32_t data_trans_instr_to_uint32(Data_Trans_Instr *instr);
+uint32_t branch_instr_to_uint32(Branch_Instr *instr);
 
 #endif /* INSTRUCTION_H_ */
