@@ -13,22 +13,62 @@ Data_Proc_Instr *encode_data_proc_instr(Token_Stream *instr)
   encoded->cond = 0xe;
   encoded->s    = 0x0;
 
-  if (!strcmp(v, "and") || !strcmp(v, "eor") ||
-      !strcmp(v, "sub") || !strcmp(v, "rsb") ||
-      !strcmp(v, "add") || !strcmp(v, "orr"))
+  /* Compute type instructions */
+  if (!strcmp(v, "and"))
   {
     encode_compute(encoded, instr);
+    encoded->opcode = 0x0;
+  }
+  if (!strcmp(v, "eor"))
+  {
+    encode_compute(encoded, instr);
+    encoded->opcode = 0x1;
+  }
+  if (!strcmp(v, "sub"))
+  {
+    encode_compute(encoded, instr);
+    encoded->opcode = 0x2;
+  }
+  if (!strcmp(v, "rsb"))
+  {
+    encode_compute(encoded, instr);
+    encoded->opcode = 0x3;
+  }
+  if (!strcmp(v, "add"))
+  {
+    encode_compute(encoded, instr);
+    encoded->opcode = 0x4;
+  }
+  if (!strcmp(v, "orr"))
+  {
+    encode_compute(encoded, instr);
+    encoded->opcode = 0xc;
   }
 
+  /* mov instruction */
   if (!strcmp(v, "mov"))
   {
     encode_mov(encoded, instr);
+    encoded->opcode = 0xd;
   }
 
-  if (!strcmp(v, "tst") || !strcmp(v, "teq") || !strcmp(v, "cmp"))
+  /* Compare type instructions */
+  if (!strcmp(v, "tst"))
   {
     encode_test(encoded, instr);
-
+    encoded->opcode = 0x8;
+    encoded->s = 0x1;
+  }
+  if (!strcmp(v, "teq"))
+  {
+    encode_test(encoded, instr);
+    encoded->opcode = 0x9;
+    encoded->s = 0x1;
+  }
+  if (!strcmp(v, "cmp"))
+  {
+    encode_test(encoded, instr);
+    encoded->opcode = 0xa;
     encoded->s = 0x1;
   }
 
@@ -94,13 +134,15 @@ void encode_operand2_immediate(Data_Proc_Instr *instr, Token_Stream *tokens)
     return;
   }
 
-  uint8_t val8 = (val32 >> rightmost_bit) & 0xff;
-
-  /* By how much we have to rotate right to put the 8 bits back where they were */
   uint8_t rotate = 0x0;
+  uint8_t val8   = val32 & 0xff;
+
+  /* If the number isn't in the rightmost 8 bits, we shift it here and compute
+   * by how much we have to rotate right after to put it back where it was. */
   if (leftmost_bit > 8)
   {
     rotate = 32 - rightmost_bit;
+    val8   = (val32 >> rightmost_bit) & 0xff;
   }
 
   if (rotate % 2 != 0 || rotate > 30)
