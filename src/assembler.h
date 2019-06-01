@@ -20,4 +20,5 @@ void load_from_src(Assembler *assembler, char *src_program_file);
 void set_next_bin_instr(Assembler *assembler, uint32_t *instr);
 
 uint16_t get_last_written_address_bin(Assembler *assembler);
+
 #endif /* ASSEMBLER_H_ */
