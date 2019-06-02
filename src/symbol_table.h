@@ -6,7 +6,7 @@
 typedef struct s_Table_Item
 {
     char *label;
-    int memory_addr;
+    uint8_t memory_addr;
 } Table_Item;
 
 typedef struct s_Symbol_Table

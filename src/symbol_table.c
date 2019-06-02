@@ -1,5 +1,26 @@
 #include <stdlib.h>
+#include <string.h>
+
+
 #include "symbol_table.h"
+
+//FNV-1a 32 bit constants
+static uint32_t offset_basis = 2166136261;
+static uint32_t FNV_prime = 16777619;
+
+static uint32_t hash_func(char *string)
+{
+  // FNV-1a hashing algorithm (in public domain)
+  uint32_t hash = offset_basis;
+  int i;
+  for (i = 0; i < strlen(string); i++)
+  {
+    hash = hash ^ string[i];
+    hash = hash * FNV_prime;
+  }
+  return hash;
+}
+
 
 void st_init(Symbol_Table *st)
 {
@@ -32,3 +53,6 @@ int st_search(Symbol_Table *st, char *label)
 void st_remove(Symbol_Table *st, char *label)
 {
 }
+
+int main()
+{}
