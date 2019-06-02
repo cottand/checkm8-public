@@ -7,24 +7,14 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic
 
 all: assemble emulate
 
-<<<<<<< HEAD
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o -o assemble
-=======
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o llist.o parser.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o llist.o parser.o -o assemble
->>>>>>> parser
+assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o llist.o parser.o
+	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o llist.o parser.o -o assemble
 
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o -o emulate
 
-<<<<<<< HEAD
-ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o token.o token_stream.o encode.o encode_data_proc.o
-	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o token.o token_stream.o encode.o encode_data_proc.o -o ptest
-=======
-ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o llist.o
-	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o llist.o -o ptest
->>>>>>> parser
+ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o token.o token_stream.o encode.o encode_data_proc.o llist.o parser.o
+	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o token.o token_stream.o encode.o encode_data_proc.o llist.o parser.o -o ptest
 
 emulator.o: emulator.c
 	$(CC) $(CFLAGS) emulator.c -c -o emulator.o
