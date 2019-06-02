@@ -48,32 +48,43 @@ void st_free(Symbol_Table *st)
   free(st);
 }
 
-void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
+int st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
 {
   if (st->elements == st->max_size)
   {
     //RESIZE?
-    printf("Symbol Table is full");
-    return;
+    printf("Symbol Table is full!\n");
+    return 0;
   }
 
   uint32_t index = hash_func(label) % st->max_size;
+  int h = 1;
   while (st->items[index] != &EMPTY_ITEM)
   {
-    //We use linear probing
-    index = index + 1 % st->max_size;
+    //We use quadratic probing
+    index = (index + h * h) % st->max_size;
+    h++;
   }
-  Table_Item new_item = {label, memory_addr};
-  st->items[index] = &new_item;
+  Table_Item *new_item = malloc(sizeof(Table_Item *));
+  new_item->label = strdup(label);
+  new_item->memory_addr = memory_addr;
+  st->items[index] = new_item;
+
+  st->elements++;
+  return 1;
 }
 
 uint8_t st_search(Symbol_Table *st, char *label)
 {
   uint32_t index = hash_func(label) % st->max_size;
+  int h = 1;
   while(strcmp(st->items[index]->label, label) != 0 && st->items[index] != &EMPTY_ITEM)
   {
-    index = index + 1 % st->max_size;
+    //We use quadratic probing
+    index = (index + h * h) % st->max_size;
+    h++;
   }
+  
   if(st->items[index] != &EMPTY_ITEM)
   {
     return st->items[index]->memory_addr;
@@ -85,6 +96,34 @@ uint8_t st_search(Symbol_Table *st, char *label)
   
 }
 
-void st_remove(Symbol_Table *st, char *label)
+int st_remove(Symbol_Table *st, char *label)
 {
+  uint32_t index = hash_func(label) % st->max_size;
+  int h = 1;
+  while(strcmp(st->items[index]->label, label) != 0 && st->items[index] != &EMPTY_ITEM)
+  {
+    index = (index + h * h) % st->max_size;
+    h++;
+  }
+  if(st->items[index] != &EMPTY_ITEM)
+  {
+    st->items[index] = &EMPTY_ITEM;
+    st->elements--;
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+int main(int argc, char **argv)
+{
+  Symbol_Table st;
+  st_init(&st);
+  printf("Inserting hello : %d\n", st_insert(&st, "hello", 0x1));
+  printf("Inserting there : %d\n", st_insert(&st, "there", 0x2));
+  st_remove(&st, "there");
+  printf("Hello - %x\n", st_search(&st, "hello"));
+  printf("There - %x\n", st_search(&st, "there"));
 }
