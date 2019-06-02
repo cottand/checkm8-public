@@ -5,19 +5,23 @@ const uint16_t NODE_SIZE = sizeof(char *) * 3;
 
 void llist_init(LList *list)
 {
-  list->empty = 1;
+  list->size = 0;
+}
+
+void llist_node_delete(Node *node)
+{
+  free(node);
 }
 
 void llist_add_last(LList *list, char *str)
 {
-  if (list->empty == 1)
+  if (list->size == 0)
   {
     list->first = malloc(NODE_SIZE);
     list->last = list->first;
     list->first->str = str;
-    list->empty = 0;
   }
-  else if (list->empty == 0)
+  else
   {
     Node *new_last = malloc(NODE_SIZE);
     new_last->str = str;
@@ -25,12 +29,17 @@ void llist_add_last(LList *list, char *str)
     list->last = new_last;
     list->last->next = 0;
   }
-  else
-    printf("INVALID VAUE");
+  list->size++;
 }
 
 void llist_remove(LList *list, uint8_t n)
 {
+  if (list->size == 0)
+  {
+    printf("LList: tried to remove nth element from empty list");
+    return;
+  }
+  list->size--;
   Node *current = list->first;
   Node *prev;
   int i = 1;
@@ -42,7 +51,7 @@ void llist_remove(LList *list, uint8_t n)
       perror("llist_remove_nth: out of bounds");
   }
   prev->next = current->next;
-  free(current);
+  llist_node_delete(current);
 }
 /**
  * removes first element of list and returns removed element,
@@ -51,25 +60,23 @@ void llist_remove(LList *list, uint8_t n)
  */
 char *llist_remove_first(LList *list)
 {
-  if (list->empty == 1)
+  if (list->size == 0)
   {
+    printf("LList: Tried to remove element from empty list");
     return 0;
   }
 
-  if (list->last == list->first)
-  {
-    list->empty = 1;
-  }
   Node *old_first = list->first;
   list->first = old_first->next;
   char *str = old_first->str; //segfault here TODO debug
-  //free(old_first);  for some reason this is seen as double free?? TODO debug
+  list->size--;
+  llist_node_delete(old_first);
   return str;
 }
 
-void llist_destroy(LList *list)
+void llist_delete(LList *list)
 {
-  while (list->empty != 0)
+  while (list->size > 0)
   {
     llist_remove_first(list);
   }
@@ -80,7 +87,7 @@ char *llist_peek(LList *list, uint8_t n)
 {
   int i = 0;
   Node *current = list->first;
-  for(; i < n; i++)
+  for (; i < n; i++)
   {
     current = current->next;
   }

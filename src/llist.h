@@ -20,13 +20,13 @@ typedef struct s_LList
 {
   Node *first;
   Node *last;
-  uint8_t empty;
+  uint8_t size;
 } LList;
 
 char *llist_remove_first(LList *list);
 void llist_add_last(LList *list, char *str);
 void llist_remove(LList *list, uint8_t n);
-void llist_destroy(LList *list);
+void llist_delete(LList *list);
 void llist_init(LList *list);
 char *llist_peek(LList *list, uint8_t n);
 

@@ -1,5 +1,4 @@
 #include "parser.h"
-#include "llist.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,52 +6,69 @@
 
 #define BIN_SIZE_ASSUMPTION 100
 
-/**
- * Returns an array of strings where each string is a line of the
- * program, and the first element of the array encodes the number of
- * of lines in the program
- */
-// TODO : test
-
 /** Takes an empty list
  * and to the lsit adds every line of the program in order
  * PRE: assumes the list to be empty and uninitialised
  */
-void get_instruction_array(Assembler *asse, LList *list)
+void parse_src_pass1(Assembler *asse, Parsed_src *parsed)
 {
+  LList *list = parsed->instructions;
+  Symbol_Table *table = parsed->table;
+  llist_init(list);
+  //INIT TABLE TODO
+  uint32_t mem_addr = 0;
   char *src = asse->src;
   char *pch;
+  uint8_t to_free_size = 0;
   pch = strtok(src, "\n");
-  register int i = 1;
   while (pch != NULL)
-  { 
+  {
     llist_add_last(list, pch);
+    if (pch[strlen(pch) - 1] == ':')
+      st_insert(table, pch, mem_addr);
+    else if (pch[0] == 'b') //if line is a branch instruction
+      to_free_size++;
+    mem_addr += sizeof(uint32_t);
     pch = strtok(NULL, " ,.-");
   }
+  parsed->to_free = malloc(sizeof(char *) * to_free_size);
   return;
   // TODO : free() ret of get_instruction_array
 }
-//TODO parse replace and add $ before 0x0....
-Symbol_Table get_table(Assembler *asse, char **instr_array)
+
+void parsed_src_delete(Parsed_src *parsed)
 {
-  Symbol_Table table;
-  uint16_t prog_size = (uint16_t)instr_array[0];
-  uint32_t i = 1;
-  uint32_t mem_addr = 0;
-  for (i = 1; i <= prog_size; i++)
+  st_delete(parsed->table);
+  llist_delete(parsed->instructions);
+  free(parsed->to_free);
+  free(parsed);
+}
+/**
+void parse_src_pass2(Assembler *asse, Parsed_src *parsed)
+{
+  LList *list = parsed->instructions;
+  Symbol_Table *table = parsed->table;
+  for (uint8_t i = 0; i < list->size; i++)
   {
-    char *current = instr_array[i];
-    //If current line is a label
-    if (current[strlen(current) - 1] == ':')
+    char *current = llist_peek(parsed->instructions, i);
+    //If line is a branch instruction
+    if (current[strlen(current) - 1] != ':' && current[0] == 'b')
     {
-      st_insert(&table, current, mem_addr);
+      char *to_be_replaced;
+      uint32_t addr;
+      if (current[1] == ' ') 
+      {
+        to_be_replaced = &current[2];
+      }
+      else
+      {
+        to_be_replaced = &current[4];
+      }
+      //GET GROM SYMBOL TABLE TODO
+      addr = st_search(table,to_be_replaced);
+      char* 
+      char* new_line;
     }
-    mem_addr += sizeof(uint32_t);
   }
 }
-
-Parsed_src parse_src(Assembler *asse)
-{
-
-  char tempString[511];
-}
+*/
