@@ -216,7 +216,7 @@ void print_regs(Emulator *emulator)
     }
     else if (i != 13 && i != 14)
     {
-      char *name = malloc(4);
+      char *name = malloc(5*sizeof(char));
       switch (i)
       {
       /*case 13:

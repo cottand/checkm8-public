@@ -55,6 +55,7 @@ void cycle_p(Pipeline *pipeline)
     break;
   case Full:
     cycle_normal(pipeline);
+    instr_free(&(pipeline->executing));
     break;
   default:
     /*Should never happen*/
