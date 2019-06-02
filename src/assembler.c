@@ -60,6 +60,7 @@ void assembler_init(Assembler *assembler, char *src_program_file,
     strcpy((char *restrict) & (assembler->bin_path), dest_bin_file);
     open_bin(assembler);
     assembler->src = malloc(get_filesize(src_program_file));
+    /* This malloc is freed in assemble() */
 }
 void assemble(char *src_program_file, const char *dest_bin_file)
 {
