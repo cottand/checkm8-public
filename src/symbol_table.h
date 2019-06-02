@@ -18,7 +18,7 @@ typedef struct s_Symbol_Table
 
 void st_init(Symbol_Table *st);
 void st_free(Symbol_Table *st);
-int st_insert(Symbol_Table *st, char *label, uint8_t memory_addr);
+void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr);
 uint8_t st_search(Symbol_Table *st, char *label);
 int st_remove(Symbol_Table *st, char *label);
 
