@@ -64,13 +64,14 @@ static void st_init_sized(Symbol_Table *st, int size)
   int i;
   for (i = 0; i < st->max_size; i++)
   {
+    st->items[i] = malloc(sizeof(Table_Item *));
+    st->items[i]->label = malloc(sizeof(char *));
     st->items[i] = &EMPTY_ITEM;
   }
 }
 
 static void resize(Symbol_Table *st)
 {
-  printf("RESIZING\n");
   int new_size = nearest_prime(st->max_size * 2);
   Symbol_Table *new_st = malloc(sizeof(Symbol_Table *));
   st_init_sized(new_st, new_size);
@@ -84,9 +85,13 @@ static void resize(Symbol_Table *st)
     }
   }
 
+  int tmp_max_size = st->max_size;
   st->max_size = new_st->max_size;
-  st->elements = new_st->elements;
+  new_st->max_size = tmp_max_size;
+
+  Table_Item **tmp_items = st->items;
   st->items = new_st->items;
+  new_st->items = tmp_items;
 
   st_free(new_st);
 }
@@ -99,7 +104,7 @@ void st_init(Symbol_Table *st)
 void st_free(Symbol_Table *st)
 {
   int i;
-  for (i = 0; i < st->elements; i++)
+  for (i = 0; i < st->max_size; i++)
   {
     Table_Item *item = st->items[i];
     if (item != &EMPTY_ITEM)
@@ -108,7 +113,8 @@ void st_free(Symbol_Table *st)
       free(item);
     }
   }
-  free(st);
+  free(st->items);
+  //free(st);
 }
 
 void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
@@ -126,30 +132,25 @@ void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
     index = (index + h * h) % st->max_size;
     h++;
   }
-  Table_Item *new_item = malloc(sizeof(Table_Item *));
+  Table_Item *new_item = malloc(sizeof(Table_Item));
   new_item->label = strdup(label);
   new_item->memory_addr = memory_addr;
   st->items[index] = new_item;
 
   st->elements++;
-  printf("Added [%d] : %s - %d\n", index, st->items[index]->label, st->items[index]->memory_addr);
 }
 
 uint8_t st_search(Symbol_Table *st, char *label)
 {
-  printf("Searching for %s\n", label);
   uint32_t index = hash_func(label) % st->max_size;
   int h = 1;
-  printf("Trying index %d with array_size %d\n", index, st->max_size);
   while (strcmp(st->items[index]->label, label) != 0 && st->items[index] != &EMPTY_ITEM)
   {
     //We use quadratic probing
     index = (index + h * h) % st->max_size;
     h++;
-    printf("Trying index %d\n", index);
   }
 
-  printf("Found index %d\n", index);
   if (st->items[index] != &EMPTY_ITEM)
   {
     return st->items[index]->memory_addr;
@@ -179,22 +180,4 @@ int st_remove(Symbol_Table *st, char *label)
   {
     return 0;
   }
-}
-
-int main()
-{
-  printf("Test !\n");
-  Symbol_Table st;
-  st_init(&st);
-  printf("Initialised !\n");
-  char current_label[3];
-  for (int i = 0; i < 13; i++)
-  {
-    snprintf(current_label, 3, "%02d", i);
-    st_insert(&st, current_label, i);
-  }
-  printf("\n");
-  printf("Index 2 : %s\n", st.items[2]->label);
-  uint8_t addr = st_search(&st, "03");
-  printf("%d\n", addr);
 }
