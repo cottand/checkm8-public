@@ -14,17 +14,26 @@ Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
 
   /* TODO: Get <address> argument into address variable */
   Token *address;
-  
 
   encoded->cond = 0xe;
-  //encoded->i = 0x0;
-  //encoded->p = 0x0;
-  //encoded->u = 0x0;
-  //encoded->l = 0x0;
-  //encoded->rn = 0x0;
   encoded->rd = strtoul(rd->value, 0, 10);
-  //encoded->offset = 0x0;
-  /* TODO */
+
+  /* TODO:
+   * encoded->i
+   * encoded->p
+   * encoded->u
+   * encoded->rn
+   * encoded->offset 
+   */
+
+  if (!strcmp(opcode->value, "ldr"))
+  {
+    encoded->l = 0x1;
+  }
+  if (!strcmp(opcode->value, "str"))
+  {
+    encoded->l = 0x0;
+  }
 
   return encoded;
 }
