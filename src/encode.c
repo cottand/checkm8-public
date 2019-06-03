@@ -46,7 +46,8 @@ instr_type get_instr_type_from_tok(Token *tok)
       !strcmp(v, "rsb") || !strcmp(v, "and") ||
       !strcmp(v, "eor") || !strcmp(v, "orr") ||
       !strcmp(v, "mov") || !strcmp(v, "tst") ||
-      !strcmp(v, "teq") || !strcmp(v, "cmp"))
+      !strcmp(v, "teq") || !strcmp(v, "cmp") ||
+      !strcmp(v, "lsl"))
   {
     return Data_Proc;
   }

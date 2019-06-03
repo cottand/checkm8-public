@@ -12,6 +12,9 @@ void encode_compute(Data_Proc_Instr *instr, Token_Stream *tokens);
 /* For opcode: mov */
 void encode_mov(Data_Proc_Instr *instr, Token_Stream *tokens);
 
+/* For opcode: lsl */
+void encode_lsl(Data_Proc_Instr *instr, Token_Stream *tokens);
+
 /* For opcodes: tst teq cmp */
 void encode_test(Data_Proc_Instr *instr, Token_Stream *tokens);
 
