@@ -1,8 +1,11 @@
 #include "encode.h"
+#include "encode_data_proc.h"
+#include "encode_mul.h"
+#include "encode_data_trans.h"
+#include "encode_branch.h"
+
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include "encode_data_proc.h"
 
 Instr encode_instr(Token_Stream *instr)
 {
@@ -28,89 +31,6 @@ Instr encode_instr(Token_Stream *instr)
   default:
     printf("Invalid instr type");
     break;
-  }
-
-  return encoded;
-}
-
-Mul_Instr *encode_mul_instr(Token_Stream *instr)
-{
-  Mul_Instr *encoded = malloc(sizeof(Mul_Instr));
-
-  Token *opcode = token_stream_expect(instr, Opcode, "Expecting opcode for mul type instr (mul, mla)");
-
-  Token *rd = token_stream_expect(instr, Register, "Expecting Rd register for mul instr");
-  Token *rm = token_stream_expect(instr, Register, "Expecting Rm register for mul instr");
-  Token *rs = token_stream_expect(instr, Register, "Expecting Rs register for mul instr");
-
-  encoded->cond = 0xe;
-  encoded->a  = 0x0;
-  encoded->s  = 0x0;
-  encoded->rd = strtoul(rd->value, 0, 10);
-  encoded->rm = strtoul(rm->value, 0, 10);
-  encoded->rs = strtoul(rs->value, 0, 10);
-  encoded->rn = 0x0;
-
-  if (!strcmp(opcode->value, "mla"))
-  {
-    Token *rn = token_stream_expect(instr, Register, "Expecting Rn register for mla instr");
-    encoded->rn = strtoul(rn->value, 0, 10);
-
-    encoded->a = 0x1;
-  }
-
-  return encoded;
-}
-
-Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
-{
-  Data_Trans_Instr *encoded = malloc(sizeof(Data_Trans_Instr));
-
-  /* TODO */
-
-  return encoded;
-}
-
-Branch_Instr *encode_branch_instr(Token_Stream *instr)
-{
-  Branch_Instr *encoded = malloc(sizeof(Branch_Instr));
-
-  Token *opcode = token_stream_expect(instr, Opcode, "Expecting opcode for branch type instr");
-  Token *offset = token_stream_expect(instr, Address, "Expecting an address for branch type instr");
-
-  encoded->offset = strtoul(offset->value, 0, 16);
-
-  if (!strcmp(opcode->value, "beq"))
-  {
-    encoded->cond = 0x0;
-  }
-  if (!strcmp(opcode->value, "bne"))
-  {
-    encoded->cond = 0x1;
-  }
-  if (!strcmp(opcode->value, "bge"))
-  {
-    encoded->cond = 0xa;
-  }
-  if (!strcmp(opcode->value, "blt"))
-  {
-    encoded->cond = 0xb;
-  }
-  if (!strcmp(opcode->value, "bgt"))
-  {
-    encoded->cond = 0xc;
-  }
-  if (!strcmp(opcode->value, "ble"))
-  {
-    encoded->cond = 0xd;
-  }
-  if (!strcmp(opcode->value, "bal"))
-  {
-    encoded->cond = 0xe;
-  }
-  if (!strcmp(opcode->value, "b"))
-  {
-    encoded->cond = 0xe;
   }
 
   return encoded;

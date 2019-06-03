@@ -7,8 +7,8 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o llist.o parser.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o llist.o parser.o -o assemble
+assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o
+	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o -o assemble
 
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o -o emulate
@@ -63,6 +63,15 @@ encode.o: encode.c
 
 encode_data_proc.o: encode_data_proc.c
 	$(CC) $(CFLAGS) encode_data_proc.c -c -o encode_data_proc.o
+
+encode_mul.o: encode_mul.c
+	$(CC) $(CFLAGS) encode_mul.c -c -o encode_mul.o
+
+encode_data_trans.o: encode_data_trans.c
+	$(CC) $(CFLAGS) encode_data_trans.c -c -o encode_data_trans.o
+
+encode_branch.o: encode_branch.c
+	$(CC) $(CFLAGS) encode_branch.c -c -o encode_branch.o
 
 token_stream.o: token_stream.c
 	$(CC) $(CFLAGS) token_stream.c -c -o token_stream.o
