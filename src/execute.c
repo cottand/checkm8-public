@@ -1,8 +1,13 @@
 #include "execute.h"
-#include "shift.h"
-#include <stdio.h>
-#include "emulator.h"
 #include "execute_data_proc.h"
+#include "execute_mul.h"
+#include "execute_data_trans.h"
+#include "execute_branch.h"
+
+#include "shift.h"
+#include "emulator.h"
+
+#include <stdio.h>
 
 void exec_instr(Emulator *emulator, Instr *instr)
 {
@@ -25,103 +30,6 @@ void exec_instr(Emulator *emulator, Instr *instr)
     emulator->halt = 1;
     break;
   }
-}
-
-void exec_mul_instr(Emulator *emulator, Mul_Instr *instr)
-{
-  if (!is_cond_true(emulator, instr->cond))
-  {
-    return;
-  }
-
-  uint32_t res = 0;
-  uint32_t rn = emulator->regs[instr->rn];
-  uint32_t rs = emulator->regs[instr->rs];
-  uint32_t rm = emulator->regs[instr->rm];
-  if (instr->a)
-  {
-    res = rm * rs + rn;
-  }
-  else
-  {
-    res = rm * rs;
-  }
-
-  emulator->regs[instr->rd] = res;
-
-  if (instr->s)
-  {
-    if (!res)
-    {
-      set_flag_Z(emulator);
-    }
-    else
-    {
-      clr_flag_Z(emulator);
-    }
-
-    if (get_reg_bit(emulator, instr->rd, 31))
-    {
-      set_flag_N(emulator);
-    }
-    else
-    {
-      clr_flag_N(emulator);
-    }
-  }
-}
-
-void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
-{
-  if (!is_cond_true(emulator, instr->cond))
-  {
-    return;
-  }
-
-  uint32_t offset = 0;
-  if (instr->i) /* Offset is shifted register */
-  {
-    uint32_t carry = 0;
-    offset = compute_offset_from_reg(emulator, instr->offset, &carry);
-  }
-  else /* Offset is unsigned 12 bit immediate offset */
-  {
-    offset = instr->offset;
-  }
-
-  uint32_t base = emulator->regs[instr->rn];
-
-  if (instr->p)
-  {
-    base = instr->u ? base + offset : base - offset;
-  }
-  
-  if (base > MEM_SIZE)
-  {
-    printf("Error: Out of bounds memory access at address 0x%08x\n", base);
-    return;
-  }
-
-  uint32_t dst_src = emulator->regs[instr->rd];
-
-  if (instr->l) /* Load from memory */
-  {
-    emulator->regs[instr->rd] = get_mem(emulator, base);
-  }
-  else /* Store to memory */
-  {
-    set_mem(emulator, base, dst_src);
-  }
-
-  /* Only support post indexing */
-  if (!instr->p)
-  {
-    emulator->regs[instr->rn] = instr->u ? base + offset : base - offset;
-  }
-
-  /* Save the new values into regs */
-  // emulator->regs[instr->rn] = base;
-  // emulator->regs[instr->rd] = dst_src;
 }
 
 /* This function computes the offset for the case where the offset is strored
@@ -174,29 +82,6 @@ uint32_t compute_offset_from_reg(Emulator *emulator, uint16_t field, uint32_t *c
   }
 
   return offset;
-}
-
-// uint32_t compute_offset_from_imm(Emulator *emulator, uint16_t field, uint32_t *carry)
-// {
-//     uint32_t immediate = op2 & 0xff;
-//     uint32_t rotate = op2 >> 8;
-//     rotate *= 2;
-
-//     return ror(immediate, rotate, carry);
-// }
-
-void exec_branch_instr(Emulator *emulator, Branch_Instr *instr)
-{
-  if (!is_cond_true(emulator, instr->cond))
-  {
-    return;
-  }
-
-  uint32_t offset = (uint32_t)(instr->offset << 2);
-  uint32_t pc = get_PC(emulator);
-  pc += offset;
-
-  set_PC(emulator, pc);
 }
 
 uint8_t is_cond_true(Emulator *emulator, uint8_t cond)

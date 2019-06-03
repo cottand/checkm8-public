@@ -10,8 +10,8 @@ all: assemble emulate
 assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o llist.o parser.o
 	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o llist.o parser.o -o assemble
 
-emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o
-	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o -o emulate
+emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o
+	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o -o emulate
 
 ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o token.o token_stream.o encode.o encode_data_proc.o llist.o parser.o
 	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o token.o token_stream.o encode.o encode_data_proc.o llist.o parser.o -o ptest
@@ -33,6 +33,15 @@ execute.o: execute.c
 
 execute_data_proc.o: execute_data_proc.c
 	$(CC) $(CFLAGS) execute_data_proc.c -c -o execute_data_proc.o
+
+execute_mul.o : execute_mul.c
+	$(CC) $(CFLAGS) execute_mul.c -c -o execute_mul.o
+
+execute_data_trans.o : execute_data_trans.c
+	$(CC) $(CFLAGS) execute_data_trans.c -c -o execute_data_trans.o
+
+execute_branch.o : execute_branch.c
+	$(CC) $(CFLAGS) execute_branch.c -c -o execute_branch.o
 
 instruction.o: instruction.c
 	$(CC) $(CFLAGS) instruction.c -c -o instruction.o
