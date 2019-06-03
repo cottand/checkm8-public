@@ -71,5 +71,6 @@ uint32_t data_proc_instr_to_uint32(Data_Proc_Instr *instr);
 uint32_t mul_instr_to_uint32(Mul_Instr *instr);
 uint32_t data_trans_instr_to_uint32(Data_Trans_Instr *instr);
 uint32_t branch_instr_to_uint32(Branch_Instr *instr);
+uint32_t halt_instr_to_uint32();
 
 #endif /* INSTRUCTION_H_ */

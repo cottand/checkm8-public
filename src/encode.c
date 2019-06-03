@@ -28,6 +28,8 @@ Instr encode_instr(Token_Stream *instr)
   case Branch:
     encoded.branch_instr = encode_branch_instr(instr);
     break;
+  case Halt:
+    break;
   default:
     printf("Invalid instr type");
     break;
@@ -65,6 +67,11 @@ instr_type get_instr_type_from_tok(Token *tok)
       !strcmp(v, "bgt") || !strcmp(v, "b"))
   {
     return Branch;
+  }
+
+  if (!strcmp(v, "andeq"))
+  {
+    return Halt;
   }
 
   return -1;

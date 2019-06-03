@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 Instr decode_instr(uint32_t instr)
 {
   Instr decoded;
@@ -26,7 +25,7 @@ Instr decode_instr(uint32_t instr)
     decoded.branch_instr = decode_branch_instr(instr);
     break;
   case Halt:
-    /*No decoding necessary */
+    /* No decoding necessary */
     break;
   default:
     printf("Error: invalid instr type\n");
@@ -86,7 +85,7 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
 {
   Branch_Instr *decoded = malloc(sizeof(Branch_Instr));
   decoded->cond  = instr >> 28;
-  //Since offset 24 bits and instr, instr will be auto truncated as desired. 
+  // Since offset 24 bits and instr, instr will be auto truncated as desired.
   decoded->offset = instr;
 
   return decoded;
@@ -94,7 +93,7 @@ Branch_Instr *decode_branch_instr(uint32_t instr)
 
 instr_type get_instr_type_from_uint(uint32_t instr)
 {
-  //We found a halt instruction
+  // We found a halt instruction
   if (instr == 0x0)
   {
     return Halt;

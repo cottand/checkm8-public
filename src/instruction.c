@@ -49,7 +49,7 @@ uint32_t instr_to_uint32(Instr *instr)
     return branch_instr_to_uint32(instr->branch_instr);
     break;
   case Halt:
-    /* TODO */
+    return halt_instr_to_uint32();
     break;
   }
 
@@ -107,3 +107,7 @@ uint32_t branch_instr_to_uint32(Branch_Instr *instr)
   return bin;
 }
 
+uint32_t halt_instr_to_uint32()
+{
+  return 0x0;
+}
