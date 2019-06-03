@@ -7,7 +7,7 @@
 void token_stream_init(Token_Stream *stream)
 {
   stream->first_tok = NULL;
-  stream->curr_tok  = NULL;
+  stream->curr_tok = NULL;
 }
 
 void token_stream_free(Token_Stream *stream)
@@ -34,7 +34,7 @@ void token_stream_tokenize(Token_Stream *stream, char *str)
 
   /* First token acts as dummy token */
   stream->first_tok = curr;
-  stream->curr_tok  = stream->first_tok;
+  stream->curr_tok = stream->first_tok;
 
   while (*str)
   {
@@ -43,11 +43,26 @@ void token_stream_tokenize(Token_Stream *stream, char *str)
     curr = curr->next;
     token_init(curr);
 
-    if (token_stream_tokenize_char(&str, curr))      { continue; }
-    if (token_stream_tokenize_register(&str, curr))  { continue; }
-    if (token_stream_tokenize_immediate(&str, curr)) { continue; }
-    if (token_stream_tokenize_address(&str, curr))   { continue; }
-    if (token_stream_tokenize_opcode(&str, curr))    { continue; }
+    if (token_stream_tokenize_char(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_register(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_immediate(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_address(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_opcode(&str, curr))
+    {
+      continue;
+    }
 
     free(curr->next);
     curr = prev;
@@ -66,7 +81,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
 
   if (**str == '[')
   {
-    tok->symb  = LBracket;
+    tok->symb = LBracket;
     tok->value = malloc(sizeof(char));
     strcpy(tok->value, "[");
 
@@ -77,9 +92,31 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
 
   if (**str == ']')
   {
-    tok->symb  = RBracket;
+    tok->symb = RBracket;
     tok->value = malloc(sizeof(char));
     strcpy(tok->value, "]");
+
+    (*str)++;
+
+    return 1;
+  }
+
+  if (**str == '+')
+  {
+    tok->symb = Sign;
+    tok->value = malloc(sizeof(char));
+    strcpy(tok->value, "+");
+
+    (*str)++;
+
+    return 1;
+  }
+
+  if (**str == '-')
+  {
+    tok->symb = Sign;
+    tok->value = malloc(sizeof(char));
+    strcpy(tok->value, "-");
 
     (*str)++;
 
@@ -89,7 +126,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
   return 0;
 }
 
-uint8_t token_stream_tokenize_register(char **str, Token* tok)
+uint8_t token_stream_tokenize_register(char **str, Token *tok)
 {
   /* Registers are of the form rNumber */
   if (**str == 'r' && isdigit(*(*str + 1)))
@@ -103,7 +140,7 @@ uint8_t token_stream_tokenize_register(char **str, Token* tok)
       (*str)++;
     }
 
-    tok->symb  = Register;
+    tok->symb = Register;
     tok->value = malloc(sizeof(char) * char_count);
 
     size_t size = char_count * sizeof(char);
@@ -121,7 +158,7 @@ uint8_t token_stream_tokenize_immediate(char **str, Token *tok)
   {
     (*str)++;
 
-    tok->symb  = Immediate;
+    tok->symb = Immediate;
     tok->value = token_stream_parse_hex(str);
 
     return 1;
@@ -136,7 +173,7 @@ uint8_t token_stream_tokenize_address(char **str, Token *tok)
   {
     (*str)++;
 
-    tok->symb  = Address;
+    tok->symb = Address;
     tok->value = token_stream_parse_hex(str);
 
     return 1;
@@ -156,7 +193,7 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
       (*str)++;
     }
 
-    tok->symb  = Opcode;
+    tok->symb = Opcode;
     tok->value = malloc(sizeof(char) * char_count);
 
     size_t size = char_count * sizeof(char);
@@ -168,7 +205,7 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
   return 0;
 }
 
-char* token_stream_parse_hex(char** str)
+char *token_stream_parse_hex(char **str)
 {
   uint8_t char_count = 0;
 
