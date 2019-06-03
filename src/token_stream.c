@@ -86,6 +86,17 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
     return 1;
   }
 
+  if (**str == ':')
+  {
+    tok->symb = Colon;
+    tok->value = malloc(sizeof(char));
+    strcpy(tok->value, ":");
+
+    (*str)++;
+
+    return 1;
+  }
+
   return 0;
 }
 

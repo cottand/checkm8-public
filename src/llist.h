@@ -13,7 +13,7 @@
 typedef struct s_Node
 {
   struct s_Node *next;
-  char *str;
+  void *elem;
 } Node;
 
 typedef struct s_LList
@@ -23,11 +23,16 @@ typedef struct s_LList
   uint8_t size;
 } LList;
 
-char *llist_remove_first(LList *list);
-void llist_add_last(LList *list, char *str);
+void llist_add(LList *list, void *elem);
+void *llist_pop_first(LList *list);
 void llist_remove(LList *list, uint8_t n);
-void llist_delete(LList *list);
+void *llist_get(LList *list, uint8_t n);
+
 void llist_init(LList *list);
-char *llist_peek(LList *list, uint8_t n);
+void llist_free(LList *list);
+
+uint8_t llist_size(LList *list);
+
+void node_init(Node *node);
 
 #endif /* LLIST_H_ */

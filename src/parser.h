@@ -1,23 +1,21 @@
 #ifndef PARSER_H_
 #define PARSER_H_
 
-#include <stdint.h>
 #include "symbol_table.h"
-#include "assembler.h"
 #include "llist.h"
 
-typedef struct s_Parsed_src
+typedef struct s_Parser
 {
-  Symbol_Table *table;
-  LList *instructions;
-  char* to_free;
-} Parsed_src;
+  Symbol_Table *labels;
+  LList *token_streams;
+} Parser;
 
-/**
- * PRE: List in Parsed_src uninitialised
- */
-void parse_src_pass1(Assembler *asse, Parsed_src *parsed);
-void parse_src_pass2(Assembler *asse, Parsed_src *parsed);
-void parsed_src_delete(Parsed_src *parsed);
+char *parse(char *file);
+
+void parser_parse1(Parser *parser, char *file);
+void parser_parse2(Parser *parser);
+
+void parser_init(Parser *parser);
+void parser_free(Parser *parser);
 
 #endif /* PARSER_H_ */

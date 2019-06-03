@@ -1,95 +1,110 @@
 #include "llist.h"
 #include <stdio.h>
 
-const uint16_t NODE_SIZE = sizeof(char *) * 3;
+void node_init(Node *node)
+{
+  node->next = 0;
+  node->elem = 0;
+}
 
 void llist_init(LList *list)
 {
-  list->size = 0;
+  /* We init the list with a dummy node */
+
+  list->first = malloc(sizeof(Node));
+  node_init(list->first);
+  list->last = list->first;
+
+  list->size = 1;
 }
 
-void llist_node_delete(Node *node)
+void llist_free(LList *list)
 {
-  free(node);
+  Node *node = list->first;
+  while (node)
+  {
+    Node *next = node->next;
+
+    free(node);
+
+    node = next;
+  }
+
+  list->first = 0;
+  list->last  = 0;
+  list->size  = 0;
 }
 
-void llist_add_last(LList *list, char *str)
+void llist_add(LList *list, void *elem)
 {
-  if (list->size == 0)
-  {
-    list->first = malloc(NODE_SIZE);
-    list->last = list->first;
-    list->first->str = str;
-  }
-  else
-  {
-    Node *new_last = malloc(NODE_SIZE);
-    new_last->str = str;
-    list->last->next = new_last;
-    list->last = new_last;
-    list->last->next = 0;
-  }
+  Node *new = malloc(sizeof(Node));
+  node_init(new);
+
+  new->elem = elem;
+
+  list->last->next = new;
+  list->last = new;
   list->size++;
 }
 
+void *llist_pop_first(LList *list)
+{
+  Node *next = list->first->next;
+
+  void *elem = next->elem;
+  list->first->next = next->next;
+  free(next);
+
+  list->size--;
+
+  return elem;
+}
+
+
 void llist_remove(LList *list, uint8_t n)
 {
-  if (list->size == 0)
+  Node *curr = list->first;
+  uint8_t i;
+  for (i = 0; i < list->size; i++)
   {
-    printf("LList: tried to remove nth element from empty list");
-    return;
-  }
-  list->size--;
-  Node *current = list->first;
-  Node *prev;
-  int i = 1;
-  for (; i < n; i++)
-  {
-    prev = current;
-    current = current->next;
-    if (current == 0)
-      perror("llist_remove_nth: out of bounds");
-  }
-  prev->next = current->next;
-  llist_node_delete(current);
-}
-/**
- * removes first element of list and returns removed element,
- * allows easy iteration and memory freeing.
- * Returns 0 if list is empty.
- */
-char *llist_remove_first(LList *list)
-{
-  if (list->size == 0)
-  {
-    printf("LList: Tried to remove element from empty list");
-    return 0;
-  }
+    if (i == n)
+    {
+      Node *next = curr->next;
 
-  Node *old_first = list->first;
-  list->first = old_first->next;
-  char *str = old_first->str; //segfault here TODO debug
-  list->size--;
-  llist_node_delete(old_first);
-  return str;
+      curr->next = curr->next->next;
+      free(next);
+
+      if (!curr->next)
+      {
+        list->last = curr;
+      }
+
+      list->size--;
+      return;
+    }
+
+    curr = curr->next;
+  }
 }
 
-void llist_delete(LList *list)
+void *llist_get(LList *list, uint8_t n)
 {
-  while (list->size > 0)
+  Node *curr = list->first;
+  uint8_t i;
+  for (i = 0; i < list->size; i++)
   {
-    llist_remove_first(list);
+    if (i - 1 == n)
+    {
+      return curr->elem;
+    }
+
+    curr = curr->next;
   }
-  free(list);
+
+  return 0;
 }
 
-char *llist_peek(LList *list, uint8_t n)
+uint8_t llist_size(LList *list)
 {
-  int i = 0;
-  Node *current = list->first;
-  for (; i < n; i++)
-  {
-    current = current->next;
-  }
-  return current->str;
+  return list->size - 1;
 }
