@@ -124,6 +124,20 @@ uint8_t token_stream_tokenize_register(char **str, Token* tok)
     return 1;
   }
 
+  /* If register is of form PC, replace it with r15 */
+  if (!strncmp(*str, "PC", 2))
+  {
+    tok->symb = Register;
+    tok->value = malloc(sizeof(char) * 2);
+
+    /* PC is reg 15 */
+    strcpy(tok->value, "15");
+
+    (*str) += 2;
+
+    return 1;
+  }
+
   return 0;
 }
 
