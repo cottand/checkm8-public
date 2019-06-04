@@ -47,6 +47,7 @@ void token_stream_tokenize(Token_Stream *stream, char *str)
     if (token_stream_tokenize_register(&str, curr))  { continue; }
     if (token_stream_tokenize_immediate(&str, curr)) { continue; }
     if (token_stream_tokenize_address(&str, curr))   { continue; }
+    if (token_stream_tokenize_constant(&str, curr))  { continue; }
     if (token_stream_tokenize_opcode(&str, curr))    { continue; }
 
     free(curr->next);
@@ -156,6 +157,21 @@ uint8_t token_stream_tokenize_address(char **str, Token *tok)
   return 0;
 }
 
+uint8_t token_stream_tokenize_constant(char **str, Token *tok)
+{
+  if (**str == '=')
+  {
+    (*str)++;
+
+    tok->symb  = Constant;
+    tok->value = token_stream_parse_hex(str);
+
+    return 1;
+  }
+
+  return 0;
+}
+
 uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
 {
   if (isalpha(**str))
@@ -240,6 +256,8 @@ uint8_t token_stream_tokens_left(Token_Stream *stream)
 
 void token_stream_print(Token_Stream *stream)
 {
+  if (!stream->first_tok) { return; }
+
   printf("Token stream:\n");
   Token *curr = stream->first_tok->next;
 

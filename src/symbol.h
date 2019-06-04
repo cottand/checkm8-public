@@ -7,6 +7,7 @@ typedef enum e_symbol
   Opcode,
   Immediate,
   Register,
+  Constant,
   Address,
   LBracket,
   RBracket,
