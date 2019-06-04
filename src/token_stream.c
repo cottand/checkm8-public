@@ -68,7 +68,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
   if (**str == '[')
   {
     tok->symb  = LBracket;
-    tok->value = malloc(sizeof(char));
+    tok->value = malloc(sizeof(char) * 2);
     strcpy(tok->value, "[");
 
     (*str)++;
@@ -79,7 +79,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
   if (**str == ']')
   {
     tok->symb  = RBracket;
-    tok->value = malloc(sizeof(char));
+    tok->value = malloc(sizeof(char) * 2);
     strcpy(tok->value, "]");
 
     (*str)++;
@@ -90,7 +90,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
   if (**str == ':')
   {
     tok->symb = Colon;
-    tok->value = malloc(sizeof(char));
+    tok->value = malloc(sizeof(char) * 2);
     strcpy(tok->value, ":");
 
     (*str)++;
@@ -116,7 +116,7 @@ uint8_t token_stream_tokenize_register(char **str, Token* tok)
     }
 
     tok->symb  = Register;
-    tok->value = malloc(sizeof(char) * char_count);
+    tok->value = malloc(sizeof(char) * char_count + 1);
 
     size_t size = char_count * sizeof(char);
     strncpy(tok->value, *str - size, size);
@@ -128,7 +128,7 @@ uint8_t token_stream_tokenize_register(char **str, Token* tok)
   if (!strncmp(*str, "PC", 2))
   {
     tok->symb = Register;
-    tok->value = malloc(sizeof(char) * 2);
+    tok->value = malloc(sizeof(char) * 3);
 
     /* PC is reg 15 */
     strcpy(tok->value, "15");
@@ -198,7 +198,7 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
     }
 
     tok->symb  = Opcode;
-    tok->value = malloc(sizeof(char) * char_count);
+    tok->value = malloc(sizeof(char) * char_count + 1);
 
     size_t size = char_count * sizeof(char);
     strncpy(tok->value, *str - size, size);
@@ -219,7 +219,7 @@ char* token_stream_parse_hex(char** str)
     (*str)++;
   }
 
-  char *ret = malloc(sizeof(char) * char_count);
+  char *ret = malloc(sizeof(char) * char_count + 1);
 
   size_t size = char_count * sizeof(char);
   strncpy(ret, *str - size, size);
