@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-void write(char path[], void *ptr)
+void write(char path[], void *ptr, size_t *size)
 {
   FILE *file = fopen(path, "wb");
   if (!file)
@@ -10,7 +11,9 @@ void write(char path[], void *ptr)
     exit(0);
   }
 
-  fwrite(ptr, sizeof(ptr), 1, file);
+  printf("size: %ld\n", *size);
+
+  fwrite(ptr, *size, 1, file);
 
   fclose(file);
 }

@@ -191,7 +191,7 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
   if (isalpha(**str))
   {
     uint8_t char_count = 0;
-    while (isalpha(**str))
+    while (isalnum(**str))
     {
       char_count++;
       (*str)++;

@@ -19,23 +19,21 @@ void parser_free(Parser *parser)
   llist_free(&parser->constants);
 }
 
-char *parse(char *file)
+void parse(void *src, void **output, size_t *output_size)
 {
   Parser parser;
   parser_init(&parser);
 
-  parser_parse1(&parser, file);
-  char *parsed = parser_parse2(&parser);
+  parser_parse1(&parser, src);
+  parser_parse2(&parser, output, output_size);
 
   parser_free(&parser);
-
-  return parsed;
 }
 
 void parser_parse1(Parser *parser, char *file)
 {
   char *line = strtok(file, "\n");
-  uint8_t line_nb = 1;
+  uint8_t line_nb = 0;
 
   while (line)
   {
@@ -54,14 +52,13 @@ void parser_parse1(Parser *parser, char *file)
   }
 }
 
-char *parser_parse2(Parser *parser)
+void parser_parse2(Parser *parser, void **output, size_t *output_size)
 {
   uint8_t total_lines  = llist_size(&parser->tokenized_lines);
   uint8_t total_consts = llist_size(&parser->constants);
 
-  size_t total_size = (total_lines + total_consts) * sizeof(uint32_t);
-
-  char *output = malloc(total_size);
+  *output_size = (total_lines + total_consts) * sizeof(uint32_t);
+  *output = malloc(*output_size);
 
   int i;
   for (i = 0; i < total_lines; i++)
@@ -73,8 +70,9 @@ char *parser_parse2(Parser *parser)
     Instr encoded   = encode_instr(stream);
     uint32_t binary = instr_to_uint32(&encoded);
 
-    memcpy(output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
+    memcpy((char *) *output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
 
+    token_stream_print(stream);
     token_stream_free(stream);
     free(stream);
   }
@@ -84,12 +82,10 @@ char *parser_parse2(Parser *parser)
   {
     uint32_t *constant = llist_pop_first(&parser->constants);
 
-    memcpy(output + i * sizeof(uint32_t), constant, sizeof(uint32_t));
+    memcpy((char *) *output + i * sizeof(uint32_t), constant, sizeof(uint32_t));
 
     free(constant);
   }
-
-  return output;
 }
 
 void parser_do_substitutions(Parser *parser, Token_Stream *tokens, uint8_t line)
@@ -140,7 +136,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
 
     uint8_t line_count = llist_size(&parser->tokenized_lines);
     uint8_t offset = (line_count + const_no) * sizeof(uint32_t);
-    offset -= 8 * sizeof(uint32_t);
+    offset -= 2 * sizeof(uint32_t);
 
     /* Now reformat the instruction */
     char *instr = malloc(sizeof(char) * 32);

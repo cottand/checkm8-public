@@ -12,10 +12,10 @@ typedef struct s_Parser
   LList constants;
 } Parser;
 
-char *parse(char *file);
+void parse(void *src, void **output, size_t *output_size);
 
-void parser_parse1(Parser *parser, char *file);
-char *parser_parse2(Parser *parser);
+void parser_parse1(Parser *parser, char *src);
+void parser_parse2(Parser *parser, void **output, size_t *output_size);
 
 void parser_init(Parser *parser);
 void parser_free(Parser *parser);
