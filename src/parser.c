@@ -69,6 +69,7 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
 
     Instr encoded   = encode_instr(stream);
     uint32_t binary = instr_to_uint32(&encoded);
+    instr_free(&encoded);
 
     memcpy((char *) *output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
 
@@ -166,35 +167,30 @@ void parser_check_for_constant(Parser *parser, Token_Stream *tokens)
 
     uint32_t const_val = strtoul(constant->value, 0, 16);
 
+    /* If the constant is 2 bytes we can treat it as a mov */
     if (const_val <= 0xff)
     {
       /* Turn the instr into an immediate mov */
-      /* format: mov r0, #0x42 */
-
-      char *reg_name = opcode->next->value;
-
-      char *instr = malloc(sizeof(char) * 14);
-      sprintf(instr, "mov r%s, #%s", reg_name, constant->value);
-
-      token_stream_free(tokens);
-      token_stream_init(tokens);
-
-      token_stream_tokenize(tokens, instr);
-
-      free(instr);
+      strcpy(opcode->value, "mov");
+      constant->symb = Immediate;
 
       return;
     }
+    else
+    {
+      /* The constant is too big so we add it to the list of constants
+       * which will be stored at the end of the file */
 
-    /* Add the constant to the list of constants */
-    uint32_t *pconst = malloc(sizeof(uint32_t));
-    memcpy(pconst, &const_val, sizeof(uint32_t));
-    llist_add(&parser->constants, pconst);
+      /* Add the constant to the list of constants */
+      uint32_t *pconst = malloc(sizeof(uint32_t));
+      memcpy(pconst, &const_val, sizeof(uint32_t));
+      llist_add(&parser->constants, pconst);
 
-    /* Value will now carry the constant number (eg const no 0, 1 etc) */
-    constant->value = realloc(constant->value, sizeof(uint8_t));
-    uint8_t const_no = llist_size(&parser->constants) - 1;
-    memcpy(constant->value, &const_no, sizeof(uint8_t));
+      /* Value will now carry the constant number (eg const no 0, 1 etc) */
+      constant->value = realloc(constant->value, sizeof(uint8_t));
+      uint8_t const_no = llist_size(&parser->constants) - 1;
+      memcpy(constant->value, &const_no, sizeof(uint8_t));
+    }
   }
 }
 

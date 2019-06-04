@@ -31,7 +31,7 @@ Instr encode_instr(Token_Stream *instr)
   case Halt:
     break;
   default:
-    printf("Invalid instr type");
+    printf("Invalid instr type\n");
     break;
   }
 
