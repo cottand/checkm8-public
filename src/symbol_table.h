@@ -1,5 +1,6 @@
 #ifndef SYMBOL_TABLE_H_
 #define SYMBOL_TABLE_H_
+#include <stdint.h>
 
 #define DEFAULT_SYMBOL_TABLE_SIZE 13
 

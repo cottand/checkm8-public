@@ -13,8 +13,8 @@ assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o -o emulate
 
-ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o token.o token_stream.o encode.o
-	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o token.o token_stream.o encode.o -o ptest
+ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o token.o token_stream.o encode.o symbol_table.o
+	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o data_proc.o token.o token_stream.o encode.o symbol_table.o -o ptest
 
 emulator.o: emulator.c
 	$(CC) $(CFLAGS) emulator.c -c -o emulator.o
