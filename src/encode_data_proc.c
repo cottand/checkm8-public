@@ -112,13 +112,13 @@ void encode_lsl(Data_Proc_Instr *instr, Token_Stream *tokens)
   Token *rn2 = malloc(sizeof(Token));
   token_init(rn2);
   rn2->symb  = rn->symb;
-  rn2->value = malloc(sizeof(char));
+  rn2->value = malloc(sizeof(char) * strlen(rn->value) + 1);
   strcpy(rn2->value, rn->value);
 
   Token *lsl = malloc(sizeof(Token));
   token_init(lsl);
   lsl->symb  = Opcode;
-  lsl->value = malloc(sizeof(char));
+  lsl->value = malloc(sizeof(char) * 4);
   strcpy(lsl->value, "lsl");
 
   rn2->next = lsl;
