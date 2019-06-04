@@ -64,8 +64,6 @@ static void st_init_sized(Symbol_Table *st, int size)
   int i;
   for (i = 0; i < st->max_size; i++)
   {
-    st->items[i] = malloc(sizeof(Table_Item *));
-    st->items[i]->label = malloc(sizeof(char *));
     st->items[i] = &EMPTY_ITEM;
   }
 }
@@ -114,7 +112,6 @@ void st_free(Symbol_Table *st)
     }
   }
   free(st->items);
-  //free(st);
 }
 
 void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
@@ -136,7 +133,6 @@ void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
   new_item->label = strdup(label);
   new_item->memory_addr = memory_addr;
   st->items[index] = new_item;
-
   st->elements++;
 }
 
