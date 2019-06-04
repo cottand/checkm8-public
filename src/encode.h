@@ -8,4 +8,6 @@ Instr encode_instr(Token_Stream *instr);
 
 instr_type get_instr_type_from_tok(Token *tok);
 
+uint32_t encode_immediate(char *immediate);
+
 #endif /* ENCODE_H_ */

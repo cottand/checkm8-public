@@ -7,8 +7,8 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o -o assemble
+assemble: assemble.c assembler.o writer.o symbol_table.o loader.o shift.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o
+	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o shift.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o -o assemble
 
 emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o
 	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o -o emulate

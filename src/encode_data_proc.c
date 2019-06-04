@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "shift.h"
+#include "encode.h"
 
 Data_Proc_Instr *encode_data_proc_instr(Token_Stream *instr)
 {
@@ -174,7 +176,7 @@ void encode_operand2_register(Data_Proc_Instr *instr, Token_Stream *tokens)
     Token *rs = token_stream_read(tokens);
     uint8_t rs_enc = strtoul(rs->value, 0, 10);
 
-    uint8_t shift_type = encode_operand2_shift(shift->value);
+    uint8_t shift_type = encode_shift_opcode(shift->value);
 
     /* Surround shift_type with 0 left and 1 right (as in spec) */
     shift_type = (shift_type << 1) | 0x1;
@@ -186,46 +188,11 @@ void encode_operand2_register(Data_Proc_Instr *instr, Token_Stream *tokens)
   {
     Token *imm = token_stream_read(tokens);
 
-    uint8_t shift_type  = encode_operand2_shift(shift->value);
+    uint8_t shift_type  = encode_shift_opcode(shift->value);
     uint8_t imm_enc     = encode_immediate(imm->value);
 
     shift_enc = (imm_enc << 3) | (shift_type << 1);
   }
 
   instr->operand_2 = (shift_enc << 4) | rm_enc;
-}
-
-uint8_t encode_operand2_shift(char *shift)
-{
-  if (!strcmp(shift, "lsl"))
-  {
-    return 0x0;
-  }
-  if (!strcmp(shift, "lsr"))
-  {
-    return 0x1;
-  }
-  if (!strcmp(shift, "asr"))
-  {
-    return 0x2;
-  }
-  if (!strcmp(shift, "ror"))
-  {
-    return 0x3;
-  }
-
-  return 0x0;
-}
-
-uint32_t encode_immediate(char *immediate)
-{
-  /* Convert from hex or decimal */
-  if (immediate[1] == 'x')
-  {
-    return strtoul(immediate, 0, 16);
-  }
-  else
-  {
-    return strtoul(immediate, 0, 10);
-  }
 }

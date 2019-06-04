@@ -5,6 +5,7 @@
 #include "encode_branch.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 Instr encode_instr(Token_Stream *instr)
@@ -75,4 +76,17 @@ instr_type get_instr_type_from_tok(Token *tok)
   }
 
   return -1;
+}
+
+uint32_t encode_immediate(char *immediate)
+{
+  /* Convert from hex or decimal */
+  if (immediate[1] == 'x')
+  {
+    return strtoul(immediate, 0, 16);
+  }
+  else
+  {
+    return strtoul(immediate, 0, 10);
+  }
 }
