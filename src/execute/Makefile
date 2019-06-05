@@ -1,32 +1,32 @@
 CC      = gcc
-CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -c
+LIBS	= -I.. -I../instruction -I../utils
+CFLAGS  = $(LIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -c
 
 .SUFFIXES: .c .o
 
 .PHONY: all clean
 
-all: utils.a
+all: execute.a
 
-
-
-utils.a: llist.o loader.o shift.o symbol_table.o symbol.h writer.o
+execute.a: execute.o execute_branch.o execute_data_proc.o execute_data_trans.o execute_mul.o
 	ar rcs ../$@ $^
 
-loader.o: loader.c
-	$(CC) $(CFLAGS) loader.c -c -o loader.o
+execute.o: execute.c
+	$(CC) $(CFLAGS) execute.c -c -o execute.o
 
-shift.o: shift.c
-	$(CC) $(CFLAGS) shift.c -c -o shift.o
+execute_data_proc.o: execute_data_proc.c
+	$(CC) $(CFLAGS) execute_data_proc.c -c -o execute_data_proc.o
 
-writer.o: writer.c
-	$(CC) $(CFLAGS) writer.c -c -o writer.o
+execute_mul.o : execute_mul.c
+	$(CC) $(CFLAGS) execute_mul.c -c -o execute_mul.o
 
-symbol_table.o: symbol_table.c
-	$(CC) $(CFLAGS) symbol_table.c -c -o symbol_table.o
+execute_data_trans.o : execute_data_trans.c
+	$(CC) $(CFLAGS) execute_data_trans.c -c -o execute_data_trans.o
 
-llist.o: llist.c
-	$(CC) $(CFLAGS) llist.c -c -o llist.o
+execute_branch.o : execute_branch.c
+	$(CC) $(CFLAGS) execute_branch.c -c -o execute_branch.o
+
 
 clean:
 	rm -f $(wildcard *.o)
-	rm -f utils.a
+	rm -f execute.a
