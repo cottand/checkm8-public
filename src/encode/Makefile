@@ -6,9 +6,9 @@ CFLAGS  = $(LIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -
 
 .PHONY: all clean
 
-all: encode.a
+all: libencode.a
 
-encode.a: encode.o encode_branch.o encode_data_proc.o encode_data_trans.o encode_mul.o
+libencode.a: encode.o encode_branch.o encode_data_proc.o encode_data_trans.o encode_mul.o
 	ar rcs ../$@ $^
 
 encode_data_proc.o: encode_data_proc.c
@@ -28,4 +28,4 @@ encode.o: encode.c
 
 clean:
 	rm -f $(wildcard *.o)
-	rm -f encode.a
+	rm -f libencode.a

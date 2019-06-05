@@ -6,10 +6,10 @@ CFLAGS  = $(LIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -
 
 .PHONY: all clean
 
-all: decode.a
+all: libdecode.a
 
 
-decode.a: decode.o
+libdecode.a: decode.o
 	ar rcs ../$@ $^
 
 decode.o: decode.c decode.h
@@ -17,4 +17,4 @@ decode.o: decode.c decode.h
 
 clean:
 	rm -f $(wildcard *.o)
-	rm -f decode.a
+	rm -f libdecode.a

@@ -6,11 +6,11 @@ CFLAGS  = $(LIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -
 
 .PHONY: all clean
 
-all: parse.a
+all: libparse.a
 
 
 
-parse.a: parser.o token_stream.o token.o 
+libparse.a: parser.o token_stream.o token.o 
 	ar rcs ../$@ $^
 
 parser.o: parser.c
@@ -25,4 +25,4 @@ token.o: token.c
 
 clean:
 	rm -f $(wildcard *.o)
-	rm -f parse.a
+	rm -f libparse.a

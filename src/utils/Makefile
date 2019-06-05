@@ -5,11 +5,11 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -c
 
 .PHONY: all clean
 
-all: utils.a
+all: libutils.a
 
 
 
-utils.a: llist.o loader.o shift.o symbol_table.o symbol.h writer.o
+libutils.a: llist.o loader.o shift.o symbol_table.o symbol.h writer.o
 	ar rcs ../$@ $^
 
 loader.o: loader.c
@@ -29,4 +29,4 @@ llist.o: llist.c
 
 clean:
 	rm -f $(wildcard *.o)
-	rm -f utils.a
+	rm -f libutils.a

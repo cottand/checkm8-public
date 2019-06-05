@@ -1,5 +1,11 @@
-CC      = gcc
-CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast
+CC       = gcc
+CLIBS	 = -Iinstruction -Iutils -L. -linstruction -L. -lutils
+ASSLIBS  = -Iencode -Iparsing -L. -lencode -lparse
+EMLIBS	 = -Idecode -Iexecute -L. -ldecode -lexecute
+CFLAGS   = $(CLIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast
+ASSFLAGS = $(ASSLIBS) $(CFLAGS)
+EMFLAGS	 = $(EMLIBS) $(CFLAGS)
+TFLAGS	 = $(EMLIBS) $(ASSLIBS) $(CFLAGS)
 
 .SUFFIXES: .c .o
 
@@ -7,85 +13,48 @@ CFLAGS  = -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o writer.o symbol_table.o loader.o shift.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o
-	$(CC) $(CFLAGS) assemble.c assembler.o writer.o symbol_table.o loader.o shift.o token.o token_stream.o encode.o instruction.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o -o assemble
+assemble: assemble.c assembler.o libencode.a libinstruction.a libparsing.a libutils.a
+	$(CC) $(ASSFLAGS) -o $@
 
-emulate: emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o
-	$(CC) $(CFLAGS) emulate.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o -o emulate
+emulate: emulate.c emulator.o pipeline.o libdecode.a libinstruction.a libexecute.a libutils.a
+	$(CC) $(EMFLAGS) -o $@
 
-ptest: ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o token.o token_stream.o encode.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o symbol_table.o assembler.o writer.o
-	$(CC) $(CFLAGS) ptest.c emulator.o loader.o pipeline.o decode.o execute.o instruction.o shift.o execute_data_proc.o execute_mul.o execute_data_trans.o execute_branch.o token.o token_stream.o encode.o encode_data_proc.o encode_mul.o encode_data_trans.o encode_branch.o llist.o parser.o symbol_table.o assembler.o writer.o -o ptest
+libencode.a:
+	make -C encode
+
+libdecode.a:
+	make -C decode
+
+libinstruction.a:
+	make -C instruction
+
+libparsing.a:
+	make -C parsing
+
+libutils.a:
+	make -C utils
+
+ptest: ptest.c emulator.o assembler.o pipeline.o
+	$(CC) $(TFLAGS) $^ -o $@
 
 emulator.o: emulator.c
-	$(CC) $(CFLAGS) emulator.c -c -o emulator.o
-
-loader.o: loader.c
-	$(CC) $(CFLAGS) loader.c -c -o loader.o
+	$(CC) $(EMLAGS) emulator.c -c -o emulator.o
 
 pipeline.o: pipeline.c
-	$(CC) $(CFLAGS) pipeline.c -c -o pipeline.o
-
-decode.o: decode.c
-	$(CC) $(CFLAGS) decode.c -c -o decode.o
-
-execute.o: execute.c
-	$(CC) $(CFLAGS) execute.c -c -o execute.o
-
-execute_data_proc.o: execute_data_proc.c
-	$(CC) $(CFLAGS) execute_data_proc.c -c -o execute_data_proc.o
-
-execute_mul.o : execute_mul.c
-	$(CC) $(CFLAGS) execute_mul.c -c -o execute_mul.o
-
-execute_data_trans.o : execute_data_trans.c
-	$(CC) $(CFLAGS) execute_data_trans.c -c -o execute_data_trans.o
-
-execute_branch.o : execute_branch.c
-	$(CC) $(CFLAGS) execute_branch.c -c -o execute_branch.o
-
-instruction.o: instruction.c
-	$(CC) $(CFLAGS) instruction.c -c -o instruction.o
-
-shift.o: shift.c
-	$(CC) $(CFLAGS) shift.c -c -o shift.o
+	$(CC) $(EMFLAGS) pipeline.c -c -o pipeline.o
 
 assembler.o: assembler.c
-	$(CC) $(CFLAGS) assembler.c -c -o assembler.o
-
-writer.o: writer.c
-	$(CC) $(CFLAGS) writer.c -c -o writer.o
-
-symbol_table.o: symbol_table.c
-	$(CC) $(CFLAGS) symbol_table.c -c -o symbol_table.o
-
-encode.o: encode.c
-	$(CC) $(CFLAGS) encode.c -c -o encode.o
-
-encode_data_proc.o: encode_data_proc.c
-	$(CC) $(CFLAGS) encode_data_proc.c -c -o encode_data_proc.o
-
-encode_mul.o: encode_mul.c
-	$(CC) $(CFLAGS) encode_mul.c -c -o encode_mul.o
-
-encode_data_trans.o: encode_data_trans.c
-	$(CC) $(CFLAGS) encode_data_trans.c -c -o encode_data_trans.o
-
-encode_branch.o: encode_branch.c
-	$(CC) $(CFLAGS) encode_branch.c -c -o encode_branch.o
-
-token_stream.o: token_stream.c
-	$(CC) $(CFLAGS) token_stream.c -c -o token_stream.o
-
-token.o: token.c
-	$(CC) $(CFLAGS) token.c -c -o token.o
-
-llist.o: llist.c
-	$(CC) $(CFLAGS) llist.c -c -o llist.o
-
-parser.o: parser.c
-	$(CC) $(CFLAGS) parser.c -c -o parser.o
+	$(CC) $(ASSFLAGS) assembler.c -c -o assembler.o
 
 clean:
 	rm -f $(wildcard *.o)
+	rm -f $(wildcard *.a)
 	rm -f assemble
 	rm -f emulate
+	rm -f ptest
+	cd decode;	make clean
+	cd encode;	make clean
+	cd execute;	make clean
+	cd instruction;	make clean
+	cd parsing;	make clean
+	cd utils;	make clean

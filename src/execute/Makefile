@@ -6,9 +6,9 @@ CFLAGS  = $(LIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast -
 
 .PHONY: all clean
 
-all: execute.a
+all: libexecute.a
 
-execute.a: execute.o execute_branch.o execute_data_proc.o execute_data_trans.o execute_mul.o
+libexecute.a: execute.o execute_branch.o execute_data_proc.o execute_data_trans.o execute_mul.o
 	ar rcs ../$@ $^
 
 execute.o: execute.c
@@ -29,4 +29,4 @@ execute_branch.o : execute_branch.c
 
 clean:
 	rm -f $(wildcard *.o)
-	rm -f execute.a
+	rm -f libexecute.a
