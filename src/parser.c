@@ -38,7 +38,7 @@ void parse_src_pass1(Assembler *asse, Parsed_src *parsed)
 
 void parsed_src_delete(Parsed_src *parsed)
 {
-  st_delete(parsed->table);
+  st_free(parsed->table);
   llist_delete(parsed->instructions);
   free(parsed->to_free);
   free(parsed);
