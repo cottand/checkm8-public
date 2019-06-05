@@ -7,14 +7,14 @@
 
 void parser_init(Parser *parser)
 {
-  parser->labels = st_create();
+  st_init(&parser->labels);
   llist_init(&parser->tokenized_lines);
   llist_init(&parser->constants);
 }
 
 void parser_free(Parser *parser)
 {
-  st_delete(parser->labels);
+  st_free(&parser->labels);
   llist_free(&parser->tokenized_lines);
   llist_free(&parser->constants);
 }
@@ -108,7 +108,7 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
       return;
     }
 
-    uint8_t label_line = st_search(parser->labels, label->value);
+    uint8_t label_line = st_search(&parser->labels, label->value);
 
     /* Compute offset taking into account the pipeline offset */
     int32_t offset = (label_line - line) * sizeof(uint32_t);
@@ -200,10 +200,9 @@ uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t lin
 
   if (label->next && label->next->symb == Colon)
   {
-    st_insert(parser->labels, label->value, line);
+    st_insert(&parser->labels, label->value, line);
     return 1;
   }
 
   return 0;
 }
-

@@ -7,7 +7,7 @@
 
 typedef struct s_Parser
 {
-  Symbol_Table *labels;
+  Symbol_Table labels;
   LList tokenized_lines;
   LList constants;
 } Parser;
@@ -26,6 +26,5 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
 
 void parser_check_for_constant(Parser *parser, Token_Stream *tokens);
 uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t line);
-
 
 #endif /* PARSER_H_ */
