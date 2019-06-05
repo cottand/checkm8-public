@@ -103,17 +103,17 @@ void encode_mov(Data_Proc_Instr *instr, Token_Stream *tokens)
 
 void encode_lsl(Data_Proc_Instr *instr, Token_Stream *tokens)
 {
-  Token *rn = token_stream_expect(tokens, Register, "Expecting Rn for data_proc instr");
+  Token *rd = token_stream_expect(tokens, Register, "Expecting Rd for data_proc instr");
 
-  instr->rd = 0x0;
-  instr->rn = strtoul(rn->value, 0, 10);
+  instr->rd = strtoul(rd->value, 0, 10);
+  instr->rn = 0x0;
 
   /* We transform lsl Rn <#expression> into mov Rn Rn lsl <#expression> */
-  Token *rn2 = malloc(sizeof(Token));
-  token_init(rn2);
-  rn2->symb  = rn->symb;
-  rn2->value = malloc(sizeof(char) * strlen(rn->value) + 1);
-  strcpy(rn2->value, rn->value);
+  Token *rd2 = malloc(sizeof(Token));
+  token_init(rd2);
+  rd2->symb  = rd->symb;
+  rd2->value = malloc(sizeof(char) * strlen(rd->value) + 1);
+  strcpy(rd2->value, rd->value);
 
   Token *lsl = malloc(sizeof(Token));
   token_init(lsl);
@@ -121,9 +121,9 @@ void encode_lsl(Data_Proc_Instr *instr, Token_Stream *tokens)
   lsl->value = malloc(sizeof(char) * 4);
   strcpy(lsl->value, "lsl");
 
-  rn2->next = lsl;
-  lsl->next = rn->next;
-  rn->next  = rn2;
+  rd2->next = lsl;
+  lsl->next = rd->next;
+  rd->next  = rd2;
 }
 
 void encode_test(Data_Proc_Instr *instr, Token_Stream *tokens)
