@@ -54,6 +54,13 @@ Data_Proc_Instr *encode_data_proc_instr(Token_Stream *instr)
     encoded->opcode = 0xd;
   }
 
+  /* lsl instruction */
+  if (!strcmp(v, "lsl"))
+  {
+    encode_lsl(encoded, instr);
+    encoded->opcode = 0xd;
+  }
+
   /* Compare type instructions */
   if (!strcmp(v, "tst"))
   {
@@ -94,6 +101,31 @@ void encode_mov(Data_Proc_Instr *instr, Token_Stream *tokens)
 
   instr->rd = strtoul(rd->value, 0, 10);
   instr->rn = 0x0;
+}
+
+void encode_lsl(Data_Proc_Instr *instr, Token_Stream *tokens)
+{
+  Token *rn = token_stream_expect(tokens, Register, "Expecting Rn for data_proc instr");
+
+  instr->rd = 0x0;
+  instr->rn = strtoul(rn->value, 0, 10);
+
+  /* We transform lsl Rn <#expression> into mov Rn Rn lsl <#expression> */
+  Token *rn2 = malloc(sizeof(Token));
+  token_init(rn2);
+  rn2->symb  = rn->symb;
+  rn2->value = malloc(sizeof(char));
+  strcpy(rn2->value, rn->value);
+
+  Token *lsl = malloc(sizeof(Token));
+  token_init(lsl);
+  lsl->symb  = Opcode;
+  lsl->value = malloc(sizeof(char));
+  strcpy(lsl->value, "lsl");
+
+  rn2->next = lsl;
+  lsl->next = rn->next;
+  rn->next  = rn2;
 }
 
 void encode_test(Data_Proc_Instr *instr, Token_Stream *tokens)

@@ -1,133 +1,179 @@
-#include <string.h>
 #include <stdlib.h>
-#include <math.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "symbol_table.h"
 
-static Symbol_Item ST_DELETED_ITEM = {NULL, -1};
+//FNV-1a 32 bit constants
+static uint32_t offset_basis = 2166136261;
+static uint32_t FNV_prime = 16777619;
 
-static Symbol_Item *st_new_item(char *label, int memory_addr)
+//Empty Item
+static Table_Item EMPTY_ITEM = {"", 0x0};
+
+// FNV-1a hashing algorithm (in public domain)
+static uint32_t hash_func(char *string)
 {
-    Symbol_Item *item = malloc(sizeof(Symbol_Item *));
-    item->label = strdup(label);
-    item->memory_addr = memory_addr;
-    return item;
+  uint32_t hash = offset_basis;
+  int i;
+  for (i = 0; i < strlen(string); i++)
+  {
+    hash = hash ^ string[i];
+    hash = hash * FNV_prime;
+  }
+  return hash;
 }
 
-static void st_delete_item(Symbol_Item *item)
+//Very simplistic primality test
+static int is_prime(int n)
 {
-    free(item->label);
-    free(item);
-}
-
-static int st_hash(char *s, int a, int m)
-{
-    long hash = 0;
-   // const int len_s = strlen(s);
-   /* for (int i = 0; i < len_s; i++)
+  if (n <= 1)
+  {
+    return 0;
+  }
+  if (n % 2 == 0 && n > 2)
+  {
+    return 0;
+  }
+  int i;
+  for (i = 3; i < n / 2; i += 2)
+  {
+    if (n % i == 0)
     {
-        hash += (long)pow(a, len_s - (i + 1)) * s[i];
-        hash = hash % m;
-    } */ //TODO NOT USE long :) or pow really
-    return (int)hash;
-}
-
-static int st_get_hash(char *s, int num_buckets, int attempt)
-{
-    int hash_a = st_hash(s, 131, num_buckets);
-    int hash_b = st_hash(s, 163, num_buckets);
-    return (hash_a + (attempt * (hash_b + 1))) % num_buckets;
-}
-
-Symbol_Table *st_create(void)
-{
-    Symbol_Table *st = malloc(sizeof(Symbol_Item *));
-
-    st->size = DEFAULT_SYMBOL_TABLE_SIZE;
-    st->count = 0;
-    st->items = calloc(st->size, sizeof(Symbol_Item *));
-    return st;
-}
-
-void st_delete(Symbol_Table *st)
-{
-    for (int i = 0; i < st->size; i++)
-    {
-        Symbol_Item *item = st->items[i];
-        if (item != NULL)
-        {
-            st_delete_item(item);
-        }
+      return 0;
     }
-    free(st->items);
-    free(st);
+  }
+  return 1;
 }
 
-void st_insert(Symbol_Table *st, char *label, int memory_addr)
+static int nearest_prime(int minimum)
 {
-    Symbol_Item *item = st_new_item(label, memory_addr);
-    int index = st_get_hash(item->label, st->size, 0);
-    Symbol_Item *cur_item = st->items[index];
-    int i = 1;
-    while (cur_item != NULL)
-    {
-        if (cur_item != &ST_DELETED_ITEM)
-        {
-            if (strcmp(cur_item->label, label) == 0)
-            {
-                st_delete_item(cur_item);
-                st->items[index] = item;
-                return;
-            }
-
-            index = st_get_hash(item->label, st->size, i);
-            cur_item = st->items[index];
-            i++;
-        }
-    }
-    st->items[index] = item;
-    st->count++;
+  int i = minimum + 1;
+  while (!is_prime(i))
+  {
+    i++;
+  }
+  return i;
 }
 
-int st_search(Symbol_Table *st, char *label)
+static void st_init_sized(Symbol_Table *st, int size)
 {
-    int index = st_get_hash(label, st->size, 0);
-    Symbol_Item *item = st->items[index];
-    int i = 1;
-    while (item != NULL)
+  st->max_size = size;
+  st->elements = 0;
+  st->items = malloc(size * sizeof(Table_Item *));
+  int i;
+  for (i = 0; i < st->max_size; i++)
+  {
+    st->items[i] = &EMPTY_ITEM;
+  }
+}
+
+static void resize(Symbol_Table *st)
+{
+  int new_size = nearest_prime(st->max_size * 2);
+  Symbol_Table *new_st = malloc(sizeof(Symbol_Table *));
+  st_init_sized(new_st, new_size);
+  int i;
+  for (i = 0; i < st->max_size; i++)
+  {
+    Table_Item *item = st->items[i];
+    if (item != &EMPTY_ITEM)
     {
-        if (item != &ST_DELETED_ITEM)
-        {
-            if (strcmp(item->label, label) == 0)
-            {
-                return item->memory_addr;
-            }
-        }
-        index = st_get_hash(label, st->size, i);
-        item = st->items[index];
-        i++;
+      st_insert(new_st, item->label, item->memory_addr);
     }
+  }
+
+  int tmp_max_size = st->max_size;
+  st->max_size = new_st->max_size;
+  new_st->max_size = tmp_max_size;
+
+  Table_Item **tmp_items = st->items;
+  st->items = new_st->items;
+  new_st->items = tmp_items;
+
+  st_free(new_st);
+}
+
+void st_init(Symbol_Table *st)
+{
+  st_init_sized(st, DEFAULT_SYMBOL_TABLE_SIZE);
+}
+
+void st_free(Symbol_Table *st)
+{
+  int i;
+  for (i = 0; i < st->max_size; i++)
+  {
+    Table_Item *item = st->items[i];
+    if (item != &EMPTY_ITEM)
+    {
+      free(item->label);
+      free(item);
+    }
+  }
+  free(st->items);
+}
+
+void st_insert(Symbol_Table *st, char *label, uint8_t memory_addr)
+{
+  if (st->elements + 1 == st->max_size)
+  {
+    resize(st);
+  }
+
+  uint32_t index = hash_func(label) % st->max_size;
+  int h = 1;
+  while (st->items[index] != &EMPTY_ITEM)
+  {
+    //We use quadratic probing
+    index = (index + h * h) % st->max_size;
+    h++;
+  }
+  Table_Item *new_item = malloc(sizeof(Table_Item));
+  new_item->label = strdup(label);
+  new_item->memory_addr = memory_addr;
+  st->items[index] = new_item;
+  st->elements++;
+}
+
+uint8_t st_search(Symbol_Table *st, char *label)
+{
+  uint32_t index = hash_func(label) % st->max_size;
+  int h = 1;
+  while (strcmp(st->items[index]->label, label) != 0 && st->items[index] != &EMPTY_ITEM)
+  {
+    //We use quadratic probing
+    index = (index + h * h) % st->max_size;
+    h++;
+  }
+
+  if (st->items[index] != &EMPTY_ITEM)
+  {
+    return st->items[index]->memory_addr;
+  }
+  else
+  {
     return -1;
+  }
 }
 
-void st_remove(Symbol_Table *st, char *label)
+int st_remove(Symbol_Table *st, char *label)
 {
-    int index = st_get_hash(label, st->size, 0);
-    Symbol_Item *item = st->items[index];
-    int i = 1;
-    while (item != NULL)
-    {
-        if (item != &ST_DELETED_ITEM)
-        {
-            if (strcmp(item->label, label) == 0)
-            {
-                st_delete_item(item);
-                st->items[index] = &ST_DELETED_ITEM;
-            }
-        }
-        index = st_get_hash(label, st->size, i);
-        item = st->items[index];
-        i++;
-    }
-    st->count--;
+  uint32_t index = hash_func(label) % st->max_size;
+  int h = 1;
+  while (strcmp(st->items[index]->label, label) != 0 && st->items[index] != &EMPTY_ITEM)
+  {
+    index = (index + h * h) % st->max_size;
+    h++;
+  }
+  if (st->items[index] != &EMPTY_ITEM)
+  {
+    st->items[index] = &EMPTY_ITEM;
+    st->elements--;
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
 }
