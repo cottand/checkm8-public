@@ -102,7 +102,7 @@ uint32_t branch_instr_to_uint32(Branch_Instr *instr)
 {
   uint32_t bin = instr->cond << 28;
   bin |= 0xa << 24;
-  bin |= instr->offset;
+  bin |= ((uint32_t) instr->offset) & 0x00ffffff;
 
   return bin;
 }
