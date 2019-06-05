@@ -1,11 +1,11 @@
 CC       = gcc
-CLIBS	 = -Iinstruction -Iutils -L. -linstruction -L. -lutils
-ASSLIBS  = -Iencode -Iparsing -L. -lencode -lparse
-EMLIBS	 = -Idecode -Iexecute -L. -ldecode -lexecute
-CFLAGS   = $(CLIBS) -Wall -g -D_DEFAULT_SOURCE -std=c99 -Werror -pedantic -Ofast
-ASSFLAGS = $(ASSLIBS) $(CFLAGS)
-EMFLAGS	 = $(EMLIBS) $(CFLAGS)
-TFLAGS	 = $(EMLIBS) $(ASSLIBS) $(CFLAGS)
+CLIBS	 = -Iinstruction -Iutils -L. -linstruction -lutils
+ASSLIBS  = -Iencode -Iparsing -lencode -lparse
+EMLIBS	 = -Idecode -Iexecute -ldecode -lexecute
+CFLAGS   = $(CLIBS) -Wall -g -std=c99 -Werror -pedantic -Ofast
+ASSFLAGS = $(CFLAGS) $(ASSLIBS)
+EMFLAGS	 = $(CFLAGS) $(EMLIBS) 
+TFLAGS	 = $(CFLAGS) $(EMLIBS) $(ASSLIBS)
 
 .SUFFIXES: .c .o
 
@@ -14,10 +14,10 @@ TFLAGS	 = $(EMLIBS) $(ASSLIBS) $(CFLAGS)
 all: assemble emulate
 
 assemble: assemble.c assembler.o libencode.a libinstruction.a libparsing.a libutils.a
-	$(CC) $(ASSFLAGS) -o $@
+	$(CC)  assembler.o assemble.c -o assemble $(ASSFLAGS)
 
 emulate: emulate.c emulator.o pipeline.o libdecode.a libinstruction.a libexecute.a libutils.a
-	$(CC) $(EMFLAGS) -o $@
+	$(CC) $(EMFLAGS) pipeline.o emulate.c emulator.o -o emulate
 
 libencode.a:
 	make -C encode
