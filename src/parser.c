@@ -38,7 +38,7 @@ void parser_parse1(Parser *parser, char *file)
   while (line)
   {
     Token_Stream *stream = malloc(sizeof(Token_Stream));
-    token_stream_tokenize(stream, line);
+    token_stream_tokenize(stream, line, line_nb);
 
     parser_check_for_constant(parser, stream);
 
@@ -146,7 +146,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     token_stream_free(tokens);
     token_stream_init(tokens);
 
-    token_stream_tokenize(tokens, instr);
+    token_stream_tokenize(tokens, instr, opcode->line);
 
     free(instr);
   }

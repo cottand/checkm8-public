@@ -13,7 +13,7 @@ typedef struct s_Token_Stream
 void token_stream_init(Token_Stream *stream);
 void token_stream_free(Token_Stream *stream);
 
-void token_stream_tokenize(Token_Stream *stream, char *str);
+void token_stream_tokenize(Token_Stream *stream, char *str, uint8_t line);
 
 Token *token_stream_peak(Token_Stream *stream);
 Token *token_stream_read(Token_Stream *stream);

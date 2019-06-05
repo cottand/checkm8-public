@@ -2,11 +2,13 @@
 #define TOKEN_H_
 
 #include "symbol.h"
+#include <stdint.h>
 
 typedef struct s_Token
 {
   symbol symb;
   char *value;
+  uint8_t line;
 
   struct s_Token *next;
 } Token;

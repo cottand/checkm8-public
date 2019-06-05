@@ -19,7 +19,7 @@ void token_free(Token *tok)
 
 void token_error(Token *tok, char *msg)
 {
-  printf("Token error: %s\n", msg);
+  printf("Token error (line %d): %s\n", tok->line + 1, msg);
   token_print(tok);
 }
 

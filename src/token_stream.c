@@ -25,10 +25,11 @@ void token_stream_free(Token_Stream *stream)
   }
 }
 
-void token_stream_tokenize(Token_Stream *stream, char *str)
+void token_stream_tokenize(Token_Stream *stream, char *str, uint8_t line)
 {
   Token *curr = malloc(sizeof(Token));
   token_init(curr);
+  curr->line = line;
 
   Token *prev = NULL;
 
@@ -42,6 +43,7 @@ void token_stream_tokenize(Token_Stream *stream, char *str)
     prev = curr;
     curr = curr->next;
     token_init(curr);
+    curr->line = line;
 
     if (token_stream_tokenize_char(&str, curr))      { continue; }
     if (token_stream_tokenize_register(&str, curr))  { continue; }
