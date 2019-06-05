@@ -4,6 +4,8 @@
 #include "shift.h"
 #include "encode.h"
 
+#include <stdio.h>
+
 /*
  * PRE: <address> is not a numeric constant.
  * Hence, <address> is of the form [<...>].
@@ -18,26 +20,30 @@ Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
   Token *rn = token_stream_expect(instr, Register, "Expecting Rn register for data_trans type instr (ldr, str)");
 
   //Check if we are post-indexing or pre-indexing.
-  Token *p_peek = token_stream_peak(instr);
+  Token *next = token_stream_peak(instr);
 
-  if (p_peek->symb == RBracket)
+  if (next->symb == RBracket)
   {
-    encode_data_trans_instr_pre_indexing(encoded, instr);
+    if (!(next->next))
+    {
+      // Pre-Indexing with offset 0
+      encode_data_trans_instr_pre_indexing(encoded, instr, next->next);
+    }
+    else
+    {
+      // Post-Indexing
+      encode_data_trans_instr_post_indexing(encoded, instr, next->next);
+    }
   }
   else
   {
-   // encode_data_trans_instr_post_indexing(encoded, instr);
+    // Pre-Indexing
+    encode_data_trans_instr_pre_indexing(encoded, instr, next);
   }
 
   encoded->cond = 0xe;
   encoded->rd = strtoul(rd->value, 0, 10);
   encoded->rn = strtoul(rn->value, 0, 10);
-
-  /* TODO:
-   * encoded->i
-   * encoded->u
-   * encoded->offset 
-   */
 
   if (!strcmp(opcode->value, "ldr"))
   {
@@ -51,11 +57,10 @@ Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
   return encoded;
 }
 
-void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Stream *instr)
+void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Stream *instr, Token *next)
 {
   encoded->p = 0x1;
-  Token *peek = token_stream_peak(instr);
-  if (!peek)
+  if (!next)
   {
     // <address> = <rn> with immediate offset of +0.
     encoded->i = 0x0;
@@ -63,18 +68,49 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
     encoded->offset = 0x0;
     return;
   }
-  if (peek->symb == Immediate)
+  if (next->symb == Immediate)
   {
     // <address> = <rn> with immediate offset of +<offset>
     encoded->i = 0x0;
     encoded->u = 0x1;
-    encoded->offset = strtoul(peek->value, 0, 10);
+    encoded->offset = strtoul(next->value, 0, 10);
   }
-  if (peek->symb == Sign)
+  if (next->symb == Register)
   {
-    // <address> = <rn> with offset of a shifted register
+    // <address> = <rn> with offset of + a shifted register
     encoded->i = 0x1;
-    encoded->u = !strcmp(peek->value, "+") ? 0x1 : 0x0;
+    encoded->u = 0x1;
+    encode_data_trans_instr_shifted_register(encoded, instr);
+  }
+  if (next->symb == Sign)
+  {
+    // <address> = <rn> with offset of +/- a shifted register
+    encoded->i = 0x1;
+    encoded->u = !strcmp(next->value, "+") ? 0x1 : 0x0;
+    encode_data_trans_instr_shifted_register(encoded, instr);
+  }
+}
+
+void encode_data_trans_instr_post_indexing(Data_Trans_Instr *encoded, Token_Stream *instr, Token *next)
+{
+  encoded->p = 0x0;
+
+  if (next->symb == Immediate)
+  {
+    encoded->i = 0x0;
+    encoded->u = 0x1;
+    encoded->offset = strtoul(next->value, 0, 10);
+  }
+  if (next->symb == Register)
+  {
+    encoded->i = 0x1;
+    encoded->u = 0x1;
+    encode_data_trans_instr_shifted_register(encoded, instr);
+  }
+  if (next->symb == Sign)
+  {
+    encoded->i = 0x1;
+    encoded->u = !strcmp(next->value, "+") ? 0x1 : 0x0;
     encode_data_trans_instr_shifted_register(encoded, instr);
   }
 }
@@ -85,7 +121,13 @@ void encode_data_trans_instr_shifted_register(Data_Trans_Instr *encoded, Token_S
   Token *rm = token_stream_expect(instr, Register, "Expecting Rm for shifted register in data_trans type instr");
   uint8_t rm_enc = strtoul(rm->value, 0, 10);
 
-  if(!token_stream_peak(instr))
+  Token *end_peek = token_stream_peak(instr);
+  if (!end_peek)
+  {
+    encoded->offset = rm_enc;
+    return;
+  }
+  if(end_peek->symb == RBracket)
   {
     encoded->offset = rm_enc;
     return;
@@ -95,7 +137,7 @@ void encode_data_trans_instr_shifted_register(Data_Trans_Instr *encoded, Token_S
   uint8_t shift_enc = 0x0;
 
   Token *peek = token_stream_peak(instr);
-  if(peek->symb == Register)
+  if (peek->symb == Register)
   {
     Token *rs = token_stream_read(instr);
     uint8_t rs_enc = strtoul(rs->value, 0, 10);
@@ -108,7 +150,7 @@ void encode_data_trans_instr_shifted_register(Data_Trans_Instr *encoded, Token_S
     shift_enc = (rs_enc << 4) | shift_type;
   }
 
-  if(peek->symb == Immediate)
+  if (peek->symb == Immediate)
   {
     Token *imm = token_stream_read(instr);
 
