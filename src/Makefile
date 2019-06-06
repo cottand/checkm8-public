@@ -1,7 +1,7 @@
 CC       = gcc
-CLIBS	 = -Iinstruction -Iutils -L. -linstruction -lutils
-ASSLIBS  = -Iencode -Iparsing -lencode -lparse
-EMLIBS	 = -Idecode -Iexecute -ldecode -lexecute
+CLIBS	 = -Iinstruction -Iutils -I.
+ASSLIBS  = -Iencode -Iparsing 
+EMLIBS	 = -Idecode -Iexecute 
 CFLAGS   = $(CLIBS) -Wall -g -std=c99 -Werror -pedantic -Ofast
 ASSFLAGS = $(CFLAGS) $(ASSLIBS)
 EMFLAGS	 = $(CFLAGS) $(EMLIBS) 
@@ -13,11 +13,11 @@ TFLAGS	 = $(CFLAGS) $(EMLIBS) $(ASSLIBS)
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o libencode.a libinstruction.a libparsing.a libutils.a
-	$(CC)  assembler.o assemble.c -o assemble $(ASSFLAGS)
+assemble: assemble.c assembler.o libparse.a libencode.a libinstruction.a libutils.a 
+	$(CC)  $^ -o assemble $(ASSFLAGS)
 
 emulate: emulate.c emulator.o pipeline.o libdecode.a libinstruction.a libexecute.a libutils.a
-	$(CC) $(EMFLAGS) pipeline.o emulate.c emulator.o -o emulate
+	$(CC) $^ -o emulate  $(EMFLAGS)
 
 libencode.a:
 	make -C encode
@@ -28,17 +28,20 @@ libdecode.a:
 libinstruction.a:
 	make -C instruction
 
-libparsing.a:
+libparse.a:
 	make -C parsing
 
 libutils.a:
 	make -C utils
 
+libexecute.a:
+	make -C execute
+
 ptest: ptest.c emulator.o assembler.o pipeline.o
 	$(CC) $(TFLAGS) $^ -o $@
 
 emulator.o: emulator.c
-	$(CC) $(EMLAGS) emulator.c -c -o emulator.o
+	$(CC) $(EMFLAGS) emulator.c -c -o emulator.o
 
 pipeline.o: pipeline.c
 	$(CC) $(EMFLAGS) pipeline.c -c -o pipeline.o
