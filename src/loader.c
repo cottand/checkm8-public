@@ -18,7 +18,11 @@ void load(char *path, void *ptr)
   fileLen = ftell(file);
   fseek(file, 0, SEEK_SET);
 
-  fread(ptr, fileLen, 1, file);
+  if(!fread(ptr, fileLen, 1, file))
+  {
+    fprintf(stderr, "Error: Issue reading file into memory");
+  }
+  
 
   fclose(file);
 }
