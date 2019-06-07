@@ -130,7 +130,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     uint8_t const_no;
     memcpy(&const_no, constant->value, sizeof(uint8_t));
 
-    uint8_t offset = (total_lines + const_no) * sizeof(uint32_t);
+    uint8_t offset = (total_lines + const_no - line) * sizeof(uint32_t);
     offset -= 2 * sizeof(uint32_t);
 
     /* Now reformat the instruction */

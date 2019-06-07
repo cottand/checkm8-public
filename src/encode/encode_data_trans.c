@@ -92,6 +92,8 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
   if (next->symb == Address)
   {
     encoded->u = 0x1;
+    encoded->i = 0x0;
+    encoded->offset = strtoul(next->value, 0, 16);
   }
 }
 
