@@ -181,7 +181,7 @@ void encode_operand2_immediate(Data_Proc_Instr *instr, Token_Stream *tokens)
 
   if (rotate % 2 != 0)
   {
-    // TODO make sure we can shift number right (eg it's 7 or less bits long)
+    /* make sure we can shift number right (eg it's 7 or less bits long) */
     if (size <= 7)
     {
       val8 <<= 1;
