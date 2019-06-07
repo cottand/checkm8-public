@@ -127,7 +127,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
 {
   Token *opcode = token_stream_peak(tokens);
 
-  if (opcode && !strcmp(opcode->value, "ldr") && !strcmp(opcode->next->next->value, "="))
+  if (opcode && !strcmp(opcode->value, "ldr") && opcode->next->next->symb == Constant)
   {
     Token *reg = opcode->next;
     Token *constant = reg->next;
@@ -140,15 +140,32 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     offset -= 2 * sizeof(uint32_t);
 
     /* Now reformat the instruction */
-    char *instr = malloc(sizeof(char) * 32);
-    sprintf(instr, "ldr r%s, [PC, $0x%x]", reg->value, offset);
+    Token *lbracket = malloc(sizeof(Token));
+    token_init(lbracket);
+    lbracket->symb = LBracket;
+    lbracket->value = malloc(sizeof(char) * 2);
+    strcpy(lbracket->value, "[");
 
-    token_stream_free(tokens);
-    token_stream_init(tokens);
+    Token *rbracket = malloc(sizeof(Token));
+    token_init(rbracket);
+    rbracket->symb = RBracket;
+    rbracket->value = malloc(sizeof(char) * 2);
+    strcpy(rbracket->value, "[");
 
-    token_stream_tokenize(tokens, instr, opcode->line);
+    Token *pc = malloc(sizeof(Token));
+    token_init(pc);
+    pc->symb = Register;
+    pc->value = malloc(sizeof(char) * 3);
+    strcpy(pc->value, "15");
 
-    free(instr);
+    constant->symb = Address;
+    constant->value = realloc(constant->value, sizeof(char) * 11);
+    sprintf(constant->value, "0x%x", offset);
+
+    reg->next = lbracket;
+    lbracket->next = pc;
+    pc->next = constant;
+    constant->next = rbracket;
   }
 }
 
