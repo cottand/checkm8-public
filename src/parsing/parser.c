@@ -65,7 +65,8 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
   {
     Token_Stream *stream = llist_pop_first(&parser->tokenized_lines);
 
-    parser_do_substitutions(parser, stream, i);
+    parser_substitute_for_branch(parser, stream, i);
+    parser_substitute_for_constant(parser, stream, i, total_lines);
 
     Instr encoded   = encode_instr(stream);
     uint32_t binary = instr_to_uint32(&encoded);
@@ -87,12 +88,6 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
 
     free(constant);
   }
-}
-
-void parser_do_substitutions(Parser *parser, Token_Stream *tokens, uint8_t line)
-{
-  parser_substitute_for_branch(parser, tokens, line);
-  parser_substitute_for_constant(parser, tokens, line);
 }
 
 void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t line)
@@ -123,7 +118,7 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
   }
 }
 
-void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line)
+void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line, uint8_t total_lines)
 {
   Token *opcode = token_stream_peak(tokens);
 
@@ -135,8 +130,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     uint8_t const_no;
     memcpy(&const_no, constant->value, sizeof(uint8_t));
 
-    uint8_t line_count = llist_size(&parser->tokenized_lines);
-    uint8_t offset = (line_count + const_no) * sizeof(uint32_t);
+    uint8_t offset = (total_lines + const_no) * sizeof(uint32_t);
     offset -= 2 * sizeof(uint32_t);
 
     /* Now reformat the instruction */
@@ -150,7 +144,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     token_init(rbracket);
     rbracket->symb = RBracket;
     rbracket->value = malloc(sizeof(char) * 2);
-    strcpy(rbracket->value, "[");
+    strcpy(rbracket->value, "]");
 
     Token *pc = malloc(sizeof(Token));
     token_init(pc);

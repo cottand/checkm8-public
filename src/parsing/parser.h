@@ -20,9 +20,8 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size);
 void parser_init(Parser *parser);
 void parser_free(Parser *parser);
 
-void parser_do_substitutions(Parser *parser, Token_Stream *tokens, uint8_t line);
 void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t line);
-void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line);
+void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line, uint8_t total_lines);
 
 void parser_check_for_constant(Parser *parser, Token_Stream *tokens);
 uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t line);
