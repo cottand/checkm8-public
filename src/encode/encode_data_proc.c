@@ -179,7 +179,21 @@ void encode_operand2_immediate(Data_Proc_Instr *instr, Token_Stream *tokens)
     val8   = (val32 >> rightmost_bit) & 0xff;
   }
 
-  if (rotate % 2 != 0 || rotate > 30)
+  if (rotate % 2 != 0)
+  {
+    /* make sure we can shift number right (eg it's 7 or less bits long) */
+    if (size <= 7)
+    {
+      val8 <<= 1;
+      rotate += 1;
+    }
+    else
+    {
+      printf("Error: can't compute even value for rotate for operand2");
+    }
+  }
+
+  if (rotate > 30)
   {
     printf("Error: rotate for immediate for operand2 can't be represented: %d\n", rotate);
   }
