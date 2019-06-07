@@ -19,22 +19,22 @@ assemble: assemble.c assembler.o libparse.a libencode.a libinstruction.a libutil
 emulate: emulate.c emulator.o pipeline.o libdecode.a libinstruction.a libexecute.a libutils.a
 	$(CC) $^ -o emulate  $(EMFLAGS)
 
-libencode.a: $(wildcard ./encode/*.c)
+libencode.a: $(wildcard ./encode/*.c) $(wildcard ./encode/*.h)
 	make -C encode
 
-libdecode.a: $(wildcard ./decode/*.c)
+libdecode.a: $(wildcard ./decode/*.c) $(wildcard ./decode/*.h)
 	make -C decode
 
-libinstruction.a: $(wildcard ./instruction/*.c)
+libinstruction.a: $(wildcard ./instruction/*.c) $(wildcard ./instruction/*.h)
 	make -C instruction
 
-libparse.a: $(wildcard ./parse/*.c)
+libparse.a: $(wildcard ./parse/*.c) $(wildcard ./parse/*.h)
 	make -C parsing
 
-libutils.a: $(wildcard ./utils/*.c)
+libutils.a: $(wildcard ./utils/*.c) $(wildcard ./utils/*.h)
 	make -C utils
 
-libexecute.a: $(wildcard ./execute/*.c)
+libexecute.a: $(wildcard ./execute/*.c) $(wildcard ./execute/*.h)
 	make -C execute
 
 ptest: ptest.c emulator.o assembler.o pipeline.o
