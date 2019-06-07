@@ -97,6 +97,7 @@ uint32_t get_io_mem_extension(Emulator *emulator, uint32_t addr)
 
   default:
     printf("Out of bounds read memory access for io");
+    return -1;
     break;
   }
 }
