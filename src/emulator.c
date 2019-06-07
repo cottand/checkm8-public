@@ -20,6 +20,12 @@ void emulator_init(Emulator *emulator)
   {
     emulator->mem[i] = 0;
   }
+
+  emulator->mem_ext_io[0] = IO_SET_20_29;
+  emulator->mem_ext_io[1] = IO_SET_10_19;
+  emulator->mem_ext_io[2] = IO_SET_0_9;
+  emulator->mem_ext_io[3] = IO_CLEAR;
+  emulator->mem_ext_io[4] = IO_SET;
 }
 
 void emulate(Emulator *emulator, char *src_file)
@@ -51,8 +57,12 @@ uint8_t get_mem_byte(Emulator *emulator, uint16_t addr)
   return emulator->mem[addr];
 }
 
-uint32_t get_mem(Emulator *emulator, uint16_t addr)
+uint32_t get_mem(Emulator *emulator, uint32_t addr)
 {
+  if (addr > MEM_SIZE)
+  {
+    return get_io_mem_extension(emulator, addr);
+  }
   uint32_t mem = 0;
   for (uint8_t j = 0; j < 4; j++)
   {
@@ -66,12 +76,19 @@ void set_mem_byte(Emulator *emulator, uint16_t addr, uint8_t val)
   emulator->mem[addr] = val;
 }
 
-void set_mem(Emulator *emulator, uint16_t addr, uint32_t val)
+void set_mem(Emulator *emulator, uint32_t addr, uint32_t val)
 {
-  for (uint8_t j = 0; j < 4; j++)
+  if (addr > MEM_SIZE)
   {
-    uint8_t byte = (val >> (j * 8)) & 0xff;
-    emulator->mem[addr + j] = byte;
+    set_io_mem_extension(emulator, addr, val);
+  }
+  else
+  {
+    for (uint8_t j = 0; j < 4; j++)
+    {
+      uint8_t byte = (val >> (j * 8)) & 0xff;
+      emulator->mem[addr + j] = byte;
+    }
   }
 }
 
@@ -79,25 +96,24 @@ uint32_t get_io_mem_extension(Emulator *emulator, uint32_t addr)
 {
   switch (addr)
   {
-  case 0x2020008:
+  case IO_SET_20_29:
+    printf("One GPIO pin from 20 to 29 has been accessed\n");
     return emulator->mem_ext_io[0];
-    break;
-  case 0x2020004:
+  case IO_SET_10_19:
+    printf("One GPIO pin from 10 to 19 has been accessed\n");
     return emulator->mem_ext_io[1];
-    break;
-  case 0x2020000:
+  case IO_SET_0_9:
+    printf("One GPIO pin from 0 to 9 has been accessed\n");
     return emulator->mem_ext_io[2];
-    break;
-  case 0x2020028:
+  case IO_CLEAR:
+    printf("PIN ON\n");
     return emulator->mem_ext_io[3];
-    break;
-  case 0x202001C:
+  case IO_SET:
+    printf("PIN OFF\n");
     return emulator->mem_ext_io[4];
-    break;
-
   default:
-    printf("Out of bounds read memory access for io");
-    return -1;
+    printf("Error: Out of bounds memory access at address 0x%08x\n", addr);
+    return 0;
     break;
   }
 }
@@ -105,24 +121,29 @@ void set_io_mem_extension(Emulator *emulator, uint32_t addr, uint32_t val)
 {
   switch (addr)
   {
-  case 0x2020008:
+  case IO_SET_20_29:
     emulator->mem_ext_io[0] = val;
+    printf("One GPIO pin from 20 to 29 has been accessed\n");
     break;
-  case 0x2020004:
+  case IO_SET_10_19:
     emulator->mem_ext_io[1] = val;
+    printf("One GPIO pin from 10 to 19 has been accessed\n");
     break;
-  case 0x2020000:
+  case IO_SET_0_9:
     emulator->mem_ext_io[2] = val;
+    printf("One GPIO pin from 0 to 9 has been accessed\n");
     break;
-  case 0x2020028:
+  case IO_CLEAR:
     emulator->mem_ext_io[3] = val;
+    printf("PIN OFF\n");
     break;
-  case 0x202001C:
+  case IO_SET:
     emulator->mem_ext_io[4] = val;
+    printf("PIN ON\n");
     break;
-  
+
   default:
-    printf("Out of bounds write memory access for io");
+    printf("Error: Out of bounds memory access at address 0x%08x\n", addr);
     break;
   }
 }

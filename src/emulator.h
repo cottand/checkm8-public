@@ -17,6 +17,12 @@
 #define FLAG_BIT_C 29
 #define FLAG_BIT_V 28
 
+#define IO_SET_20_29 0x20200008
+#define IO_SET_10_19 0x20200004
+#define IO_SET_0_9 0x20200000
+#define IO_CLEAR 0x20200028
+#define IO_SET 0x2020001C
+
 typedef struct s_Emulator
 {
   uint32_t regs[REG_COUNT];
@@ -31,33 +37,32 @@ void emulate(Emulator *emulator, char *src_file);
 void load_binary(Emulator *emulator, char *src_file);
 
 uint8_t get_mem_byte(Emulator *emulator, uint16_t addr);
-uint32_t get_mem(Emulator *emulator, uint16_t addr);
-void    set_mem_byte(Emulator *emulator, uint16_t addr, uint8_t val);
-void set_mem(Emulator *emulator, uint16_t addr, uint32_t val);
+uint32_t get_mem(Emulator *emulator, uint32_t addr);
+void set_mem_byte(Emulator *emulator, uint16_t addr, uint8_t val);
+void set_mem(Emulator *emulator, uint32_t addr, uint32_t val);
 uint32_t get_io_mem_extension(Emulator *emulator, uint32_t addr);
 void set_io_mem_extension(Emulator *emulator, uint32_t addr, uint32_t val);
 
 uint8_t get_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
-void    set_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
-void    clr_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
+void set_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
+void clr_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
 
 uint32_t get_PC(Emulator *emulator);
-void     set_PC(Emulator *emulator, uint32_t val);
-void     incr_PC(Emulator *emulator);
+void set_PC(Emulator *emulator, uint32_t val);
+void incr_PC(Emulator *emulator);
 
 uint8_t get_flag_N(Emulator *emulator);
-void    set_flag_N(Emulator *emulator);
-void    clr_flag_N(Emulator *emulator);
+void set_flag_N(Emulator *emulator);
+void clr_flag_N(Emulator *emulator);
 uint8_t get_flag_Z(Emulator *emulator);
-void    set_flag_Z(Emulator *emulator);
-void    clr_flag_Z(Emulator *emulator);
+void set_flag_Z(Emulator *emulator);
+void clr_flag_Z(Emulator *emulator);
 uint8_t get_flag_C(Emulator *emulator);
-void    set_flag_C(Emulator *emulator);
-void    clr_flag_C(Emulator *emulator);
+void set_flag_C(Emulator *emulator);
+void clr_flag_C(Emulator *emulator);
 uint8_t get_flag_V(Emulator *emulator);
-void    set_flag_V(Emulator *emulator);
-void    clr_flag_V(Emulator *emulator);
-
+void set_flag_V(Emulator *emulator);
+void clr_flag_V(Emulator *emulator);
 
 /**
  *   PC-speceific instructions
@@ -65,7 +70,7 @@ void    clr_flag_V(Emulator *emulator);
  * 16 least significant bits, and the rest will be left alone
  */
 uint32_t fetch(Emulator *emulator);
-void     set_PC_addr(Emulator *emulator, uint16_t addr);
+void set_PC_addr(Emulator *emulator, uint16_t addr);
 
 void print_regs(Emulator *emulator);
 void print_mem(Emulator *emulator);
