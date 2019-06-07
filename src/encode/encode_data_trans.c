@@ -24,6 +24,7 @@ Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
 
   if (next->symb == RBracket)
   {
+    next = token_stream_expect(instr, RBracket, "Expecting RBracket for data_trans type instr");
     if (!(next->next))
     {
       // Pre-Indexing with offset 0
@@ -100,7 +101,6 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
 void encode_data_trans_instr_post_indexing(Data_Trans_Instr *encoded, Token_Stream *instr, Token *next)
 {
   encoded->p = 0x0;
-
   if (next->symb == Immediate)
   {
     encoded->i = 0x0;
