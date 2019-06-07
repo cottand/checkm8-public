@@ -15,4 +15,7 @@ uint32_t asr(uint32_t value, uint32_t shift, uint32_t *carry);
 /* Rotate right */
 uint32_t ror(uint32_t value, uint32_t shift, uint32_t *carry);
 
+/* Util used for Encode */
+uint8_t encode_shift_opcode(char *shift);
+
 #endif /* SHIFT_H_ */

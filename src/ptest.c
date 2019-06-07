@@ -4,19 +4,18 @@
 #include "execute.h"
 #include "decode.h"
 #include "token_stream.h"
+#include "symbol_table.h"
 
 int main(int argc, char **argv)
 {
-  char *str = "mov r0,#1";
+ // char *str = "mov r0,#1";
+  Symbol_Table table;
+  st_init(&table);
+  st_insert(&table, "Hello", (uint8_t) 8);
+  uint8_t ret = st_search(&table, "Hello");
+  printf("\n the num is: %x \n", ret);
+  st_free(&table);
 
-  Token_Stream stream;
-  token_stream_init(&stream);
-
-  token_stream_tokenize(&stream, str);
-
-  token_stream_print(&stream);
-
-  token_stream_free(&stream);
 
   return EXIT_SUCCESS;
 }

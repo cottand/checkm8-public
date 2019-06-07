@@ -4,17 +4,18 @@
 #include "encode.h"
 #include <stdio.h>
 #include <string.h>
+#include <byteswap.h>
 
 void parser_init(Parser *parser)
 {
-  parser->labels = st_create();
+  st_init(&parser->labels);
   llist_init(&parser->tokenized_lines);
   llist_init(&parser->constants);
 }
 
 void parser_free(Parser *parser)
 {
-  st_delete(parser->labels);
+  st_free(&parser->labels);
   llist_free(&parser->tokenized_lines);
   llist_free(&parser->constants);
 }
@@ -70,10 +71,11 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
     Instr encoded   = encode_instr(stream);
     uint32_t binary = instr_to_uint32(&encoded);
     instr_free(&encoded);
-
     memcpy((char *) *output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
 
     token_stream_print(stream);
+    
+    printf("%d: %0x\n\n", i, __bswap_32(binary));
     token_stream_free(stream);
     free(stream);
   }
@@ -108,7 +110,7 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
       return;
     }
 
-    uint8_t label_line = st_search(parser->labels, label->value);
+    uint8_t label_line = st_search(&parser->labels, label->value);
 
     /* Compute offset taking into account the pipeline offset */
     int32_t offset = (label_line - line) * sizeof(uint32_t);
@@ -127,7 +129,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
 {
   Token *opcode = token_stream_peak(tokens);
 
-  if (opcode && !strcmp(opcode->value, "ldr"))
+  if (opcode && !strcmp(opcode->value, "ldr") && !strcmp(opcode->next->next->value, "="))
   {
     Token *reg = opcode->next;
     Token *constant = reg->next;
@@ -219,10 +221,9 @@ uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t lin
 
   if (label->next && label->next->symb == Colon)
   {
-    st_insert(parser->labels, label->value, line);
+    st_insert(&parser->labels, label->value, line);
     return 1;
   }
 
   return 0;
 }
-
