@@ -75,6 +75,56 @@ void set_mem(Emulator *emulator, uint16_t addr, uint32_t val)
   }
 }
 
+uint32_t get_io_mem_extension(Emulator *emulator, uint32_t addr)
+{
+  switch (addr)
+  {
+  case 0x2020008:
+    return emulator->mem_ext_io[0];
+    break;
+  case 0x2020004:
+    return emulator->mem_ext_io[1];
+    break;
+  case 0x2020000:
+    return emulator->mem_ext_io[2];
+    break;
+  case 0x2020028:
+    return emulator->mem_ext_io[3];
+    break;
+  case 0x202001C:
+    return emulator->mem_ext_io[4];
+    break;
+
+  default:
+    printf("Out of bounds read memory access for io");
+    break;
+  }
+}
+void set_io_mem_extension(Emulator *emulator, uint32_t addr, uint32_t val)
+{
+  switch (addr)
+  {
+  case 0x2020008:
+    emulator->mem_ext_io[0] = val;
+    break;
+  case 0x2020004:
+    emulator->mem_ext_io[1] = val;
+    break;
+  case 0x2020000:
+    emulator->mem_ext_io[2] = val;
+    break;
+  case 0x2020028:
+    emulator->mem_ext_io[3] = val;
+    break;
+  case 0x202001C:
+    emulator->mem_ext_io[4] = val;
+    break;
+  
+  default:
+    printf("Out of bounds write memory access for io");
+    break;
+  }
+}
 uint8_t get_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit)
 {
   return (emulator->regs[reg] >> bit) & 0x0001;
@@ -216,7 +266,7 @@ void print_regs(Emulator *emulator)
     }
     else if (i != 13 && i != 14)
     {
-      char *name = malloc(5*sizeof(char));
+      char *name = malloc(5 * sizeof(char));
       switch (i)
       {
       /*case 13:

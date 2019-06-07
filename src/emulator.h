@@ -5,6 +5,7 @@
 
 #define REG_COUNT 17
 #define MEM_SIZE 65536
+#define IO_SIZE 5
 
 #define REG_SP 13
 #define REG_LR 14
@@ -20,6 +21,7 @@ typedef struct s_Emulator
 {
   uint32_t regs[REG_COUNT];
   uint8_t mem[MEM_SIZE];
+  uint32_t mem_ext_io[IO_SIZE];
   uint8_t halt;
 } Emulator;
 
@@ -32,6 +34,8 @@ uint8_t get_mem_byte(Emulator *emulator, uint16_t addr);
 uint32_t get_mem(Emulator *emulator, uint16_t addr);
 void    set_mem_byte(Emulator *emulator, uint16_t addr, uint8_t val);
 void set_mem(Emulator *emulator, uint16_t addr, uint32_t val);
+uint32_t get_io_mem_extension(Emulator *emulator, uint32_t addr);
+void set_io_mem_extension(Emulator *emulator, uint32_t addr, uint32_t val);
 
 uint8_t get_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
 void    set_reg_bit(Emulator *emulator, uint8_t reg, uint8_t bit);
