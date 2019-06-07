@@ -4,7 +4,6 @@
 #include "encode.h"
 #include <stdio.h>
 #include <string.h>
-#include <byteswap.h>
 
 void parser_init(Parser *parser)
 {
@@ -74,8 +73,7 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
     memcpy((char *) *output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
 
     token_stream_print(stream);
-    
-    printf("%d: %0x\n\n", i, __bswap_32(binary));
+
     token_stream_free(stream);
     free(stream);
   }
