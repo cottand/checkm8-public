@@ -100,28 +100,6 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
     return 1;
   }
 
-  if (**str == '+')
-  {
-    tok->symb = Sign;
-    tok->value = malloc(sizeof(char) * 2);
-    strcpy(tok->value, "+");
-
-    (*str)++;
-
-    return 1;
-  }
-
-  if (**str == '-')
-  {
-    tok->symb = Sign;
-    tok->value = malloc(sizeof(char) * 2);
-    strcpy(tok->value, "-");
-
-    (*str)++;
-
-    return 1;
-  }
-
   return 0;
 }
 
@@ -237,7 +215,7 @@ char *token_stream_parse_hex(char **str)
 {
   uint8_t char_count = 0;
 
-  while (isxdigit(**str) || **str == 'x')
+  while (isxdigit(**str) || **str == 'x' || **str == '-' || **str == '+')
   {
     char_count++;
     (*str)++;

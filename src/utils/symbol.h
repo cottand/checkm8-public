@@ -12,7 +12,6 @@ typedef enum e_symbol
   LBracket,
   RBracket,
   Colon,
-  Sign
 } symbol;
 
 #endif /* SYMBOL_H_ */

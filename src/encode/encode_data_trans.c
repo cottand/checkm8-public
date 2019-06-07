@@ -72,21 +72,21 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
   {
     // <address> = <rn> with immediate offset of +<offset>
     encoded->i = 0x0;
-    encoded->u = 0x1;
-    encoded->offset = strtoul(next->value, 0, 10);
+    encoded->u = next->value[0] == '-';
+    if (encoded->u)
+    {
+      encoded->offset = encode_immediate(&next->value[1]);
+    }
+    else
+    {
+      encoded->offset = encode_immediate(next->value);
+    }
   }
   if (next->symb == Register)
   {
     // <address> = <rn> with offset of + a shifted register
     encoded->i = 0x1;
     encoded->u = 0x1;
-    encode_data_trans_instr_shifted_register(encoded, instr);
-  }
-  if (next->symb == Sign)
-  {
-    // <address> = <rn> with offset of +/- a shifted register
-    encoded->i = 0x1;
-    encoded->u = !strcmp(next->value, "+") ? 0x1 : 0x0;
     encode_data_trans_instr_shifted_register(encoded, instr);
   }
   if (next->symb == Address)
@@ -111,12 +111,6 @@ void encode_data_trans_instr_post_indexing(Data_Trans_Instr *encoded, Token_Stre
   {
     encoded->i = 0x1;
     encoded->u = 0x1;
-    encode_data_trans_instr_shifted_register(encoded, instr);
-  }
-  if (next->symb == Sign)
-  {
-    encoded->i = 0x1;
-    encoded->u = !strcmp(next->value, "+") ? 0x1 : 0x0;
     encode_data_trans_instr_shifted_register(encoded, instr);
   }
 }
