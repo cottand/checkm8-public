@@ -72,8 +72,8 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
   {
     // <address> = <rn> with immediate offset of +<offset>
     encoded->i = 0x0;
-    encoded->u = next->value[0] == '-';
-    if (encoded->u)
+    encoded->u = !(next->value[0] == '-');
+    if (!encoded->u)
     {
       encoded->offset = encode_immediate(&next->value[1]);
     }
