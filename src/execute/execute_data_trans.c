@@ -29,7 +29,30 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
 
   if (base > MEM_SIZE)
   {
-    printf("Error: Out of bounds memory access at address 0x%08x\n", base);
+    if (base == 0x20200008)
+    {
+      printf("One GPIO pin from 20 to 29 has been accessed\n");
+    }
+    else if (base == 0x20200004)
+    {
+      printf("One GPIO pin from 10 to 19 has been accessed\n");
+    }
+    else if (base == 0x20200000)
+    {
+      printf("One GPIO pin from 0 to 9 has been accessed\n");
+    }
+    else if (base == 0x2020001C)
+    {
+      printf("PIN ON\n");
+    }
+    else if (base == 0x20200028)
+    {
+      printf("PIN OFF\n");
+    }
+    else
+    {
+      printf("Error: Out of bounds memory access at address 0x%08x\n", base);
+    }
     return;
   }
 
