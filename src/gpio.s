@@ -1,9 +1,10 @@
-ldr r7   =0x00FFFFFF 
-ldr r1   =0x00100000 
-ldr r3   =0x20200008 
+ldr r7   =0x00FFFFFF  
+ldr r1   =0x00080000 
+ldr r3   =0x20200004 
 ldr r4   =0x20200028 
 ldr r5   =0x2020001C  
-ldr [r3] =0x00000001     
+orr [r3] [r3] =0x00001000
+and [r3] [r3] =0x11001111
 clear:
 ldr [r4] r1	 
 mov r6   r7     
