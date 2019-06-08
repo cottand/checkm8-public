@@ -102,7 +102,6 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
     {
       return;
     }
-
     uint8_t label_line = st_search(&parser->labels, label->value);
 
     /* Compute offset taking into account the pipeline offset */
@@ -211,7 +210,7 @@ uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t lin
 
   if (label->next && label->next->symb == Colon)
   {
-    st_insert(&parser->labels, label->value, line);
+    st_insert(&parser->labels, label->value, (line - parser->labels.elements));
     return 1;
   }
 
