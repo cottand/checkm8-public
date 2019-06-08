@@ -22,12 +22,12 @@ program:
 
 
 
-ldr r7   =0x00FF FFFF //our fat number???
-ldr r1   =0x0010 0000 //value to be setting
-ldr r3   =0x2020 0008  //set i/o address
+ldr r7   =0x000F FFFF //our fat number???
+ldr r1   =0x0008 0000 //value to be setting
+ldr r3   =0x2020 0004  //set i/o address
 ldr r4   =0x2020 0028  //clear address
 ldr r5   =0x2020 001C  //set address
-ldr [r3] =0x0000 0001     //set p20 as output
+ldr [r3] =0x0800 0000     //set p20 as output
 clear:
 ldr [r4] r1		//clear p20 
 mov r6   r7                 //start loop counter
