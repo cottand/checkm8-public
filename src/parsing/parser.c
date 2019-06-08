@@ -57,9 +57,7 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
   uint8_t total_lines  = llist_size(&parser->tokenized_lines);
   uint8_t total_consts = llist_size(&parser->constants);
 
-  /* We add two lines of 0s to separate the instructions and the constants
-   * otherwise the constants get read as instructions*/
-  *output_size = (total_lines + total_consts + 2) * sizeof(uint32_t);
+  *output_size = (total_lines + total_consts) * sizeof(uint32_t);
   *output = malloc(*output_size);
 
   int i;
@@ -81,11 +79,8 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
     free(stream);
   }
 
-  /* Add two rows of 0s to separate instructions from constants */
-  memset((char *) *output + total_lines * sizeof(uint32_t), 0x0, 2 * sizeof(uint32_t));
-
   /* Add all constants at the end of the file */
-  for (i = total_lines + 2; i < total_lines + total_consts + 2; i++)
+  for (i = total_lines; i < total_lines + total_consts; i++)
   {
     uint32_t *constant = llist_pop_first(&parser->constants);
 
