@@ -1,6 +1,6 @@
 ldr r7   =0x000FFFFF
-ldr r1   =0x00080000
-ldr r3   =0x20200004
+ldr r1   =0x00000200
+ldr r3   =0x20200000
 ldr r4   =0x20200028
 ldr r5   =0x2020001C
 ldr r8   =0x08000000
