@@ -1,5 +1,6 @@
 #include "checkm8.h"
 
-void run()
+int main()
 {
+  return 0;
 }
