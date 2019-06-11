@@ -136,7 +136,7 @@ uint8_t token_stream_tokenize_register(char **str, Token *tok)
     }
 
     tok->symb = Register;
-    tok->value = calloc(char_count + 1, sizeof(char) );
+    tok->value = calloc(char_count + 1, sizeof(char));
 
     size_t size = char_count * sizeof(char);
     strncpy(tok->value, *str - size, size);
@@ -239,7 +239,7 @@ char *token_stream_parse_hex(char **str)
     (*str)++;
   }
 
-  char *ret = malloc(sizeof(char) * char_count + 1);
+  char *ret = calloc(char_count + 1, sizeof(char));
 
   size_t size = char_count * sizeof(char);
   strncpy(ret, *str - size, size);
