@@ -54,7 +54,7 @@ void parser_parse1(Parser *parser, char *file)
 
 void parser_parse2(Parser *parser, void **output, size_t *output_size)
 {
-  uint8_t total_lines  = llist_size(&parser->tokenized_lines);
+  uint8_t total_lines = llist_size(&parser->tokenized_lines);
   uint8_t total_consts = llist_size(&parser->constants);
 
   *output_size = (total_lines + total_consts) * sizeof(uint32_t);
@@ -68,10 +68,10 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
     parser_substitute_for_branch(parser, stream, i);
     parser_substitute_for_constant(parser, stream, i, total_lines);
 
-    Instr encoded   = encode_instr(stream);
+    Instr encoded = encode_instr(stream);
     uint32_t binary = instr_to_uint32(&encoded);
     instr_free(&encoded);
-    memcpy((char *) *output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
+    memcpy((char *)*output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
 
     token_stream_print(stream);
 
@@ -84,7 +84,7 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
   {
     uint32_t *constant = llist_pop_first(&parser->constants);
 
-    memcpy((char *) *output + i * sizeof(uint32_t), constant, sizeof(uint32_t));
+    memcpy((char *)*output + i * sizeof(uint32_t), constant, sizeof(uint32_t));
 
     free(constant);
   }
@@ -206,7 +206,7 @@ void parser_check_for_constant(Parser *parser, Token_Stream *tokens)
 
 uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t line)
 {
-  Token* label = token_stream_peak(tokens);
+  Token *label = token_stream_peak(tokens);
 
   if (label->next && label->next->symb == Colon)
   {

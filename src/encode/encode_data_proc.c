@@ -13,7 +13,7 @@ Data_Proc_Instr *encode_data_proc_instr(Token_Stream *instr)
   char *v = opcode->value;
 
   encoded->cond = 0xe;
-  encoded->s    = 0x0;
+  encoded->s = 0x0;
 
   /* Compute type instructions */
   if (!strcmp(v, "and"))
@@ -113,19 +113,19 @@ void encode_lsl(Data_Proc_Instr *instr, Token_Stream *tokens)
   /* We transform lsl Rn <#expression> into mov Rn Rn lsl <#expression> */
   Token *rd2 = malloc(sizeof(Token));
   token_init(rd2);
-  rd2->symb  = rd->symb;
+  rd2->symb = rd->symb;
   rd2->value = malloc(sizeof(char) * strlen(rd->value) + 1);
   strcpy(rd2->value, rd->value);
 
   Token *lsl = malloc(sizeof(Token));
   token_init(lsl);
-  lsl->symb  = Opcode;
+  lsl->symb = Opcode;
   lsl->value = malloc(sizeof(char) * 4);
   strcpy(lsl->value, "lsl");
 
   rd2->next = lsl;
   lsl->next = rd->next;
-  rd->next  = rd2;
+  rd->next = rd2;
 }
 
 void encode_test(Data_Proc_Instr *instr, Token_Stream *tokens)
@@ -156,7 +156,7 @@ void encode_operand2_immediate(Data_Proc_Instr *instr, Token_Stream *tokens)
   uint32_t val32 = encode_immediate(imm->value);
 
   /* We now make sure the value can be represented with 8 bits max */
-  uint8_t leftmost_bit  = 32 - __builtin_clz(val32);
+  uint8_t leftmost_bit = 32 - __builtin_clz(val32);
   uint8_t rightmost_bit = ffs(val32) - 1;
 
   /* Size in bits of the immediate */
@@ -169,14 +169,14 @@ void encode_operand2_immediate(Data_Proc_Instr *instr, Token_Stream *tokens)
   }
 
   uint8_t rotate = 0x0;
-  uint8_t val8   = val32 & 0xff;
+  uint8_t val8 = val32 & 0xff;
 
   /* If the number isn't in the rightmost 8 bits, we shift it here and compute
    * by how much we have to rotate right after to put it back where it was. */
   if (leftmost_bit > 8)
   {
     rotate = 32 - rightmost_bit;
-    val8   = (val32 >> rightmost_bit) & 0xff;
+    val8 = (val32 >> rightmost_bit) & 0xff;
   }
 
   if (rotate % 2 != 0)
@@ -234,8 +234,8 @@ void encode_operand2_register(Data_Proc_Instr *instr, Token_Stream *tokens)
   {
     Token *imm = token_stream_read(tokens);
 
-    uint8_t shift_type  = encode_shift_opcode(shift->value);
-    uint8_t imm_enc     = encode_immediate(imm->value);
+    uint8_t shift_type = encode_shift_opcode(shift->value);
+    uint8_t imm_enc = encode_immediate(imm->value);
 
     shift_enc = (imm_enc << 3) | (shift_type << 1);
   }

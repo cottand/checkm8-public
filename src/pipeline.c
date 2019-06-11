@@ -35,8 +35,7 @@ void cycle_normal(Pipeline *pipeline)
   pipeline->executing = pipeline->decoded;
   exec_instr(pipeline->emulator, &(pipeline->executing));
   cycle_after_jump(pipeline);
-  if (pipeline->executing.type == Branch
-   && is_cond_true(pipeline->emulator, pipeline->executing.branch_instr->cond))
+  if (pipeline->executing.type == Branch && is_cond_true(pipeline->emulator, pipeline->executing.branch_instr->cond))
   {
     pipeline->current_state = Half;
   }

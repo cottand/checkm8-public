@@ -39,13 +39,13 @@ Data_Proc_Instr *decode_data_proc_instr(uint32_t instr)
 {
   Data_Proc_Instr *decoded = malloc(sizeof(Data_Proc_Instr));
 
-  decoded->cond       = instr >> 28;
-  decoded->i          = instr >> 25;
-  decoded->opcode     = instr >> 21;
-  decoded->s          = instr >> 20;
-  decoded->rn         = instr >> 16;
-  decoded->rd         = instr >> 12;
-  decoded->operand_2  = instr >> 0;
+  decoded->cond = instr >> 28;
+  decoded->i = instr >> 25;
+  decoded->opcode = instr >> 21;
+  decoded->s = instr >> 20;
+  decoded->rn = instr >> 16;
+  decoded->rd = instr >> 12;
+  decoded->operand_2 = instr >> 0;
 
   return decoded;
 }
@@ -55,12 +55,12 @@ Mul_Instr *decode_mul_instr(uint32_t instr)
   Mul_Instr *decoded = malloc(sizeof(Mul_Instr));
 
   decoded->cond = instr >> 28;
-  decoded->a    = instr >> 21;
-  decoded->s    = instr >> 20;
-  decoded->rd   = instr >> 16;
-  decoded->rn   = instr >> 12;
-  decoded->rs   = instr >> 8;
-  decoded->rm   = instr >> 0;
+  decoded->a = instr >> 21;
+  decoded->s = instr >> 20;
+  decoded->rd = instr >> 16;
+  decoded->rn = instr >> 12;
+  decoded->rs = instr >> 8;
+  decoded->rm = instr >> 0;
 
   return decoded;
 }
@@ -69,13 +69,13 @@ Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 {
   Data_Trans_Instr *decoded = malloc(sizeof(Data_Trans_Instr));
 
-  decoded->cond   = instr >> 28;
-  decoded->i      = instr >> 25;
-  decoded->p      = instr >> 24;
-  decoded->u      = instr >> 23;
-  decoded->l      = instr >> 20;
-  decoded->rn     = instr >> 16;
-  decoded->rd     = instr >> 12;
+  decoded->cond = instr >> 28;
+  decoded->i = instr >> 25;
+  decoded->p = instr >> 24;
+  decoded->u = instr >> 23;
+  decoded->l = instr >> 20;
+  decoded->rn = instr >> 16;
+  decoded->rd = instr >> 12;
   decoded->offset = instr >> 0;
 
   return decoded;
@@ -84,7 +84,7 @@ Data_Trans_Instr *decode_data_trans_instr(uint32_t instr)
 Branch_Instr *decode_branch_instr(uint32_t instr)
 {
   Branch_Instr *decoded = malloc(sizeof(Branch_Instr));
-  decoded->cond  = instr >> 28;
+  decoded->cond = instr >> 28;
   // Since offset 24 bits and instr, instr will be auto truncated as desired.
   decoded->offset = instr;
 

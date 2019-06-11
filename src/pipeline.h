@@ -23,7 +23,6 @@ typedef struct s_Pipeline
   uint16_t addresses_bottom_to_top[3];
 } Pipeline;
 
-
 void pipeline_init(Pipeline *pipeline, Emulator *emulator);
 
 void cycle_p(Pipeline *pipeline);
