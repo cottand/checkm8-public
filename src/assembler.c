@@ -7,7 +7,7 @@
 void assemble(char *src_path, char *dst_path)
 {
   uint32_t src_size = get_filesize(src_path);
-  void *src = malloc(src_size + 1);
+  void *src = calloc(1, src_size + 1);
   load(src_path, src);
 
   void *output = 0;
