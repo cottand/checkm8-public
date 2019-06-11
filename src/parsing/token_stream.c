@@ -45,12 +45,30 @@ void token_stream_tokenize(Token_Stream *stream, char *str, uint8_t line)
     token_init(curr);
     curr->line = line;
 
-    if (token_stream_tokenize_char(&str, curr))      { continue; }
-    if (token_stream_tokenize_register(&str, curr))  { continue; }
-    if (token_stream_tokenize_immediate(&str, curr)) { continue; }
-    if (token_stream_tokenize_address(&str, curr))   { continue; }
-    if (token_stream_tokenize_constant(&str, curr))  { continue; }
-    if (token_stream_tokenize_opcode(&str, curr))    { continue; }
+    if (token_stream_tokenize_char(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_register(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_immediate(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_address(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_constant(&str, curr))
+    {
+      continue;
+    }
+    if (token_stream_tokenize_opcode(&str, curr))
+    {
+      continue;
+    }
 
     free(curr->next);
     curr = prev;
@@ -69,7 +87,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
 
   if (**str == '[')
   {
-    tok->symb  = LBracket;
+    tok->symb = LBracket;
     tok->value = malloc(sizeof(char) * 2);
     strcpy(tok->value, "[");
 
@@ -80,7 +98,7 @@ uint8_t token_stream_tokenize_char(char **str, Token *tok)
 
   if (**str == ']')
   {
-    tok->symb  = RBracket;
+    tok->symb = RBracket;
     tok->value = malloc(sizeof(char) * 2);
     strcpy(tok->value, "]");
 
@@ -117,8 +135,8 @@ uint8_t token_stream_tokenize_register(char **str, Token *tok)
       (*str)++;
     }
 
-    tok->symb  = Register;
-    tok->value = malloc(sizeof(char) * char_count + 1);
+    tok->symb = Register;
+    tok->value = calloc(char_count + 1, sizeof(char) );
 
     size_t size = char_count * sizeof(char);
     strncpy(tok->value, *str - size, size);
@@ -179,7 +197,7 @@ uint8_t token_stream_tokenize_constant(char **str, Token *tok)
   {
     (*str)++;
 
-    tok->symb  = Constant;
+    tok->symb = Constant;
     tok->value = token_stream_parse_hex(str);
 
     return 1;
@@ -199,8 +217,8 @@ uint8_t token_stream_tokenize_opcode(char **str, Token *tok)
       (*str)++;
     }
 
-    tok->symb  = Opcode;
-    tok->value = malloc(sizeof(char) * char_count + 1);
+    tok->symb = Opcode;
+    tok->value = calloc(char_count + 1, sizeof(char));
 
     size_t size = char_count * sizeof(char);
     strncpy(tok->value, *str - size, size);
@@ -272,7 +290,10 @@ uint8_t token_stream_tokens_left(Token_Stream *stream)
 
 void token_stream_print(Token_Stream *stream)
 {
-  if (!stream->first_tok) { return; }
+  if (!stream->first_tok)
+  {
+    return;
+  }
 
   printf("Token stream:\n");
   Token *curr = stream->first_tok->next;
