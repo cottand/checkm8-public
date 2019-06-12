@@ -4,15 +4,15 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-void instr_init(Instr* instr)
+void instr_init(Instr *instr)
 {
-  instr->data_proc_instr  = 0;
-  instr->mul_instr        = 0;
+  instr->data_proc_instr = 0;
+  instr->mul_instr = 0;
   instr->data_trans_instr = 0;
-  instr->branch_instr     = 0;
+  instr->branch_instr = 0;
 }
 
-void instr_free(Instr* instr)
+void instr_free(Instr *instr)
 {
   if (instr->data_proc_instr)
   {
@@ -102,7 +102,7 @@ uint32_t branch_instr_to_uint32(Branch_Instr *instr)
 {
   uint32_t bin = instr->cond << 28;
   bin |= 0xa << 24;
-  bin |= ((uint32_t) instr->offset) & 0x00ffffff;
+  bin |= ((uint32_t)instr->offset) & 0x00ffffff;
 
   return bin;
 }

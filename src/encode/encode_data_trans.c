@@ -24,6 +24,7 @@ Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
 
   if (next->symb == RBracket)
   {
+    next = token_stream_expect(instr, RBracket, "Expecting RBracket for data_trans type instr");
     if (!(next->next))
     {
       // Pre-Indexing with offset 0
@@ -72,8 +73,15 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
   {
     // <address> = <rn> with immediate offset of +<offset>
     encoded->i = 0x0;
-    encoded->u = 0x1;
-    encoded->offset = strtoul(next->value, 0, 10);
+    encoded->u = !(next->value[0] == '-');
+    if (!encoded->u)
+    {
+      encoded->offset = encode_immediate(&next->value[1]);
+    }
+    else
+    {
+      encoded->offset = encode_immediate(next->value);
+    }
   }
   if (next->symb == Register)
   {
@@ -82,19 +90,17 @@ void encode_data_trans_instr_pre_indexing(Data_Trans_Instr *encoded, Token_Strea
     encoded->u = 0x1;
     encode_data_trans_instr_shifted_register(encoded, instr);
   }
-  if (next->symb == Sign)
+  if (next->symb == Address)
   {
-    // <address> = <rn> with offset of +/- a shifted register
-    encoded->i = 0x1;
-    encoded->u = !strcmp(next->value, "+") ? 0x1 : 0x0;
-    encode_data_trans_instr_shifted_register(encoded, instr);
+    encoded->u = 0x1;
+    encoded->i = 0x0;
+    encoded->offset = strtoul(next->value, 0, 16);
   }
 }
 
 void encode_data_trans_instr_post_indexing(Data_Trans_Instr *encoded, Token_Stream *instr, Token *next)
 {
   encoded->p = 0x0;
-
   if (next->symb == Immediate)
   {
     encoded->i = 0x0;
@@ -105,12 +111,6 @@ void encode_data_trans_instr_post_indexing(Data_Trans_Instr *encoded, Token_Stre
   {
     encoded->i = 0x1;
     encoded->u = 0x1;
-    encode_data_trans_instr_shifted_register(encoded, instr);
-  }
-  if (next->symb == Sign)
-  {
-    encoded->i = 0x1;
-    encoded->u = !strcmp(next->value, "+") ? 0x1 : 0x0;
     encode_data_trans_instr_shifted_register(encoded, instr);
   }
 }

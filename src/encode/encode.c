@@ -41,7 +41,7 @@ Instr encode_instr(Token_Stream *instr)
 
 instr_type get_instr_type_from_tok(Token *tok)
 {
-  char* v = tok->value;
+  char *v = tok->value;
 
   if (!strcmp(v, "add") || !strcmp(v, "sub") ||
       !strcmp(v, "rsb") || !strcmp(v, "and") ||
@@ -62,7 +62,6 @@ instr_type get_instr_type_from_tok(Token *tok)
   {
     return Data_Trans;
   }
-
 
   if (!strcmp(v, "beq") || !strcmp(v, "bne") ||
       !strcmp(v, "bge") || !strcmp(v, "blt") ||

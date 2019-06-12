@@ -27,11 +27,6 @@ void exec_data_trans_instr(Emulator *emulator, Data_Trans_Instr *instr)
     base = instr->u ? base + offset : base - offset;
   }
 
-  if (base > MEM_SIZE)
-  {
-    printf("Error: Out of bounds memory access at address 0x%08x\n", base);
-    return;
-  }
 
   uint32_t dst_src = emulator->regs[instr->rd];
 

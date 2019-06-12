@@ -59,7 +59,7 @@ void parser_parse1(Parser *parser, char *file)
 
 void parser_parse2(Parser *parser, void **output, size_t *output_size)
 {
-  uint8_t total_lines  = llist_size(&parser->tokenized_lines);
+  uint8_t total_lines = llist_size(&parser->tokenized_lines);
   uint8_t total_consts = llist_size(&parser->constants);
 
   *output_size = (total_lines + total_consts) * sizeof(uint32_t);
@@ -70,12 +70,13 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
   {
     Token_Stream *stream = llist_pop_first(&parser->tokenized_lines);
 
-    parser_do_substitutions(parser, stream, i);
+    parser_substitute_for_branch(parser, stream, i);
+    parser_substitute_for_constant(parser, stream, i, total_lines);
 
-    Instr encoded   = encode_instr(stream);
+    Instr encoded = encode_instr(stream);
     uint32_t binary = instr_to_uint32(&encoded);
     instr_free(&encoded);
-    memcpy((char *) *output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
+    memcpy((char *)*output + i * sizeof(uint32_t), &binary, sizeof(uint32_t));
 
     token_stream_print(stream);
 
@@ -88,16 +89,10 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
   {
     uint32_t *constant = llist_pop_first(&parser->constants);
 
-    memcpy((char *) *output + i * sizeof(uint32_t), constant, sizeof(uint32_t));
+    memcpy((char *)*output + i * sizeof(uint32_t), constant, sizeof(uint32_t));
 
     free(constant);
   }
-}
-
-void parser_do_substitutions(Parser *parser, Token_Stream *tokens, uint8_t line)
-{
-  parser_substitute_for_branch(parser, tokens, line);
-  parser_substitute_for_constant(parser, tokens, line);
 }
 
 void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t line)
@@ -112,7 +107,6 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
     {
       return;
     }
-
     uint8_t label_line = st_search(&parser->labels, label->value);
 
     /* Compute offset taking into account the pipeline offset */
@@ -128,11 +122,11 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
   }
 }
 
-void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line)
+void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line, uint8_t total_lines)
 {
   Token *opcode = token_stream_peak(tokens);
 
-  if (opcode && !strcmp(opcode->value, "ldr") && !strcmp(opcode->next->next->value, "="))
+  if (opcode && !strcmp(opcode->value, "ldr") && opcode->next->next->symb == Constant)
   {
     Token *reg = opcode->next;
     Token *constant = reg->next;
@@ -140,8 +134,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     uint8_t const_no;
     memcpy(&const_no, constant->value, sizeof(uint8_t));
 
-    uint8_t line_count = llist_size(&parser->tokenized_lines);
-    uint8_t offset = (line_count + const_no) * sizeof(uint32_t);
+    uint8_t offset = (total_lines + const_no - line) * sizeof(uint32_t);
     offset -= 2 * sizeof(uint32_t);
 
     /* Now reformat the instruction */
@@ -220,11 +213,11 @@ void parser_check_for_constant(Parser *parser, Token_Stream *tokens)
 
 uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t line)
 {
-  Token* label = token_stream_peak(tokens);
+  Token *label = token_stream_peak(tokens);
 
   if (label->next && label->next->symb == Colon)
   {
-    st_insert(&parser->labels, label->value, line);
+    st_insert(&parser->labels, label->value, (line - parser->labels.elements));
     return 1;
   }
 

@@ -1,0 +1,48 @@
+set memaddr to write 001
+0x2020 0008 xx  xx xx xx
+0x2020 0028 clears
+0x2020 001C sets
+
+set pin 20 as input:
+write xxx....001 to 0x2020 008 set pin 20 as out
+wirte 1 into bit 20 at 0x2020 0028 to clear p20
+write 1 into bit 20 at 0x2020 001C to set p20 ie you can also just write 0x0010 0000
+
+
+program:
+ set p20 as out
+ r3 = BIG_NUM
+ clear p20
+ decrement r3
+ if r3 != 0 jump [-1]
+ set p20
+ r3 = BIG_NUM
+ if r3 != 0 jump [-1]
+ jump [-7]
+
+
+
+ldr r7   =0x000F FFFF //our fat number???
+ldr r1   =0x0008 0000 //value to be setting
+ldr r3   =0x2020 0004  //set i/o address
+ldr r4   =0x2020 0028  //clear address
+ldr r5   =0x2020 001C  //set address
+ldr [r3] =0x0800 0000     //set p20 as output
+clear:
+ldr [r4] r1		//clear p20 
+mov r6   r7                 //start loop counter
+loop1:
+sub r6	 r6	 #1		//decrement
+cmp r6   #0
+bne loop1
+ldr [r5] r1 		//set p20
+mov r6   r7                 //start loop counter
+loop2:
+sub r6	 r6	 #1		//decrement
+cmp r6   #0
+bne loop2
+b clear
+
+
+
+
