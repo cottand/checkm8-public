@@ -9,7 +9,7 @@ typedef enum e_Color
   Black
 } Color;
 
-typedef enum e_Piece
+typedef enum e_Piece_Type
 {
   None,
   Pawn,
@@ -18,6 +18,12 @@ typedef enum e_Piece
   Bishop,
   Queen,
   King
+} Piece_Type;
+
+typedef struct s_Piece
+{
+  Piece_Type type;
+  Color color;
 } Piece;
 
 typedef struct s_Cell
