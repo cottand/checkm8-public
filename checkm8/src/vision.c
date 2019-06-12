@@ -48,12 +48,39 @@ void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
   }
 }
 
+CvRect **get_cells(float *topLeft, float *bottomRight)
+{
+  CvRect **cells = malloc(8 * sizeof(CvRect *));
+
+  int width = bottomRight[0] - topLeft[0];
+  int height = bottomRight[1] - topLeft[1];
+  int cell_width = width / 8;
+  int cell_height = height / 8;
+
+  for(int i = 0; i < 8; i++)
+  {
+    cells[i] = malloc(8 * sizeof(CvRect));
+    for (int j = 0; j < 8; j++)
+    {
+      cells[i][j] = cvRect(topLeft[0]+j*cell_width, topLeft[1]+i*cell_height, cell_width, cell_height);
+    }
+  }
+  return cells;
+}
+
+IplImage *get_cell(IplImage *board, CvRect **cells, int row, int column)
+{
+  cvResetImageROI(board);
+  cvSetImageROI(board, cells[row][column]);
+  return board;
+}
+
 int main()
 {
   // Loading image
-  IplImage *image = cvLoadImage("images/chessboard.jpg", CV_WINDOW_AUTOSIZE);
+  IplImage *original = cvLoadImage("images/chessboard.jpg", CV_WINDOW_AUTOSIZE);
 
-  IplImage *thresholded = get_thresholded_image(image);
+  IplImage *thresholded = get_thresholded_image(original);
 
   // Creating Memory Storage
   CvMemStorage *storage = cvCreateMemStorage(0);
@@ -62,29 +89,20 @@ int main()
   CvSeq *circles = NULL;
 
   circles = cvHoughCircles(thresholded, storage, CV_HOUGH_GRADIENT, 1, 50, 10, 10, 0, 500);
+  cvReleaseImage(&thresholded);
 
   // Determine which circle is topLeft and which is bottomRight
-  float *topLeft, *bottomRight;
+  float *topLeft;
+  float *bottomRight;
   get_corners(circles, &topLeft, &bottomRight);
 
-  topLeft[0] += topLeft[2];
-  topLeft[1] += topLeft[2];
+  IplImage *board = cvCreateImage(cvGetSize(original), 8, 1);
+  cvCvtColor(original, board, CV_BGR2GRAY);
+  cvReleaseImage(&original);
 
-  bottomRight[0] -= bottomRight[2];
-  bottomRight[1] -= bottomRight[2];
+  CvRect **cells = get_cells(topLeft, bottomRight);
 
-  int width = bottomRight[0] - topLeft[0];
-  int height = bottomRight[1] - topLeft[1];
-
-
-  //int cell_width = width / 8;
-  //int cell_height = height / 8;
-
-  cvSetImageROI(image, cvRect(topLeft[0], topLeft[1], width, height));
-
-  // Printing image
-  cvShowImage("Original", image);
+  cvShowImage("cells[7][7]", get_cell(board, cells, 7, 7));
   cvWaitKey(0);
-  cvReleaseImage(&image);
   cvDestroyAllWindows();
 }
