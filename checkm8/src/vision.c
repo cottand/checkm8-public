@@ -17,6 +17,22 @@ IplImage *get_thresholded_image(IplImage *img)
   return thresholded_img;
 }
 
+void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
+{
+  float *point1 = (float *)cvGetSeqElem(elems, 0);
+  float *point2 = (float *)cvGetSeqElem(elems, 1);
+  if (point1[0] < point2[0])
+  {
+    *topLeft = point1;
+    *bottomRight = point2;
+  }
+  else
+  {
+    *topLeft = point2;
+    *bottomRight = point1;
+  }
+}
+
 int main()
 {
   // Loading image
@@ -32,13 +48,13 @@ int main()
 
   circles = cvHoughCircles(thresholded, storage, CV_HOUGH_GRADIENT, 1, 50, 10, 10, 0, 500);
 
-  // TODO: Differentiate topLeft and bottomRight
-  float *topLeft = (float *)cvGetSeqElem(circles, 0);
-  float *bottomRight = (float *)cvGetSeqElem(circles, 1);
+  // Determine which circle is topLeft and which is bottomRight
+  float *topLeft, *bottomRight;
+  get_corners(circles, &topLeft, &bottomRight);
 
   topLeft[0] += topLeft[2];
   topLeft[1] += topLeft[2];
-  
+
   bottomRight[0] -= bottomRight[2];
   bottomRight[1] -= bottomRight[2];
 
@@ -47,7 +63,7 @@ int main()
 
 
   //int cell_width = width / 8;
- // int cell_height = height / 8;
+  //int cell_height = height / 8;
 
   cvSetImageROI(image, cvRect(topLeft[0], topLeft[1], width, height));
 
