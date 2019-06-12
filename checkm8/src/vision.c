@@ -31,6 +31,11 @@ void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
     *topLeft = point2;
     *bottomRight = point1;
   }
+
+  *topLeft[0] += *topLeft[2];
+  *topLeft[1] += *topLeft[2];
+  *bottomRight[0] -= *bottomRight[2];
+  *bottomRight[1] -= *bottomRight[2];
 }
 
 int main()
