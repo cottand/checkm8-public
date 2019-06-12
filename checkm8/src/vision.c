@@ -97,6 +97,14 @@ float get_empty_std_dev(IplImage *board, CvRect **cells)
   return dev;
 }
 
+float get_cell_std_dev(IplImage *board, CvRect **cells, int row, int col)
+{
+  CvScalar mean, std_dev;
+  cvAvgSdv(get_cell(board, cells, row, col), &mean, &std_dev, NULL);
+
+  return std_dev.val[0];
+}
+
 int main()
 {
   // Loading image
