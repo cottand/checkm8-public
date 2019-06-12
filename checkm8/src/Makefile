@@ -9,23 +9,23 @@ CLIBS		 = $(HEADERS) -L/usr/local/lib64 -lopencv_core -lopencv_highgui -lopencv_
 
 all: vision
 
-checkm8: main.c checkm8.o board.o cell.o
-	$(CC) $(CFLAGS) main.c checkm8.o cell.o -o checkm8
+checkm8: main.c checkm8.o board.o cell.o board.o
+	$(CC) $(CFLAGS) $^ -o $@
 
 ptest: ptest.c checkm8.o board.o cell.o
-	$(CC) $(CFLAGS) ptest.c checkm8.o board.o cell.o -o ptest
+	$(CC) $(CFLAGS) $^ -o $@
 
 checkm8.o : checkm8.c
-	$(CC) $(CFLAGS) checkm8.c -c -o checkm8.o
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 board.o: board.c
-	$(CC) $(CFLAGS) board.c -c -o board.o
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 cell.o: cell.c
-	$(CC) $(CFLAGS) cell.c -c -o cell.o
+	$(CC) $(CFLAGS)  -c $^ -o $@
 
 vision: vision.c
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean:
 	rm -f $(wildcard *.o)
