@@ -1,11 +1,11 @@
 CC       = gcc
-CLIBS	 = -Iinstruction -Iutils -I.
-ASSLIBS  = -Iencode -Iparsing 
-EMLIBS	 = -Idecode -Iexecute 
+CLIBS    = -Iinstruction -Iutils -I.
+ASSLIBS  = -Iencode -Iparsing
+EMLIBS   = -Idecode -Iexecute
 CFLAGS   = $(CLIBS) -Wall -g -std=c99 -Werror -pedantic -Ofast
 ASSFLAGS = $(CFLAGS) $(ASSLIBS)
-EMFLAGS	 = $(CFLAGS) $(EMLIBS) 
-TFLAGS	 = $(CFLAGS) $(EMLIBS) $(ASSLIBS)
+EMFLAGS  = $(CFLAGS) $(EMLIBS)
+TFLAGS   = $(CFLAGS) $(EMLIBS) $(ASSLIBS)
 
 .SUFFIXES: .c .o
 
@@ -13,11 +13,14 @@ TFLAGS	 = $(CFLAGS) $(EMLIBS) $(ASSLIBS)
 
 all: assemble emulate
 
-assemble: assemble.c assembler.o libparse.a libencode.a libinstruction.a libutils.a 
+assemble: assemble.c assembler.o libparse.a libencode.a libinstruction.a libutils.a
 	$(CC)  $^ -o assemble $(ASSFLAGS)
 
 emulate: emulate.c emulator.o pipeline.o libdecode.a libinstruction.a libexecute.a libutils.a
 	$(CC) $^ -o emulate  $(EMFLAGS)
+
+ptest: ptest.c emulator.o pipeline.o libdecode.a libinstruction.a libexecute.a libutils.a libparse.a
+	$(CC) $(TFLAGS) $^ -o $@
 
 libencode.a: $(wildcard ./encode/*.c) $(wildcard ./encode/*.h)
 	make -C encode
@@ -37,9 +40,6 @@ libutils.a: $(wildcard ./utils/*.c) $(wildcard ./utils/*.h)
 libexecute.a: $(wildcard ./execute/*.c) $(wildcard ./execute/*.h)
 	make -C execute
 
-ptest: ptest.c emulator.o assembler.o pipeline.o
-	$(CC) $(TFLAGS) $^ -o $@
-
 emulator.o: emulator.c
 	$(CC) $(EMFLAGS) emulator.c -c -o emulator.o
 
@@ -55,9 +55,9 @@ clean:
 	rm -f assemble
 	rm -f emulate
 	rm -f ptest
-	cd decode;	make clean
-	cd encode;	make clean
-	cd execute;	make clean
-	cd instruction;	make clean
+	cd decode; make clean
+	cd encode; make clean
+	cd execute; make clean
+	cd instruction; make clean
 	cd parsing;	make clean
 	cd utils;	make clean
