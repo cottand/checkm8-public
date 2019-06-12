@@ -46,6 +46,11 @@ void parser_parse1(Parser *parser, char *file)
     {
       llist_add(&parser->tokenized_lines, stream);
     }
+    else
+    {
+      token_stream_free(stream);
+      free(stream);
+    }
 
     line = strtok(0, "\n");
     line_nb++;
