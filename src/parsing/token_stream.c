@@ -29,9 +29,6 @@ void token_stream_tokenize(Token_Stream *stream, char *str, uint8_t line)
 {
   Token *curr = malloc(sizeof(Token));
   token_init(curr);
-  curr->line = line;
-
-  Token *prev = NULL;
 
   /* First token acts as dummy token */
   stream->first_tok = curr;
@@ -39,39 +36,33 @@ void token_stream_tokenize(Token_Stream *stream, char *str, uint8_t line)
 
   while (*str)
   {
-    curr->next = malloc(sizeof(Token));
-    prev = curr;
-    curr = curr->next;
+    if (curr)
+    {
+      curr->next = malloc(sizeof(Token));
+      curr = curr->next;
+    }
+    else
+    {
+      curr = malloc(sizeof(Token));
+    }
+
     token_init(curr);
     curr->line = line;
 
-    if (token_stream_tokenize_char(&str, curr))
-    {
-      continue;
-    }
-    if (token_stream_tokenize_register(&str, curr))
-    {
-      continue;
-    }
-    if (token_stream_tokenize_immediate(&str, curr))
-    {
-      continue;
-    }
-    if (token_stream_tokenize_address(&str, curr))
-    {
-      continue;
-    }
-    if (token_stream_tokenize_constant(&str, curr))
-    {
-      continue;
-    }
-    if (token_stream_tokenize_opcode(&str, curr))
-    {
-      continue;
-    }
+    if (token_stream_tokenize_char(&str, curr))       { continue; }
+    if (token_stream_tokenize_register(&str, curr))   { continue; }
+    if (token_stream_tokenize_immediate(&str, curr))  { continue; }
+    if (token_stream_tokenize_address(&str, curr))    { continue; }
+    if (token_stream_tokenize_constant(&str, curr))   { continue; }
+    if (token_stream_tokenize_opcode(&str, curr))     { continue; }
 
-    free(curr->next);
-    curr = prev;
+    free(curr);
+    curr = 0;
+  }
+
+  if (!strcmp(curr->value, ""))
+  {
+    free(curr);
   }
 }
 
@@ -297,11 +288,6 @@ void token_stream_print(Token_Stream *stream)
 
   printf("Token stream:\n");
   Token *curr = stream->first_tok->next;
-
-  if (!curr)
-  {
-    return;
-  }
 
   while (curr)
   {

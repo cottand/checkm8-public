@@ -46,6 +46,11 @@ void parser_parse1(Parser *parser, char *file)
     {
       llist_add(&parser->tokenized_lines, stream);
     }
+    else
+    {
+      token_stream_free(stream);
+      free(stream);
+    }
 
     line = strtok(0, "\n");
     line_nb++;
@@ -151,14 +156,16 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
     pc->value = malloc(sizeof(char) * 3);
     strcpy(pc->value, "15");
 
-    constant->symb = Address;
-    constant->value = realloc(constant->value, sizeof(char) * 11);
-    sprintf(constant->value, "0x%x", offset);
+    Token *offset_tok = malloc(sizeof(Token));
+    token_init(offset_tok);
+    offset_tok->symb = Address;
+    offset_tok->value = malloc(sizeof(char) * 11);
+    sprintf(offset_tok->value, "0x%x", offset);
 
     reg->next = lbracket;
     lbracket->next = pc;
-    pc->next = constant;
-    constant->next = rbracket;
+    pc->next = offset_tok;
+    offset_tok->next = rbracket;
   }
 }
 
