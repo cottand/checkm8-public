@@ -10,7 +10,7 @@ static void initialize_pawns(Board *board, uint8_t row, Color piece_color);
 void board_init(Board *board)
 {
   uint8_t cell_count = 8 * 8;
-  board->cells = malloc(sizeof(Cell*) * cell_count);
+  board->cells = malloc(sizeof(Cell) * cell_count);
 
   /* Initialize colors */
   for (int i = 0; i < cell_count; i++)
