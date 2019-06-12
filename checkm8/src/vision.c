@@ -17,25 +17,35 @@ IplImage *get_thresholded_image(IplImage *img)
   return thresholded_img;
 }
 
+void get_empty_std_dev(CvRect **cells)
+{
+
+}
+
 void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
 {
   float *point1 = (float *)cvGetSeqElem(elems, 0);
   float *point2 = (float *)cvGetSeqElem(elems, 1);
   if (point1[0] < point2[0])
   {
+    point1[0] += point1[2];
+    point1[1] += point1[2];
+    point2[0] -= point2[2];
+    point2[1] -= point2[2];
+
     *topLeft = point1;
     *bottomRight = point2;
   }
   else
   {
+    point2[0] += point2[2];
+    point2[1] += point2[2];
+    point1[0] -= point1[2];
+    point1[1] -= point1[2];
+
     *topLeft = point2;
     *bottomRight = point1;
   }
-
-  *topLeft[0] += *topLeft[2];
-  *topLeft[1] += *topLeft[2];
-  *bottomRight[0] -= *bottomRight[2];
-  *bottomRight[1] -= *bottomRight[2];
 }
 
 int main()
