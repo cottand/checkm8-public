@@ -17,11 +17,6 @@ IplImage *get_thresholded_image(IplImage *img)
   return thresholded_img;
 }
 
-void get_empty_std_dev(CvRect **cells)
-{
-
-}
-
 void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
 {
   float *point1 = (float *)cvGetSeqElem(elems, 0);
@@ -73,6 +68,33 @@ IplImage *get_cell(IplImage *board, CvRect **cells, int row, int column)
   cvResetImageROI(board);
   cvSetImageROI(board, cells[row][column]);
   return board;
+}
+
+float get_empty_std_dev(IplImage *board, CvRect **cells)
+{
+  float dev = 0.0f;
+
+  CvScalar mean, std_dev;
+  cvAvgSdv(get_cell(board, cells, 2, 0), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 2, 1), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 5, 0), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 5, 1), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 2, 6), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 2, 7), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 5, 6), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+  cvAvgSdv(get_cell(board, cells, 5, 7), &mean, &std_dev, NULL);
+  dev += std_dev.val[0];
+
+  dev /= 8.0f;
+
+  return dev;
 }
 
 int main()
