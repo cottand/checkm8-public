@@ -7,7 +7,9 @@
 #include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/videoio/videoio_c.h>
 
-#define URL "http://146.169.211.105:8080"
+#define URL "http://146.169.198.228:8080"
+
+#define PADDING 0.00
 
 static IplImage *get_image_from_camera(void)
 {
@@ -15,6 +17,12 @@ static IplImage *get_image_from_camera(void)
   snprintf(python_request, 60, "python python/read_stream.py %s", URL);
   system(python_request);
   IplImage *image = cvLoadImage("images/chessboard.jpg", CV_WINDOW_AUTOSIZE);
+  return image;
+}
+
+static IplImage *get_image_from_path(char *path)
+{
+  IplImage *image = cvLoadImage(path, CV_WINDOW_AUTOSIZE);
   return image;
 }
 
@@ -66,15 +74,19 @@ static CvRect **get_cells(float *topLeft, float *bottomRight)
   int cell_width = width / 8;
   int cell_height = height / 8;
 
-  float padding_x = 0.03 * width;
-  float padding_y = 0.03 * height;
+  float padding_x = PADDING * cell_width;
+  float padding_y = PADDING * cell_height;
 
   for (int i = 0; i < 8; i++)
   {
     cells[i] = malloc(8 * sizeof(CvRect));
     for (int j = 0; j < 8; j++)
     {
-      cells[i][j] = cvRect(topLeft[0] + j * cell_width + padding_x, topLeft[1] + i * cell_height + padding_y, cell_width - 2 * padding_x, cell_height - 2 * padding_y);
+      int pos_x = topLeft[0] + j * cell_width + padding_x;
+      int pos_y = topLeft[1] + i * cell_height + padding_y;
+      int wid = cell_width - 2 * padding_x;
+      int hei = cell_height - 2 * padding_y;
+      cells[i][j] = cvRect(pos_x, pos_y , wid, hei);
     }
   }
   return cells;
@@ -126,7 +138,7 @@ bool is_cell_empty_std_dev(Vision_State *vision_state, int row, int column)
 {
   float std_dev_cell = get_cell_std_dev(vision_state, row, column);
 
-  return fabs(std_dev_cell - vision_state->std_dev_empty) <= 5;
+  return fabs(std_dev_cell - vision_state->std_dev_empty) <= 05;
 }
 
 bool is_cell_empty_circles(Vision_State *vision_state, int row, int column)
@@ -147,6 +159,11 @@ bool is_cell_empty_circles(Vision_State *vision_state, int row, int column)
   return circles->total == 0;
 }
 
+bool is_cell_empty_substraction(Vision_State *vision_state, int row, int column)
+{
+  return false;
+}
+
 bool is_cell_empty(Vision_State *vision_state, int row, int column)
 {
   return is_cell_empty_std_dev(vision_state, row, column);
@@ -164,6 +181,7 @@ static void vision_state_init(IplImage *file, Vision_State *vision_state)
 
   CvSeq *markers = NULL;
   markers = cvHoughCircles(thresholded, tmp_storage, CV_HOUGH_GRADIENT, 1, 50, 10, 10, 0, 500);
+  printf("Found %d markers\n", markers->total);
 
   float *top_left;
   float *bottom_right;
@@ -199,7 +217,7 @@ Vision_Change get_vision_change(Vision *vision)
   Vision_Change vision_change;
   vision_change.emptied_cell[0] = -1;
   vision_change.emptied_cell[1] = -1;
-  vision_change.filled_cell[0] = -1;
+  vision_change.filled_cell[0] = -1; //scanf("");
   vision_change.filled_cell[1] = -1;
   // TODO: Array of 2 elements to keep i and j !
   for (int i = 0; i < 8; i++)
@@ -218,8 +236,9 @@ Vision_Change get_vision_change(Vision *vision)
       CvScalar mean, std_dev;
       cvAvgSdv(subtraction, &mean, &std_dev, NULL);
 
-      if (mean.val[0] >= 5) {}
-
+      if (mean.val[0] >= 5)
+      {
+      }
     }
   }
   return vision_change;
@@ -321,32 +340,55 @@ int main(int argc, char **argv)
 
 
   */
+  /*
   Vision_State vision_state;
   vision_state_init(get_image_from_camera(), &vision_state);
   printf("Waiting..\n");
-  scanf("");
+  getchar();
   vision_state.board = get_image_from_camera();
+  */
+  Vision_State vision_state;
+  vision_state_init(get_image_from_path("../chessboard_clear.jpg"), &vision_state);
+  vision_state.board = get_image_from_path("../chessboard_pieces.jpg");
 
   printf("std_dev_empty : %f\n", vision_state.std_dev_empty);
-  printf("cell 7 7 : %f\n", get_cell_std_dev(&vision_state, 4, 1));
-  printf("Cell[6][6] empty : %d\n", is_cell_empty(&vision_state, 4, 1));
+  printf("cell 7 7 : %f\n", get_cell_std_dev(&vision_state, 0, 0));
+  printf("Cell[6][6] empty : %d\n", is_cell_empty(&vision_state, 0, 0));
+
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
+      float dev = get_cell_std_dev(&vision_state, i, j);
+      printf("%0.1f ", dev);
+    }
+    printf("\n");
+  }
+  printf("\n\n");
 
   int count = 0;
-  for(int i = 0; i < 8; i++)
+  for (int i = 0; i < 8; i++)
   {
     for (int j = 0; j < 8; j++)
     {
       bool empty = is_cell_empty(&vision_state, i, j);
-      if(empty) {printf(".");}
-      else {printf("O"); count++;}
+      if (empty)
+      {
+        printf(".");
+      }
+      else
+      {
+        printf("O");
+        count++;
+      }
       //cvShowImage("Cell", get_cell(board, cells, i, j));
       //cvWaitKey(0);
     }
     printf("\n");
   }
-  printf("%d\n", count);
+  printf("%d\n\n", count);
 
-  //cvShowImage("cells[7][7]", get_cell(board, cells, 4, 1));
+  cvShowImage("cells[7][7]", get_cell(&vision_state, 0, 0));
 
   //cvShowImage("histogram", imgHistogram);
   cvWaitKey(0);
