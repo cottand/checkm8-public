@@ -15,7 +15,14 @@ typedef struct s_Vision
   Vision_State *curr;
 } Vision;
 
+typedef struct s_Vision_Change
+{
+  int emptied_cell[2];
+  int filled_cell[2];
+} Vision_Change;
+
 void vision_init(Vision *vision);
 void vision_update(Vision *vision);
+void vision_free(Vision *vision);
 
 #endif /* VISION_H_ */

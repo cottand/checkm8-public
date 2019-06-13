@@ -182,9 +182,44 @@ static void vision_state_free(Vision_State *vision_state)
   free(vision_state);
 }
 
+Vision_Change get_vision_change(Vision *vision)
+{
+  Vision_Change vision_change;
+  vision_change.emptied_cell[0] = -1;
+  vision_change.emptied_cell[1] = -1;
+  vision_change.filled_cell[0] = -1;
+  vision_change.filled_cell[1] = -1;
+  // TODO: Array of 2 elements to keep i and j !
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
+      IplImage *cell_prev = get_cell(vision->prev, i, j);
+      IplImage *cell_curr = cvCreateImage(cvGetSize(cell_prev), 8, 1);
+      IplImage *subtraction = cvCreateImage(cvGetSize(cell_prev), 8, 1);
+      cvResize(get_cell(vision->curr, i, j), cell_curr, CV_INTER_LINEAR);
+      cvSub(cell_prev, cell_curr, subtraction, 0);
+
+      // TODO : test the subtraction -> mean???
+      // If mostly white, a piece has been added
+      // If mostly black, nothing changed ??
+      CvScalar mean, std_dev;
+      cvAvgSdv(subtraction, &mean, &std_dev, NULL);
+
+      if (mean.val[0] >= 5) {}
+
+    }
+  }
+  return vision_change;
+}
+
 void vision_init(Vision *vision)
 {
-
+  Vision_State *vision_state = malloc(sizeof(Vision_State *));
+  IplImage *image = get_image_from_camera();
+  vision_state_init(image, vision_state);
+  vision->prev = vision_state;
+  vision->curr = vision_state;
 }
 
 void vision_update(Vision *vision)
@@ -195,6 +230,13 @@ void vision_update(Vision *vision)
   IplImage *image = get_image_from_camera();
   vision_state_init(image, curr);
   vision->curr = curr;
+}
+
+void vision_free(Vision *vision)
+{
+  vision_state_free(vision->prev);
+  vision_state_free(vision->curr);
+  free(vision);
 }
 
 int main(int argc, char **argv)
