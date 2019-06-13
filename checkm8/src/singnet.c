@@ -22,18 +22,21 @@ void alpha_make_move(char *move)
   {
     perror("Error: response is NULL");
   }
-
-  char res_move[4];
-  if(fscanf(res_file, "status: \"move_error\""))
+  
+  char buffer[30];
+  
+  char error_pattern[] = "status: \"move_error\"\n"; 
+  while (fgets(buffer, 30, res_file))
   {
-    perror("Invalid move, please enter again: ");
-  }
-  else if(fscanf(res_file, "status: \"game_running: %s\"", res_move))
-  {
-    printf("\n\nyou've made this move: %s\n\n", res_move);
-  }
-  else{
-    printf("pattern match failed\n");
+    printf("%s", buffer);
+    if(strcmp(error_pattern, buffer) == 0)
+    {
+      printf("\nMove error!!");
+    }
+    else if(strncmp("status", buffer, 6) == 0)
+    {
+      //TODO: Extract the move here......
+    }
   }
   
   fclose(res_file);
@@ -48,7 +51,7 @@ void alpha_reset(void)
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
   
-  request->cmd = "reset";
+  request->cmd = "restart";
   FILE *res_file = snet_alpha_request(request);
   
 
