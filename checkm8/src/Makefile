@@ -12,7 +12,7 @@ all: vision
 checkm8: main.c checkm8.o board.o cell.o board.o
 	$(CC) $(CFLAGS) $^ -o $@
 
-ptest: ptest.c checkm8.o board.o cell.o
+ptest: ptest.c snet.o
 	$(CC) $(CFLAGS) $^ -o $@
 
 checkm8.o : checkm8.c
@@ -27,9 +27,13 @@ cell.o: cell.c
 vision: vision.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
+snet.o: singnet.c
+	$(CC) $(CFLAGS)  -c $^ -o $@
+
 clean:
 	rm -f $(wildcard *.o)
 	rm -f $(wildcard *.a)
 	rm -f checkm8
 	rm -f ptest
 	rm -f vision
+	rm -f snet
