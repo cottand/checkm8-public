@@ -29,6 +29,7 @@ cmake-build-debug/
 emulate
 assemble
 ptest
+vision
 
 #ignore junk files from compiling Haskell code
 *.hi

@@ -4,18 +4,117 @@
 
 \begin{document}
 
-\title{Our Extension...}
-\author{TODO}
+\title{Final Report\\
+  \small{\em{Assembler and Checkm8 chess player}}}
+\author{Lancelot Blanchard \and Nico D'Cotta \and Kacper Kazaniecki \and William Profit}
 
 \maketitle
 
-\section{Introduction}
+\section{Assembler}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+\subsection{Introduction}
+
+In the making of the assembler, we first looked at the emulator to determine
+which parts we could reuse. The main part we were able to reuse is the
+instruction system. It is an abstract representation of an instruction that is
+well adapted for both parts: the emulator reads 32 bits and fills the abstracted
+instruction structure and passes it to the executor. On the other hand, the
+assembler reads the written instructions and fills the very same structure which
+is then easily converted to 32 bits. Although the assembler resuses the
+instrution system, the general structure around it is rather different, we
+detail it below.
+
+\subsection{Structure}
+
+The program is initially read into a buffer which is then passed to the parser
+which will in turn parse the file in two passes. For the first pass, the file
+tokenises every line into more abstract symbols such as \em Opcode, Constant,
+Address ...\em. We also register labels and constants (values too big to be in
+single instructions and which have to be placed at the end of the file) and
+place both in respective lists. The second pass reads all the tokenised lines
+and substitutes all the labels and constants with the right offsets.\\
+
+Every tokenised line is passed to the encoder which reads the line token by
+token and fills the instruction structure with all the data needed for the
+perticular instruction type. Once this structure has been filled out, it is very
+easy to encode it as 32 bits using bit shifting operations. The 32-bit
+instructions are written sequentially to an output buffer which is then written
+to the output file.
+
+\section{Extension: Checkm8 chess player}
+
+\subsection{Overview}
+
+We present an automated chess program to play against on a real world board. The
+program first uses computer vision to detect the board and extract features to
+get the state of the game. We then make use of the AlphaZero algorithm by
+DeepMind to make a move. The AlphaZero algorithm runs on the SingularityNET
+network which itself runs on the Ethereum blockchain. We thus propose a way for
+anyone to defy AlphaZero.
+
+\subsection{Computer Vision}
+
+The first step for the program is to get the state of the board from a camera
+and produce an internal representation of it. The goal is therefore to be able
+to segment all the cells and determine whether they contain a piece or not.\\ We
+initially set out to use line detection to isolate the cells, however there
+proved to be a lot of wrong lines detected so we decided to make use of two
+markers placed at diagonally opposed corners of the board. With that we can get
+the board itself, cropping out the rest of the image. From here, we subdivide
+the image into 8 rows and 8 columns to get all the cells.\\ We have tried
+several methods to detect whether a cell contains a piece or not. The first one
+consists of looking at the standard deviation of the color. We initially look at
+the empty board to compute the average standard deviation of an empty cell,
+which turns out to be around 1. Then during the game, we compute the standard
+deviation of every cell and compare it to the empty standard deviation value and
+given a certain threshold, we determine wheter a cell contains a piece or not.
+We ran into a couple of problems with this technique, mainly in that if the
+cells were not cropped perfectly then, say a white cell would have a bit of
+black from the neighbouring cell so the standard deviation would end up passing
+the threshold value.\\
+Secondly, we tried running a circles detection algorithm on every cell as chess
+pieces have a circular shape. However, this proved to be too arbitrary and we
+had a lot of false positives as well as false negatives.
+
+\subsection{AlphaZero and SingularityNET}
+
+SingularityNET is a decentralised protocol based on the Ethereum blockchain that
+allows to run AI algorithms on the network. Using their AGI token we can query
+services of AIs running there and use their answer in our application.It is
+believed that AlphaZero has over 3500 elo in chess, compared to about 2800 for
+the current human world champion Magnus Carlsen.\\ We therefore make use of the
+AlphaZero algorithm developped by Google's DeepMind in 2018. After processing
+the image of the board, we determine which move the opponent did and send that
+information to the AI which in turn gives us back what move it made.
+
+\section{Conclusion}
+\subsection{Reflection on group work}
+We mainly communicated through Slack which proved very effective as we were able
+to use different channels to discuss different subjects when working on
+different parts. This relates to effectively splitting tasks between group
+members. We made sure to spend enough time planning before getting into
+programming to ensure a good code structure and an optimal distribution of
+tasks. We sketched out the entire project as a group so every one would have a
+clear idea of the overall structure. Following that, we determined how the
+indiviudal components would work together, keeping in mind the idea of making
+those modules as black boxes so we can easily assign them to a person and work
+independently of each other. For that, we defined the functions that would
+bridge the modules together before the actual implementation. This proved to be
+very effective and saved a lot of time and debugging.\\
+However, we agree in hindsight that we inititially diverged too much for the
+extension as we started thinking about making a robotic arm (with Lego mindstorm
+pieces). This proved to be very difficult and delayed the project by a lot. The
+lesson we got from this is that we should first focus on developping the minimum
+viable product before further extending it.\\
+Nonetheless, we were able to work efficiently thanks to good task distribution,
+organisation and communication.
+
+\subsection{Individual reflections}
+\subsubsection{Lancelot Blanchard}
+\subsubsection{Nico D'Cotta}
+\subsubsection{Kacper Kazaniecki}
+\subsubsection{William Profit}
+\subsection{Final thoughts}
+Talk about struggles how we overcame them like OGs etc
 
 \end{document}
