@@ -4,18 +4,45 @@
 
 \begin{document}
 
-\title{Our Extension...}
-\author{TODO}
+\title{Checkm8 chess player}
+\author{Lancelot Blanchard \and Nico D'Cotta \and Kacper Kazaniecki \and William Profit}
 
 \maketitle
 
 \section{Introduction}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+We present an automated chess program to play against on a real world board. The
+program first uses computer vision to detect the board and extract features to
+get the state of the game. We then make use of the AlphaZero algorithm by
+DeepMind to make a move. The AlphaZero algorithm runs on the SingularityNET
+network which itself runs on the Ethereum blockchain. We thus propose a way for
+anyone to defy AlphaZero.
+
+\section{Computer Vision}
+
+The first step for the program is to get the state of the board from a camera
+and produce an internal representation of it. The goal is therefore to be able
+to segment all the cells and determine whether they contain a piece or not.\\
+To facilitate the image processing task, we make use of two green markers placed
+at diagonally opposed corners of the board. With that we can get the board
+itself, cropping out the rest of the image. From here, we subdivide the image
+into 8 rows and 8 columns to get all the cells.
+
+TODO: how do we determine if there's a piece or not
+
+\section{AlphaZero and SingularityNET}
+
+SingularityNET is a decentralised protocol based on the Ethereum blockchain that
+allows to run AI algorithms on the network. Using their AGI token we can query
+services of AIs running there and use their answer in our application.\\
+We therefore make use of the AlphaZero algorithm developped by Google's DeepMind
+in 2018. After processing the image of the board, we determine which move the
+opponent did and send that information to the AI which in turn gives us back
+what move it made.
+
+TODO: talk about elo and all that
+
+\section{Conclusion}
+Talk about struggles how we overcame them like OGs etc
 
 \end{document}
