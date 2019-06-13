@@ -7,6 +7,9 @@ typedef struct s_Vision_State
 {
   IplImage *board;
   CvRect **cells;
+
+  IplImage *board_empty;
+  float std_dev_empty;
 } Vision_State;
 
 typedef struct s_Vision

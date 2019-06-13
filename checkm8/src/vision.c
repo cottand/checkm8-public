@@ -122,24 +122,34 @@ float get_cell_std_dev(Vision_State *vision_state, int row, int col)
   return std_dev.val[0];
 }
 
-bool is_cell_empty(Vision_State *vision_state, int row, int column, float std_dev_empty)
+bool is_cell_empty_std_dev(Vision_State *vision_state, int row, int column)
 {
   float std_dev_cell = get_cell_std_dev(vision_state, row, column);
 
-  return fabs(std_dev_cell - std_dev_empty) <= 5;
-  /*
+  return fabs(std_dev_cell - vision_state->std_dev_empty) <= 5;
+}
+
+bool is_cell_empty_circles(Vision_State *vision_state, int row, int column)
+{
   CvMemStorage *storage = cvCreateMemStorage(0);
 
   // This will store the lines
   CvSeq *circles = NULL;
 
-  IplImage *image = get_cell(board, cells, row, column);
+  IplImage *image = get_cell(vision_state, row, column);
   circles = cvHoughCircles(image, storage, CV_HOUGH_GRADIENT, 1, 100, 25, 27, 5, 20);
 
+  // Code to draw circle
   //printf("total : %d\n", circles->total);
   //float *circle1 = (float *)cvGetSeqElem(circles, 0);
   //cvCircle(image, cvPoint(circle1[0], circle1[1]), circle1[2], cvScalar(255, 0, 0, 0), 1, 8, 0);
-  return circles->total == 0;*/
+
+  return circles->total == 0;
+}
+
+bool is_cell_empty(Vision_State *vision_state, int row, int column)
+{
+  return is_cell_empty_std_dev(vision_state, row, column);
 }
 
 static void vision_state_init(IplImage *file, Vision_State *vision_state)
@@ -162,7 +172,9 @@ static void vision_state_init(IplImage *file, Vision_State *vision_state)
   CvRect **cells = get_cells(top_left, bottom_right);
 
   vision_state->board = board;
+  vision_state->board_empty = board;
   vision_state->cells = cells;
+  vision_state->std_dev_empty = get_empty_std_dev(vision_state);
 
   // Clear Memory
   cvClearSeq(markers);
@@ -263,7 +275,6 @@ int main(int argc, char **argv)
     }
   }
 
-  
   // Initialise Histogram
   int bins = 256;
   int hsize[] = {bins};
@@ -274,7 +285,7 @@ int main(int argc, char **argv)
 
   // Create Histogram
   hist = cvCreateHist(1, hsize, CV_HIST_ARRAY, ranges, 1);
-  
+
   char name[11];
   for (int i = 0; i < 8; i++)
   {
@@ -307,20 +318,25 @@ int main(int argc, char **argv)
       cvDestroyAllWindows();
     }
   }
-  
 
 
-  float std_dev_empty = get_empty_std_dev(board, cells);
-  printf("std_dev_empty : %f\n", std_dev_empty);
-  printf("cell 7 7 : %f\n", get_cell_std_dev(board, cells, 4, 1));
-  printf("Cell[6][6] empty : %d\n", is_cell_empty(board, cells, 4, 1, std_dev_empty));
+  */
+  Vision_State vision_state;
+  vision_state_init(get_image_from_camera(), &vision_state);
+  printf("Waiting..\n");
+  scanf("");
+  vision_state.board = get_image_from_camera();
+
+  printf("std_dev_empty : %f\n", vision_state.std_dev_empty);
+  printf("cell 7 7 : %f\n", get_cell_std_dev(&vision_state, 4, 1));
+  printf("Cell[6][6] empty : %d\n", is_cell_empty(&vision_state, 4, 1));
 
   int count = 0;
   for(int i = 0; i < 8; i++)
   {
     for (int j = 0; j < 8; j++)
     {
-      bool empty = is_cell_empty(board, cells, i, j, std_dev_empty);
+      bool empty = is_cell_empty(&vision_state, i, j);
       if(empty) {printf(".");}
       else {printf("O"); count++;}
       //cvShowImage("Cell", get_cell(board, cells, i, j));
@@ -336,11 +352,13 @@ int main(int argc, char **argv)
   cvWaitKey(0);
   cvDestroyAllWindows();
 
+  /*
   vision_state_free(state0);
-  vision_state_free(state1);*/
+  vision_state_free(state1);
 
   cvShowImage("camera", get_image_from_camera());
   cvWaitKey(0);
   //cvReleaseImage(&image);
   cvDestroyAllWindows();
+  */
 }
