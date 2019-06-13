@@ -3,6 +3,6 @@
 
 void cell_print(Cell *cell)
 {
-  printf("Cell: { Piece=%d | Color=%d | x=%d, | y=%d }\n",
-    cell->piece, cell->color, cell->x, cell->y);
+  printf("Cell: { Piece=%d (%d) | Color=%d | x=%d, | y=%d }\n",
+    cell->piece.type, cell->piece.color, cell->color, cell->x, cell->y);
 }
