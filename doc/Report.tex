@@ -78,7 +78,16 @@ black from the neighbouring cell so the standard deviation would end up passing
 the threshold value.\\
 Secondly, we tried running a circles detection algorithm on every cell as chess
 pieces have a circular shape. However, this proved to be too arbitrary and we
-had a lot of false positives as well as false negatives.
+had a lot of false positives as well as false negatives.\\
+We ended up using a hybrid of both techniques. We first get the cells and apply
+a pass of line detection to crop them further in order to eliminate as much of
+the neighbouring cells as possible. We then continue on with the previously
+described standard deviation method. We finally combine the results of this
+method with the circle method to determine whether a cell is empty or not. By
+fine tuning the threshold parameters, we are able to get decent results although
+sometimes a small number of cells are not detected correctly. After running many
+tests, we observed that detection errors can often be attributed to shadows or
+glare on the board.
 
 \subsection{AlphaZero and SingularityNET}
 
