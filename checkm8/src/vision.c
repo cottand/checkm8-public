@@ -7,9 +7,9 @@
 #include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/videoio/videoio_c.h>
 
-#define URL "http://146.169.198.228:8080"
+#define URL "http://146.169.218.9:8080"
 
-#define PADDING 0.00
+#define PADDING 0.03
 
 static IplImage *get_image_from_camera(void)
 {
@@ -65,7 +65,7 @@ static void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
   }
 }
 
-static CvRect **get_cells(float *topLeft, float *bottomRight)
+static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
 {
   CvRect **cells = malloc(8 * sizeof(CvRect *));
 
@@ -77,6 +77,9 @@ static CvRect **get_cells(float *topLeft, float *bottomRight)
   float padding_x = PADDING * cell_width;
   float padding_y = PADDING * cell_height;
 
+  CvSeq *lines = NULL;
+  CvMemStorage *storage = cvCreateMemStorage(0);
+
   for (int i = 0; i < 8; i++)
   {
     cells[i] = malloc(8 * sizeof(CvRect));
@@ -86,9 +89,52 @@ static CvRect **get_cells(float *topLeft, float *bottomRight)
       int pos_y = topLeft[1] + i * cell_height + padding_y;
       int wid = cell_width - 2 * padding_x;
       int hei = cell_height - 2 * padding_y;
+
       cells[i][j] = cvRect(pos_x, pos_y , wid, hei);
+
+      bool lines_remain = true;
+      while (lines_remain)
+      {
+        IplImage *image1 = cvCreateImage(cvGetSize(board), 8, 1);
+
+        cvCanny(board, image1, 50, 200, 3);
+        
+        // Using Hough Lines Probabilistic Algorithm
+        cvSetImageROI(image1, cells[i][j]);
+        int min_length = wid < hei ? wid : hei;
+        min_length -= 0.5 * min_length;
+        lines = cvHoughLines2(image1, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 35, min_length, 40, 0, 360);
+        /*
+        for (int z = 0; z < lines->total; z++)
+        {
+          CvPoint *line = (CvPoint *)cvGetSeqElem(lines, z);
+          line[0].x += cells[i][j].x;
+          line[1].x += cells[i][j].x;
+          line[0].y += cells[i][j].y;
+          line[1].y += cells[i][j].y;
+          cvLine(image1, line[0], line[1], cvScalar(255, 0, 0, 0), 3, 8, 0);
+        }
+        char name[11];
+        snprintf(name, 11, "cell[%d][%d]", i, j);
+        cvShowImage(name, image1);
+        cvWaitKey(0);
+        printf("Cell[%d][%d]: %d\n", i, j, lines->total);*/
+
+        lines_remain = lines->total != 0;
+
+        if (lines_remain)
+        {
+          pos_x += padding_x;
+          pos_y += padding_y;
+          wid -= 2 * padding_x;
+          hei -= 2 * padding_y;
+          
+          cells[i][j] = cvRect(pos_x, pos_y , wid, hei);
+        }
+      }
     }
   }
+  cvReleaseMemStorage(&storage);
   return cells;
 }
 
@@ -187,18 +233,19 @@ static void vision_state_init(IplImage *file, Vision_State *vision_state)
   float *bottom_right;
   get_corners(markers, &top_left, &bottom_right);
 
-  CvRect **cells = get_cells(top_left, bottom_right);
-
   vision_state->board = board;
+
+  CvRect **cells = get_cells(top_left, bottom_right, vision_state->board);
+
   vision_state->board_empty = board;
   vision_state->cells = cells;
-  vision_state->std_dev_empty = get_empty_std_dev(vision_state);
+  //vision_state->std_dev_empty = get_empty_std_dev(vision_state);
 
   // Clear Memory
   cvClearSeq(markers);
   cvReleaseMemStorage(&tmp_storage);
   cvReleaseImage(&thresholded);
-  cvReleaseImage(&file);
+  cvReleaseImage(&file); 
 }
 
 static void vision_state_free(Vision_State *vision_state)
@@ -347,10 +394,88 @@ int main(int argc, char **argv)
   getchar();
   vision_state.board = get_image_from_camera();
   */
-  Vision_State vision_state;
-  vision_state_init(get_image_from_path("../chessboard_clear.jpg"), &vision_state);
-  vision_state.board = get_image_from_path("../chessboard_pieces.jpg");
+   /* Loading the image */
+  //IplImage *image = cvLoadImage("images/chessboard.jpg", CV_WINDOW_AUTOSIZE);
 
+  Vision_State vision_state;
+  vision_state_init(get_image_from_path("images/chessboard.jpg"), &vision_state);
+
+  int count = 0;
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
+      float dev = get_cell_std_dev(&vision_state, i, j);
+      if (dev < 10)
+      {
+        printf(".");
+      }
+      else
+      {
+        printf("O");
+        count++;
+      }
+      //cvShowImage("Cell", get_cell(board, cells, i, j));
+      //cvWaitKey(0);
+    }
+    printf("\n");
+  }
+  printf("%d\n\n", count);
+/*
+  for(int i = 0; i < 8; i++)
+  {
+    for(int j = 0; j < 8; j++)
+    {
+      cvShowImage("cell", get_cell(&vision_state, i, j));
+      cvWaitKey(0);
+      cvDestroyAllWindows();
+    }
+  }*/
+/*
+  // We'll use a temporary image with a single colour channel, to recognise the lines
+  IplImage *image1 = cvCreateImage(cvGetSize(vision_state.board), 8, 1);
+  // IplImage* image2 = cvCreateImage(cvGetSize(image), 8, 3);
+
+  // Creating Memory Storage
+  CvMemStorage *storage = cvCreateMemStorage(0);
+
+  // This will store the lines
+  CvSeq *lines = NULL;
+
+  // Converting our image to greyscale
+  cvCanny(vision_state.board, image1, 50, 200, 3);
+  // cvCvtColor(image1, image2, CV_GRAY2BGR);
+
+  // Using Hough Lines Probabilistic Algorithm
+  cvSetImageROI(image1, vision_state.cells[0][0]);
+  lines = cvHoughLines2(image1, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 50, 40, 0, 360);
+
+    printf("lines: %d\n", lines->total);
+  for (int i = 0; i < lines->total; i++)
+  {
+    CvPoint *line = (CvPoint *)cvGetSeqElem(lines, i);
+    line[0].x += vision_state.cells[0][0].x;
+    line[1].x += vision_state.cells[0][0].x;
+    line[0].y += vision_state.cells[0][0].y;
+    line[1].y += vision_state.cells[0][0].y;
+    printf("line found\n");
+    cvLine(vision_state.board, line[0], line[1], cvScalar(0, 0, 0, 0), 3, 8, 0);
+  }
+
+  // Printing image
+  cvNamedWindow("image", 0);
+  //cvResetImageROI(vision_state.board);
+  cvShowImage("Original", vision_state.board );
+  //cvShowImage("Chessboard lines bruv", image2);
+  cvWaitKey(0);
+  cvReleaseImage(&vision_state.board);
+  //cvReleaseImage(&image2);
+  cvDestroyAllWindows();*/
+
+
+  //Vision_State vision_state;
+  //vision_state_init(get_image_from_path("images/chessboard.jpg"), &vision_state);
+/*
   printf("std_dev_empty : %f\n", vision_state.std_dev_empty);
   printf("cell 7 7 : %f\n", get_cell_std_dev(&vision_state, 0, 0));
   printf("Cell[6][6] empty : %d\n", is_cell_empty(&vision_state, 0, 0));
@@ -372,7 +497,8 @@ int main(int argc, char **argv)
     for (int j = 0; j < 8; j++)
     {
       bool empty = is_cell_empty(&vision_state, i, j);
-      if (empty)
+      float dev = get_cell_std_dev(&vision_state, i, j);
+      if (dev < 10)
       {
         printf(".");
       }
@@ -386,9 +512,18 @@ int main(int argc, char **argv)
     }
     printf("\n");
   }
-  printf("%d\n\n", count);
-
-  cvShowImage("cells[7][7]", get_cell(&vision_state, 0, 0));
+  printf("%d\n\n", count);*/
+/*
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
+      cvShowImage("cells[7][7]", get_cell(&vision_state, i, j));
+      cvWaitKey(0);
+      cvDestroyAllWindows();
+    }
+  }*/
+  //cvShowImage("cells[7][7]", get_cell(&vision_state, 0, 0));
 
   //cvShowImage("histogram", imgHistogram);
   cvWaitKey(0);

@@ -1,7 +1,7 @@
 CC       = gcc
 CFLAGS   = $(CLIBS) -Wall -g -std=c99 -pedantic -Ofast
 HEADERS  = -I/usr/local/include/opencv/ -I/usr/include/opencv2/
-CLIBS	 = $(HEADERS) -L/usr/local/lib64 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -Wl,-rpath=/usr/local/lib64/
+CLIBS	 = $(HEADERS) -L/usr/local/lib64 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc
 
 .SUFFIXES: .c .o
 
