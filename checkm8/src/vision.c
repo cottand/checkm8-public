@@ -7,9 +7,6 @@
 #include <opencv2/imgproc/imgproc_c.h>
 #include <opencv2/videoio/videoio_c.h>
 
-// TODO: pass URL as argument of main function
-#define URL "http://146.169.218.9:8080"
-
 #define MIN_HUE 77
 #define MAX_HUE 87
 
@@ -18,16 +15,16 @@
 #define DELTA_LINE_ERROR 2
 #define DELTA_LINE 3
 
-#define THRESH_STD_DEV 16
-#define THRESH_CIRCLES 25
+#define THRESH_STD_DEV 14
+#define THRESH_CIRCLES 22
 
-#define CAMERA 0
+#define CAMERA 1
 
 /* Reads an image from the camera */
-static IplImage *get_image_from_camera(void)
+static IplImage *get_image_from_camera(Vision *vision)
 {
   char python_request[60];
-  snprintf(python_request, 60, "python python/read_stream.py %s", URL);
+  snprintf(python_request, 60, "python python/read_stream.py %s", vision->camera_url);
   system(python_request);
   IplImage *image = cvLoadImage("images/chessboard.jpg", CV_WINDOW_AUTOSIZE);
   return image;
@@ -41,11 +38,11 @@ static IplImage *get_image_from_path(char *path)
 }
 
 /* Depending on the CAMERA constant, get the image from Camera or Path */
-static IplImage *get_image()
+static IplImage *get_image(Vision *vision)
 {
   if (CAMERA)
   {
-    return get_image_from_camera();
+    return get_image_from_camera(vision);
   }
   else
   {
@@ -330,10 +327,12 @@ static void process_image(IplImage *file, Vision *vision)
 
 /* Initialises Vision struct */
 // Pre: Board is in initial state
-void vision_init(Vision *vision)
+void vision_init(Vision *vision, char *url)
 {
+  vision->camera_url = url;
+
   // Setting Up std_dev_empty
-  IplImage *image = get_image();
+  IplImage *image = get_image(vision);
   process_image(image, vision);
   vision->std_dev_empty = get_empty_std_dev(vision);
 }
@@ -347,7 +346,7 @@ void vision_update(Vision *vision)
     free(vision->cells[i]);
   }
   free(vision->cells);
-  IplImage *image = get_image();
+  IplImage *image = get_image(vision);
   process_image(image, vision);
 }
 
@@ -361,29 +360,4 @@ void vision_free(Vision *vision)
   }
   free(vision->cells);
   free(vision);
-}
-
-int main(int argc, char **argv)
-{
-  Vision vision;
-  vision_init(&vision);
-
-  int count = 0;
-  for (int i = 0; i < 8; i++)
-  {
-    for (int j = 0; j < 8; j++)
-    {
-      if (is_cell_empty(&vision, i, j))
-      {
-        printf(".");
-      }
-      else
-      {
-        printf("O");
-        count++;
-      }
-    }
-    printf("\n");
-  }
-  printf("%d\n\n", count);
 }

@@ -8,12 +8,12 @@
 void player_turn();
 void algo_turn(Board *board, Vision *vision);
 
-void checkm8_run(const char *ip_cam)
+void checkm8_run(char *ip_cam)
 {
   printf("Starting game..\n");
   printf("Initializing vision..\n");
   Vision vision;
-  vision_init(&vision);
+  vision_init(&vision, ip_cam);
 
   printf("Initializing AlphaZero..\n");
   alpha_reset();
@@ -49,12 +49,13 @@ void algo_turn(Board *board, Vision *vision)
   board_set_from_vision(&next, vision);
 
   Move move = get_move(board, &next);
+  move_print(&move);
 
   /* Carry out the move on the board */
   do_move(board, &move);
 
-  char *move_str;
-  move_to_str(&move, move_str);
+  char *move_str = NULL;
+  move_to_str(&move, &move_str);
   printf("Detected move: %s\n", move_str);
 
   printf("Internal state of the board:\n");
@@ -72,5 +73,5 @@ void algo_turn(Board *board, Vision *vision)
   // get move from AlphaZero and ask hooman to make it ? DONE TODO CHECK IF IT'S GOOD ?
 
   free(move_str);
-  // free(algo_move) MAYBE??
+  free(algo_move);
 }

@@ -1,6 +1,8 @@
 #ifndef SINGNET_H_
 #define SINGNET_H_
 
+#include <stdio.h>
+
 typedef struct s_Alpha_Request
 {
   char *uid;

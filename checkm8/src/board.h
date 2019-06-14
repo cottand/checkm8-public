@@ -39,6 +39,6 @@ void do_move(Board *board, Move *move);
 void board_print(Board *board);
 void move_print(Move *move);
 
-void move_to_str(Move *move, char *str);
+void move_to_str(Move *move, char **str);
 
 #endif /* BOARD_H_ */

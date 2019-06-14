@@ -8,6 +8,7 @@ typedef struct s_Vision
   float std_dev_empty;
   IplImage *board;
   CvRect **cells;
+  char *camera_url;
 } Vision;
 
 typedef struct s_Vision_Change
@@ -18,7 +19,7 @@ typedef struct s_Vision_Change
 
 bool is_cell_empty(Vision *vision, int row, int column);
 
-void vision_init(Vision *vision);
+void vision_init(Vision *vision, char *url);
 void vision_update(Vision *vision);
 void vision_free(Vision *vision);
 
