@@ -1,5 +1,8 @@
 \documentclass[11pt]{article}
 \usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+\usepackage[compact]{titlesec}
 \usepackage[margin=1in]{geometry}
 
 %\usepackage{fullpage}
@@ -22,10 +25,12 @@ instruction system. It is an abstract representation of an instruction that is
 well adapted for both parts: the emulator reads 32 bits and fills the abstracted
 instruction structure and passes it to the executor. On the other hand, the
 assembler reads the written instructions and fills the very same structure which
-is then easily converted to 32 bits. \\ Applying separation of concerns when
+is then easily converted to 32 bits.\\
+
+Applying separation of concerns when
 writing the emulator made reusing and adapting the code rather painless.
 Although the assembler does resuse the instruction system, the general structure
-around it is rather different from the emulator's, we detail it below.
+around it is rather different from the emulator's, we detail it below.\\
 
 \subsection{Structure}
 
@@ -42,10 +47,11 @@ token and fills the instruction structure with all the data needed for the
 perticular instruction type. Once this structure has been filled out, it is very
 easy to encode it as 32 bits using bit shifting operations. The 32-bit
 instructions are written sequentially to an output buffer which is then written
-to the output file. \\ \\
+to the output file.\\
+
 Some of the challenges or bugs we faced included expanding the emulator's memory
 to be able to emulate I/O, and writing very similar code to what we did in
-emulator but 'backwards' was not always easy.
+emulator but 'backwards' was not always easy.\\
 
 \section{Extension: Checkm8 chess player}
 
@@ -56,7 +62,7 @@ program first uses computer vision to detect the board and extract features to
 get the state of the game. We then make use of the AlphaZero algorithm by
 DeepMind to make a move. The AlphaZero algorithm runs on the SingularityNET
 network which itself runs on the Ethereum blockchain. We thus propose a way for
-anyone to defy AlphaZero.
+anyone to defy AlphaZero.\\
 
 \subsection{Computer Vision}
 
@@ -67,7 +73,9 @@ initially set out to use line detection to isolate the cells, however there
 proved to be a lot of wrong lines detected so we decided to make use of two
 markers placed at diagonally opposed corners of the board. With that we can get
 the board itself, cropping out the rest of the image. From here, we subdivide
-the image into 8 rows and 8 columns to get all the cells.\\ We have tried
+the image into 8 rows and 8 columns to get all the cells.\\
+
+We have tried
 several methods to detect whether a cell contains a piece or not. The first one
 consists of looking at the standard deviation of the color. We initially look at
 the empty board to compute the average standard deviation of an empty cell,
@@ -78,9 +86,11 @@ We ran into a couple of problems with this technique, mainly in that if the
 cells were not cropped perfectly then, say a white cell would have a bit of
 black from the neighbouring cell so the standard deviation would end up passing
 the threshold value.\\
+
 Secondly, we tried running a circles detection algorithm on every cell as chess
 pieces have a circular shape. However, this proved to be too arbitrary and we
 had a lot of false positives as well as false negatives.\\
+
 We ended up using a hybrid of both techniques. We first get the cells and apply
 a pass of line detection to crop them further in order to eliminate as much of
 the neighbouring cells as possible. We then continue on with the previously
@@ -89,7 +99,7 @@ method with the circle method to determine whether a cell is empty or not. By
 fine tuning the threshold parameters, we are able to get decent results although
 sometimes a small number of cells are not detected correctly. After running many
 tests, we observed that detection errors can often be attributed to shadows or
-glare on the board.
+glare on the board.\\
 
 \subsection{AlphaZero and SingularityNET}
 
@@ -97,10 +107,12 @@ SingularityNET is a decentralised protocol based on the Ethereum blockchain that
 allows to run AI algorithms on the network. Using their AGI token we can query
 services of AIs running there and use their answer in our application.It is
 believed that AlphaZero has over 3500 elo in chess, compared to about 2800 for
-the current human world champion Magnus Carlsen.\\ We therefore make use of the
+the current human world champion Magnus Carlsen.\\
+
+We therefore make use of the
 AlphaZero algorithm developped by Google's DeepMind in 2018. After processing
 the image of the board, we determine which move the opponent did and send that
-information to the AI which in turn gives us back what move it made.
+information to the AI which in turn gives us back what move it made.\\
 
 \subsection{Extension usage and testing}
 To compile and run Checkm8, you need:
@@ -125,20 +137,43 @@ To run Checkm8,
 \end{itemize}
 You may now start playing against AlphaZero. Checkm8 will read your moves
 from the camera, you only have to move AlphaZero's pieces following 
-instructions on the screen.
-
-
+instructions on the screen.\\
 OpenCV has assertions defined in its own functions that would let us 
 know when we did not use them properly, and helped find some tricky bugs.
 Fot example, that is how we discovered that we were using the wrong variables
 to compute padding, resulting in some negative coordinates for the image
-processing.
+processing.\\
 \texttt{vision.c} had to be debugged through trial and error because we
 had to run it with images every time, and vary the images so our code would
 work with different lighting conditions, which had a bigger imapct that we 
-thought. This made debugging and testing slower thatn we would have liekd.
+thought. This made debugging and testing slower thatn we would have liekd.\\
 \subsection{Results}
+At the time of writing and under testing conditions,
+Checkm8 succesfully locates the board and reads the
+player's moves and prints its own move in response to that, enabling
+one to actuall play against AlphaZero at chess. Checkm8 is also able to 
+see illegal moves and corrupt chessboards without crashing. When seeing
+anything of the sort, it will ask the player to crrect it by hand. After an
+unsuccessful read, the player always has the option to input their move by 
+hand in the CLI.\\
 
+Unfortunately, computer vision is quite fragile and Checkm8 may fail 
+to read the board under bad lighting, or if the camera is not correctly 
+placed. We are currently sometimes experiencing a bug where sometimes,
+seemingly randomly, (we 
+are not able to reproduce it) Checkm8 will fail to compute the size of each
+cell in the board properly. Our current solution to this is to retake a picture
+and this is usually enough.\\
+\subsection{Future work}
+In the next few days, we would like to fix the previously mentioned bug 
+and enable Checkm8 to see boards under more adverse lighting conditions.
+For example, the shadow the pieces cast on the cell next to their own is 
+sometimes perceived as an extra piece. \\
+
+For Checkm8 to become a completely autonomous chess player, it could 
+be outfitted with a robotic arm or something that enabled it to move its 
+own peices. This would make it so the player can play without worrying 
+about moving both their pieces and their opponent's.\\
 \section{Conclusion}
 \subsection{Reflection on group work}
 We mainly communicated through Slack which proved very effective as we were able
@@ -153,13 +188,15 @@ those modules as black boxes so we can easily assign them to a person and work
 independently of each other. For that, we defined the functions that would
 bridge the modules together before the actual implementation. This proved to be
 very effective and saved a lot of time and debugging.\\
+
 However, we agree in hindsight that we inititially diverged too much for the
 extension as we started thinking about making a robotic arm (with Lego mindstorm
 pieces). This proved to be very difficult and delayed the project by a lot. The
 lesson we got from this is that we should first focus on developping the minimum
 viable product before further extending it.\\
+
 Nonetheless, we were able to work efficiently thanks to good task distribution,
-organisation and communication.
+organisation and communication.\\
 
 \subsection{Individual reflections}
 \subsubsection{Lancelot Blanchard}
@@ -178,7 +215,7 @@ challenging such that we had to spend much effort on them, and hence had to rush
 implementation of our extension which I was very excited about. Overall, I still believe this has 
 genuinely been an incredibly informative experience. This project taught me not only helpful skills in 
 C programming, which I am certain will be useful in the near future, but it also made me experience 
-working as part of a team and collaborating efficiently. 
+working as part of a team and collaborating efficiently.\\
 
 \subsubsection{Nico D'Cotta}
 Personally, I believe I have learnt a great deal working on this project, not
@@ -189,9 +226,10 @@ pleasant and efficient group dynamic. Not having covered every single part of
 the project, I think specialising on certain bits that each of us can do well is
 what makes group work work. Small challenges like cross compiling and linking
 third party libraries accross operating systems has allowed me to get a glimpse
-at what actual software developers have to deal with on a daily basis. \\
+at what actual software developers have to deal with on a daily basis.\\
+
 I am sure that a lot of what I have learnt will be useful to me in the not too
-far future, and am overall satisfied with the work we have produced.
+far future, and am overall satisfied with the work we have produced.\\
 
 
 \subsubsection{Kacper Kazaniecki}
@@ -204,20 +242,21 @@ learned a lot about using git in a team through the use of branching and
 merging. The project also taught me to use some very useful tools such as
 Valgrind and gdb which proved to be instrumental in debugging code and making
 sure it's leak-free. Ultimately, I think our group worked very well and everyone
-played a good part in the making of the project.
+played a good part in the making of the project.\\
 
 \subsection{Final thoughts}
 Overall, we all agree we found this project very eye-opening in how 
 groups work in in our field and on tool usage (such as GDB, Make,
 Valgrind, Git, etc) that enable us to work towards getting what we 
 wanted out of our code. \\
-We aimed towards finishing parts I, II and III so we could spend time
+
+We aimed towards finishing parts I, II and III as quickly as possible so we could spend time
 working on our extension and be ambitious about it. We regret not being
 able to do that to the extend we would have wished, but we found that 
 instead we spent the necessary time on the first parts to produce 
 efficient and encapsulated quality code. Our extension, although not
 as ambitious as we had hoped at first, was a lot of hard work and we 
-would like to think is interesting and original enough to stand out.
+would like to think is interesting and original enough to stand out.\\
 
 
 \end{document}
