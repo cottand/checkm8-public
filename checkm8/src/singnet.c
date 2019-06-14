@@ -14,8 +14,9 @@
 #define MOVE_PATTERN "status: \"game_running: "
 
 
-bool alpha_make_move(char *player_move, char **alpha_move)
+char *alpha_make_move(char *player_move, bool *success)
 {
+  *success = true;
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
 
@@ -29,7 +30,7 @@ bool alpha_make_move(char *player_move, char **alpha_move)
     perror("Error: response is NULL");
   }
 
-  *alpha_move = calloc(sizeof(char), 4);
+  char *res_move = calloc(sizeof(char), 4);
 
   char buffer[MAX_RES_LINE_LENGTH];
 
@@ -38,12 +39,12 @@ bool alpha_make_move(char *player_move, char **alpha_move)
     if(strcmp(ERROR_PATTERN, buffer) == 0)
     {
       printf("Error: Alpha move error\n");
-      free(*alpha_move);
-      return false;
+      free(res_move);
+      *success = false;
     }
     else if(strncmp(MOVE_PATTERN  , buffer, MOVE_OFFSET) == 0)
     {
-      strncpy(*alpha_move, buffer + MOVE_OFFSET, 4);
+      strncpy(res_move, buffer + MOVE_OFFSET, 4);
     }
   }
 
@@ -51,7 +52,7 @@ bool alpha_make_move(char *player_move, char **alpha_move)
   free(res_buffer);
   free(request);
 
-  return true;
+  return res_move;
 }
 
 void alpha_reset(void)

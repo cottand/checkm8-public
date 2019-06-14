@@ -61,12 +61,13 @@ void algo_turn(Board *board, Vision *vision)
   bool success = false;
   while (!success)
   {
-    char *move = detect_player_move(board, vision);
-    success = alpha_make_move(move, &algo_move);
+    move = detect_player_move(board, vision);
+    algo_move = alpha_make_move(move, &success);
 
     if (!success)
     {
       printf("AlphaZero detected an illegal move, please redo move\n");
+      getchar();
     }
   }
 

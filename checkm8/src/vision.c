@@ -15,7 +15,10 @@
 #define DELTA_LINE_ERROR 2
 #define DELTA_LINE 3
 
+// Higher is easier
 #define THRESH_STD_DEV 16
+
+// Smaller is easier
 #define THRESH_CIRCLES 24
 
 #define CAMERA 1
@@ -113,7 +116,7 @@ static void get_lines(CvSeq *lines, CvSeq *h_lines, CvSeq *v_lines)
 static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
 {
   // Allocate memory for the 2D array
-  CvRect **cells = malloc(8 * sizeof(CvRect *));
+  CvRect **cells = calloc(8, sizeof(CvRect *));
   if(!cells)
   {
     printf("Vision Error: Cannot allocate cells 2d array\n");
@@ -135,7 +138,7 @@ static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
 
   for (int i = 0; i < 8; i++)
   {
-    cells[i] = malloc(8 * sizeof(CvRect));
+    cells[i] = calloc(8, sizeof(CvRect));
     if(!cells[i])
     {
       printf("Vision Error: Cannot allocate cells[%d] array\n", i);
@@ -397,11 +400,11 @@ bool vision_init(Vision *vision, char *url)
 bool vision_update(Vision *vision)
 {
   cvReleaseImage(&vision->board);
-  for (int i = 0; i < 8; i++)
+  /*for (int i = 0; i < 8; i++)
   {
     free(vision->cells[i]);
   }
-  free(vision->cells);
+  free(vision->cells);*/
   IplImage *image = get_image(vision);
   if(!image)
   {
