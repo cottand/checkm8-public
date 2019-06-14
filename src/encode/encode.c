@@ -13,7 +13,7 @@ Instr encode_instr(Token_Stream *instr)
   Instr encoded;
   instr_init(&encoded);
 
-  encoded.type = get_instr_type_from_tok(token_stream_peak(instr));
+  encoded.type = get_instr_type_from_tok(token_stream_peek(instr));
 
   switch (encoded.type)
   {

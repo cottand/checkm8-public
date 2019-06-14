@@ -15,6 +15,12 @@ cmake-build-debug/
 #ignore pdf files (just keep source files)
 *.pdf
 
+#ingore latex config files
+doc/Report.fdb_latexmk
+doc/Report.fls
+doc/Report.synctex.gz
+
+
 #ignore junk files from latex output
 *.out
 *.log

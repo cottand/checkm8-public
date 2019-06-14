@@ -97,7 +97,7 @@ void parser_parse2(Parser *parser, void **output, size_t *output_size)
 
 void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t line)
 {
-  Token *opcode = token_stream_peak(tokens);
+  Token *opcode = token_stream_peek(tokens);
 
   if (opcode && opcode->value[0] == 'b')
   {
@@ -124,7 +124,7 @@ void parser_substitute_for_branch(Parser *parser, Token_Stream *tokens, uint8_t 
 
 void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_t line, uint8_t total_lines)
 {
-  Token *opcode = token_stream_peak(tokens);
+  Token *opcode = token_stream_peek(tokens);
 
   if (opcode && !strcmp(opcode->value, "ldr") && opcode->next->next->symb == Constant)
   {
@@ -171,7 +171,7 @@ void parser_substitute_for_constant(Parser *parser, Token_Stream *tokens, uint8_
 
 void parser_check_for_constant(Parser *parser, Token_Stream *tokens)
 {
-  Token *opcode = token_stream_peak(tokens);
+  Token *opcode = token_stream_peek(tokens);
 
   if (opcode && !strcmp(opcode->value, "ldr"))
   {
@@ -213,7 +213,7 @@ void parser_check_for_constant(Parser *parser, Token_Stream *tokens)
 
 uint8_t parser_check_for_label(Parser *parser, Token_Stream *tokens, uint8_t line)
 {
-  Token *label = token_stream_peak(tokens);
+  Token *label = token_stream_peek(tokens);
 
   if (label->next && label->next->symb == Colon)
   {

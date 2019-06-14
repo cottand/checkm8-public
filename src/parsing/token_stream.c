@@ -238,14 +238,14 @@ char *token_stream_parse_hex(char **str)
   return ret;
 }
 
-Token *token_stream_peak(Token_Stream *stream)
+Token *token_stream_peek(Token_Stream *stream)
 {
   return stream->curr_tok->next;
 }
 
 Token *token_stream_read(Token_Stream *stream)
 {
-  Token *ret = token_stream_peak(stream);
+  Token *ret = token_stream_peek(stream);
   stream->curr_tok = ret;
 
   return ret;

@@ -138,7 +138,7 @@ void encode_test(Data_Proc_Instr *instr, Token_Stream *tokens)
 
 void encode_operand2(Data_Proc_Instr *instr, Token_Stream *tokens)
 {
-  if (token_stream_peak(tokens)->symb == Immediate)
+  if (token_stream_peek(tokens)->symb == Immediate)
   {
     instr->i = 0x1;
     encode_operand2_immediate(instr, tokens);
@@ -207,7 +207,7 @@ void encode_operand2_register(Data_Proc_Instr *instr, Token_Stream *tokens)
   Token *rm = token_stream_expect(tokens, Register, "Expecting Rm for operand2");
   uint8_t rm_enc = strtoul(rm->value, 0, 10);
 
-  if (!token_stream_peak(tokens))
+  if (!token_stream_peek(tokens))
   {
     instr->operand_2 = rm_enc;
     return;
@@ -216,8 +216,8 @@ void encode_operand2_register(Data_Proc_Instr *instr, Token_Stream *tokens)
   Token *shift = token_stream_expect(tokens, Opcode, "Expecting shift type");
   uint8_t shift_enc = 0x0;
 
-  Token *peak = token_stream_peak(tokens);
-  if (peak->symb == Register)
+  Token *peek = token_stream_peek(tokens);
+  if (peek->symb == Register)
   {
     Token *rs = token_stream_read(tokens);
     uint8_t rs_enc = strtoul(rs->value, 0, 10);
@@ -230,7 +230,7 @@ void encode_operand2_register(Data_Proc_Instr *instr, Token_Stream *tokens)
     shift_enc = (rs_enc << 4) | shift_type;
   }
 
-  if (peak->symb == Immediate)
+  if (peek->symb == Immediate)
   {
     Token *imm = token_stream_read(tokens);
 

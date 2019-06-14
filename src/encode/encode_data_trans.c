@@ -20,7 +20,7 @@ Data_Trans_Instr *encode_data_trans_instr(Token_Stream *instr)
   Token *rn = token_stream_expect(instr, Register, "Expecting Rn register for data_trans type instr (ldr, str)");
 
   //Check if we are post-indexing or pre-indexing.
-  Token *next = token_stream_peak(instr);
+  Token *next = token_stream_peek(instr);
 
   if (next->symb == RBracket)
   {
@@ -121,7 +121,7 @@ void encode_data_trans_instr_shifted_register(Data_Trans_Instr *encoded, Token_S
   Token *rm = token_stream_expect(instr, Register, "Expecting Rm for shifted register in data_trans type instr");
   uint8_t rm_enc = strtoul(rm->value, 0, 10);
 
-  Token *end_peek = token_stream_peak(instr);
+  Token *end_peek = token_stream_peek(instr);
   if (!end_peek)
   {
     encoded->offset = rm_enc;
@@ -136,7 +136,7 @@ void encode_data_trans_instr_shifted_register(Data_Trans_Instr *encoded, Token_S
   Token *shift = token_stream_expect(instr, Opcode, "Expecting shift type for shifted register in data_trans type instr");
   uint8_t shift_enc = 0x0;
 
-  Token *peek = token_stream_peak(instr);
+  Token *peek = token_stream_peek(instr);
   if (peek->symb == Register)
   {
     Token *rs = token_stream_read(instr);
