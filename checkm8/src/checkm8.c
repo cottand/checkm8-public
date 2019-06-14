@@ -60,8 +60,8 @@ void algo_turn(Board *board, Vision *vision)
   printf("Internal state of the board:\n");
   board_print(board);
 
-  char *algo_move = "t0d0";
-  //char *algo_move = alpha_make_move(move_str);
+  //char *algo_move = "t0d0";
+  char *algo_move = alpha_make_move(move_str);
 
   printf("AlphaZero move: %s\n", algo_move);
 

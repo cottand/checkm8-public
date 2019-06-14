@@ -8,7 +8,7 @@
 #define EMPTY_STRING "\0"
 #define GAME_ID "checkm8"
 
-void alpha_make_move(char *move)
+char *alpha_make_move(char *move)
 {
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
@@ -23,7 +23,7 @@ void alpha_make_move(char *move)
     perror("Error: response is NULL");
   }
 
-  char res_move[4];
+  char *res_move = malloc(sizeof(char) * 5);
   if(fscanf(res_file, "status: \"move_error\""))
   {
     perror("Invalid move, please enter again: ");
@@ -40,6 +40,8 @@ void alpha_make_move(char *move)
   fclose(res_file);
   free(res_buffer);
   free(request);
+
+  return res_move;
 }
 
 void alpha_reset(void)
