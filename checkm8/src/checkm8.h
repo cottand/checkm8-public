@@ -1,6 +1,6 @@
-#ifndef CHECKM8_H__
-#define CHECKM8_H__
+#ifndef CHECKM8_H_
+#define CHECKM8_H_
 
-void run();
+void checkm8_run(const char *ip_cam);
 
-#endif /* CHECKM8_H__ */
+#endif /* CHECKM8_H_ */

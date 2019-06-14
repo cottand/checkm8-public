@@ -1,5 +1,5 @@
-#ifndef SINGNET_H__
-#define SINGNET_H__
+#ifndef SINGNET_H_
+#define SINGNET_H_
 
 typedef struct s_Alpha_Request
 {
@@ -13,4 +13,4 @@ void alpha_reset(void);
 FILE *snet_alpha_request(Alpha_Request *request);
 void init_alpha_request(Alpha_Request *request);
 
-#endif /* SINGNET_H__ */
+#endif /* SINGNET_H_ */

@@ -67,6 +67,22 @@ void board_free(Board *board)
   free(board->cells);
 }
 
+void board_set_from_vision(Board *board, Vision *vision)
+{
+  /* The origin of vision is upper left, board uses bot left */
+
+  for (int y = 0; y < 8; y++)
+  {
+    for (int x = 0; x < 8; x++)
+    {
+      if (!is_cell_empty(vision, y, 8 - x))
+      {
+        board_set_cell_coord(board, x, y, Pawn, White);
+      }
+    }
+  }
+}
+
 Cell *board_get_cell(Board *board, char x, uint8_t y)
 {
   uint8_t pos_x = x - 'a';
@@ -86,6 +102,18 @@ Cell *board_get_cell_coord(Board *board, uint8_t x, uint8_t y)
   return &board->cells[8 * y + x];
 }
 
+void board_set_cell_coord(Board *board, uint8_t x, uint8_t y, Piece_Type type, Color color)
+{
+  if (x > 7 || y > 7)
+  {
+    perror("Error: of bounds coordinates for board\n");
+    return;
+  }
+
+  board->cells[8 * y + x].piece.type  = type;
+  board->cells[8 * y + x].piece.color = color;
+}
+
 Move get_move(Board *prev, Board *curr)
 {
   Move move;
@@ -102,12 +130,12 @@ Move get_move(Board *prev, Board *curr)
       if (prev_cell->piece.type != None && curr_cell->piece.type == None)
       {
         move.from = *curr_cell;
+        move.piece = prev_cell->piece;
       }
 
       if (prev_cell->piece.type == None && curr_cell->piece.type != None)
       {
         move.to = *curr_cell;
-        move.piece = curr_cell->piece;
       }
     }
   }
@@ -175,4 +203,21 @@ void move_print(Move *move)
   printf("Move: { from (%d, %d) | to (%d, %d), piece (%d, %d) }\n",
     move->from.x, move->from.y, move->to.x, move->to.y,
     move->piece.type, move->piece.color);
+}
+
+void move_to_str(Move *move, char *str)
+{
+  str = malloc(sizeof(char) * 5);
+
+  char from_x = move->from.x + 'a';
+  int from_y = move->from.y + 1;
+
+  char to_x = move->to.x + 'a';
+  int to_y = move->to.y + 1;
+
+  str[0] = from_x;
+  snprintf(str + 1 * sizeof(char), 1, "%d", from_y);
+
+  str[2] = to_x;
+  snprintf(str + 3 * sizeof(char), 1, "%d", to_y);
 }

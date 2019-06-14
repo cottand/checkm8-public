@@ -3,10 +3,10 @@
 #include "singnet.h"
 #include <string.h>
 
-#define max_cmd_length 200
-#define max_response_length 300
-#define empty_string "\0"
-#define game_id "checkm8"
+#define MAX_CMD_LENGTH 200
+#define MAX_RESPONSE_LENGTH 300
+#define EMPTY_STRING "\0"
+#define GAME_ID "checkm8"
 
 void alpha_make_move(char *move)
 {
@@ -17,7 +17,7 @@ void alpha_make_move(char *move)
 
   FILE *res_file = snet_alpha_request(request); 
 
-  char *res_buffer = calloc(sizeof(char), max_response_length);
+  char *res_buffer = calloc(sizeof(char), MAX_RESPONSE_LENGTH);
   if(res_file == NULL)
   {
     perror("Error: response is NULL");
@@ -32,10 +32,11 @@ void alpha_make_move(char *move)
   {
     printf("\n\nyou've made this move: %s\n\n", res_move);
   }
-  else{
+  else
+  {
     printf("pattern match failed\n");
   }
-  
+
   fclose(res_file);
   free(res_buffer);
   free(request);
@@ -47,10 +48,9 @@ void alpha_reset(void)
 
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
-  
+
   request->cmd = "reset";
   FILE *res_file = snet_alpha_request(request);
-  
 
   if(res_file == NULL)
   {
@@ -65,15 +65,15 @@ FILE *snet_alpha_request(Alpha_Request *request)
   char *alpha_out = "../resources/alpha_out.txt";
 
   char *call = "snet client call -y snet zeta36-chess-alpha-zero play";
-  char *json = calloc(sizeof(char), max_cmd_length);
+  char *json = calloc(sizeof(char), MAX_CMD_LENGTH);
 
-  snprintf(json, max_cmd_length,
+  snprintf(json, MAX_CMD_LENGTH,
    "{\"uid\": \"%s\", \"move\": \"%s\", \"cmd\": \"%s\"}",
    request->uid, request->move, request->cmd);
   printf("\n\n%s\n\n", json);
-  char *cmd = calloc(sizeof(char), max_cmd_length);
+  char *cmd = calloc(sizeof(char), MAX_CMD_LENGTH);
 
-  snprintf(cmd, max_cmd_length,
+  snprintf(cmd, MAX_CMD_LENGTH,
    "{ printf \"\n$(%s '%s')\n\"; } > %s",
    call, json, alpha_out);
 
@@ -81,17 +81,17 @@ FILE *snet_alpha_request(Alpha_Request *request)
   {
     perror("Error: failed to send request");
   }
-  
+
   FILE *res_file = fopen(alpha_out, "r");
-  
-  free(cmd); 
+
+  free(cmd);
   free(json);
   return res_file;
 }
 
 void init_alpha_request(Alpha_Request *request)
 {
-  request->uid = game_id;
+  request->uid = GAME_ID;
   request->move = "\0";
   request->cmd = "\0";
 }
