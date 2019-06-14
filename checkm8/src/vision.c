@@ -394,7 +394,7 @@ bool vision_init(Vision *vision, char *url)
 }
 
 /* Updates image and cells coordinates */
-void vision_update(Vision *vision)
+bool vision_update(Vision *vision)
 {
   cvReleaseImage(&vision->board);
   for (int i = 0; i < 8; i++)
@@ -403,7 +403,18 @@ void vision_update(Vision *vision)
   }
   free(vision->cells);
   IplImage *image = get_image(vision);
-  process_image(image, vision);
+  if(!image)
+  {
+    printf("Vision Error: Cannot read image to update Vision (CAMERA = %d)\n", CAMERA);
+    return false;
+  }
+  if(!process_image(image, vision))
+  {
+    printf("Vision Error: Cannot process image to update Vision\n");
+    return false;
+  }
+
+  return true;
 }
 
 /* Frees Vision struct */
