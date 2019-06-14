@@ -23,6 +23,7 @@
 /* Reads an image from the camera */
 static IplImage *get_image_from_camera(Vision *vision)
 {
+  system("rm images/chessboard.jpg");
   char python_request[60];
   snprintf(python_request, 60, "python python/read_stream.py %s", vision->camera_url);
   system(python_request);
@@ -113,6 +114,11 @@ static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
 {
   // Allocate memory for the 2D array
   CvRect **cells = malloc(8 * sizeof(CvRect *));
+  if(!cells)
+  {
+    printf("Vision Error: Cannot allocate cells 2d array\n");
+    return NULL;
+  }
 
   // We calculate the board dimensions and the cell dimensions
   int width = bottom_right[0] - top_left[0];
@@ -130,6 +136,11 @@ static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
   for (int i = 0; i < 8; i++)
   {
     cells[i] = malloc(8 * sizeof(CvRect));
+    if(!cells[i])
+    {
+      printf("Vision Error: Cannot allocate cells[%d] array\n", i);
+      return NULL;
+    }
     for (int j = 0; j < 8; j++)
     {
       // Apply the initial padding
@@ -137,6 +148,12 @@ static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
       int pos_y = top_left[1] + i * cell_height + padding_y;
       int wid = cell_width - 2 * padding_x;
       int hei = cell_height - 2 * padding_y;
+
+      if(!(pos_x >= 0 && pos_y >= 0 && wid >= 1 && hei >= 1))
+      {
+        printf("Vision Error: Wrong coordinates in calculation of cell[%d][%d]\n", i, j);
+        return NULL;
+      }
       cells[i][j] = cvRect(pos_x, pos_y, wid, hei);
 
       // Detect if lines are found in the cells
@@ -145,6 +162,11 @@ static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
       {
         // We use Canny edge detector to find the contours in our cell
         IplImage *image1 = cvCreateImage(cvGetSize(board), 8, 1);
+        if(!image1)
+        {
+          printf("Vision Error: Cannot detect edges on cell[%d][%d]\n", i, j);
+          return NULL;
+        }
         cvCanny(board, image1, 50, 200, 3);
 
         // Focus the board image on the cell
@@ -292,10 +314,15 @@ bool is_cell_empty(Vision *vision, int row, int column)
 }
 
 /* Detects markers on board and calculates corresponding cells coordinates */
-static void process_image(IplImage *file, Vision *vision)
+static bool process_image(IplImage *file, Vision *vision)
 {
   // Isolate markers on board
   IplImage *thresholded = get_thresholded_image(file);
+  if(!thresholded)
+  {
+    printf("Vision Error: Cannot identify markers on board\n");
+    return false;
+  }
 
   // Convert board image to greyscale
   IplImage *board = cvCreateImage(cvGetSize(file), 8, 1);
@@ -308,6 +335,12 @@ static void process_image(IplImage *file, Vision *vision)
   CvSeq *markers = NULL;
   markers = cvHoughCircles(thresholded, tmp_storage, CV_HOUGH_GRADIENT, 1, 50, 10, 10, 0, 500);
 
+  if(!markers->total)
+  {
+    printf("Vision Error: No markers were found\n");
+    return false;
+  }
+
   // Get coordinates of markers
   float *top_left;
   float *bottom_right;
@@ -316,6 +349,11 @@ static void process_image(IplImage *file, Vision *vision)
   // Set the values of the vision struct
   vision->board = board;
   CvRect **cells = get_cells(top_left, bottom_right, vision->board);
+  if(!cells)
+  {
+    printf("Vision Error: Cannot calculate cells coordinates\n");
+    return false;
+  }
   vision->cells = cells;
 
   // Clear Memory
@@ -323,18 +361,36 @@ static void process_image(IplImage *file, Vision *vision)
   cvReleaseMemStorage(&tmp_storage);
   cvReleaseImage(&thresholded);
   cvReleaseImage(&file);
+
+  return true;
 }
 
 /* Initialises Vision struct */
 // Pre: Board is in initial state
-void vision_init(Vision *vision, char *url)
+bool vision_init(Vision *vision, char *url)
 {
+  if(!url)
+  {
+    printf("Vision Error: URL is null\n");
+    return false;
+  }
   vision->camera_url = url;
 
   // Setting Up std_dev_empty
   IplImage *image = get_image(vision);
-  process_image(image, vision);
+  if(!image)
+  {
+    printf("Vision Error: Cannot read image to initialise Vision (CAMERA = %d)\n", CAMERA);
+    return false;
+  }
+  if(!process_image(image, vision))
+  {
+    printf("Vision Error: Cannot process image to initialise Vision\n");
+    return false;
+  }
   vision->std_dev_empty = get_empty_std_dev(vision);
+
+  return true;
 }
 
 /* Updates image and cells coordinates */
