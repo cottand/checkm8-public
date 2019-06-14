@@ -5,9 +5,21 @@
 
 #define MAX_CMD_LENGTH 200
 #define MAX_RESPONSE_LENGTH 300
+<<<<<<< HEAD
 #define EMPTY_STRING "\0"
 #define GAME_ID "checkm8"
 
+=======
+#define MAX_RES_LINE_LENGTH 30
+
+#define GAME_ID "checkm8"
+#define ALPHA_OUT "../resources/alpha_out.txt"
+#define MOVE_OFFSET 23
+#define ERROR_PATTERN "status: \"move_error\"\n"
+#define MOVE_PATTERN "status: \"game_running: "
+
+
+>>>>>>> singularity_net_integration
 char *alpha_make_move(char *move)
 {
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
@@ -23,6 +35,7 @@ char *alpha_make_move(char *move)
     perror("Error: response is NULL");
   }
 
+<<<<<<< HEAD
   char *res_move = malloc(sizeof(char) * 5);
   if(fscanf(res_file, "status: \"move_error\""))
   {
@@ -35,6 +48,22 @@ char *alpha_make_move(char *move)
   else
   {
     printf("pattern match failed\n");
+=======
+  char *res_move = calloc(sizeof(char), 4);
+  
+  char buffer[MAX_RES_LINE_LENGTH];
+  
+  while (fgets(buffer, MAX_RES_LINE_LENGTH, res_file))
+  {
+    if(strcmp(ERROR_PATTERN, buffer) == 0)
+    {
+      printf("Error: Alpha move error\n");
+    }
+    else if(strncmp(MOVE_PATTERN  , buffer, MOVE_OFFSET) == 0)
+    {
+      strncpy(res_move, buffer + MOVE_OFFSET, 4);
+    }
+>>>>>>> singularity_net_integration
   }
 
   fclose(res_file);
@@ -50,8 +79,13 @@ void alpha_reset(void)
 
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
+<<<<<<< HEAD
 
   request->cmd = "reset";
+=======
+  
+  request->cmd = "restart";
+>>>>>>> singularity_net_integration
   FILE *res_file = snet_alpha_request(request);
 
   if(res_file == NULL)
@@ -64,27 +98,32 @@ void alpha_reset(void)
 
 FILE *snet_alpha_request(Alpha_Request *request)
 {
-  char *alpha_out = "../resources/alpha_out.txt";
-
   char *call = "snet client call -y snet zeta36-chess-alpha-zero play";
   char *json = calloc(sizeof(char), MAX_CMD_LENGTH);
 
   snprintf(json, MAX_CMD_LENGTH,
    "{\"uid\": \"%s\", \"move\": \"%s\", \"cmd\": \"%s\"}",
    request->uid, request->move, request->cmd);
+<<<<<<< HEAD
   printf("\n\n%s\n\n", json);
+=======
+>>>>>>> singularity_net_integration
   char *cmd = calloc(sizeof(char), MAX_CMD_LENGTH);
 
   snprintf(cmd, MAX_CMD_LENGTH,
    "{ printf \"\n$(%s '%s')\n\"; } > %s",
-   call, json, alpha_out);
+   call, json, ALPHA_OUT);
 
   if(system(cmd) == -1)
   {
     perror("Error: failed to send request");
   }
 
+<<<<<<< HEAD
   FILE *res_file = fopen(alpha_out, "r");
+=======
+  FILE *res_file = fopen(ALPHA_OUT, "r");
+>>>>>>> singularity_net_integration
 
   free(cmd);
   free(json);
