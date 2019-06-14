@@ -30,6 +30,9 @@ void checkm8_run(char *ip_cam)
     player_turn();
     algo_turn(&board, &vision);
   }
+
+  board_free(&board);
+  vision_free(&vision);
 }
 
 void player_turn()
@@ -72,6 +75,7 @@ void algo_turn(Board *board, Vision *vision)
   // send move_str to SingNET ? DONE TODO CHECK IF IT'S GOOD ?
   // get move from AlphaZero and ask hooman to make it ? DONE TODO CHECK IF IT'S GOOD ?
 
+  board_free(&next);
   free(move_str);
   free(algo_move);
 }
