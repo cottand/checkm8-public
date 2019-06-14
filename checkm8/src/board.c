@@ -176,9 +176,9 @@ Move move_piece(Cell *from, Cell *to)
 Move move_piece_str(Board *board, char *str)
 {
   int from_x = str[0] - 'a';
-  int from_y = str[1] - '0';
+  int from_y = str[1] - '1';
   int to_x   = str[2] - 'a';
-  int to_y   = str[3] - '0';
+  int to_y   = str[3] - '1';
 
   Cell *from = board_get_cell_coord(board, from_x, from_y);
   Cell *to = board_get_cell_coord(board, to_x, to_y);
@@ -250,9 +250,9 @@ void move_to_str(Move *move, char **str)
 void str_to_move(Board *board, Move *move, char *str)
 {
   int from_x = str[0] - 'a';
-  int from_y = str[1] - '0';
+  int from_y = str[1] - '1';
   int to_x   = str[2] - 'a';
-  int to_y   = str[3] - '0';
+  int to_y   = str[3] - '1';
 
   move->from  = *board_get_cell_coord(board, from_x, from_y);
   move->to    = *board_get_cell_coord(board, to_x, to_y);

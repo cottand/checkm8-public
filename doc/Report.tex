@@ -1,4 +1,5 @@
 \documentclass[11pt]{article}
+\usepackage{hyperref}
 
 %\usepackage{fullpage}
 
@@ -100,7 +101,22 @@ AlphaZero algorithm developped by Google's DeepMind in 2018. After processing
 the image of the board, we determine which move the opponent did and send that
 information to the AI which in turn gives us back what move it made.
 
-\subsection{Usage and testing}
+\subsection{Extension usage and testing}
+To compile and run Checkm8, \em OpenCV \em must be installed at
+\texttt{/usr/local} see:
+\href{https://docs.opencv.org/3.4.6/d7/d9f/tutorial_linux_install.html}{OpenCV install documentation}.
+To run Checkm8, % TODO
+
+
+OpenCV has assertions defined in its own functions that would let us 
+know when we did not use them properly, and helped find some tricky bugs.
+Fot example, that is how we discovered that we were using the wrong variables
+to compute padding, resulting in some negative coordinates for the image
+processing.
+\texttt{vision.c} had to be debugged through trial and error because we
+had to run it with images every time, and vary the images so our code would
+work with different lighting conditions, which had a bigger imapct that we 
+thought. This made debugging and testing slower thatn we would have liekd.
 \subsection{Results}
 \section{Conclusion}
 \subsection{Reflection on group work}
@@ -126,6 +142,23 @@ organisation and communication.
 
 \subsection{Individual reflections}
 \subsubsection{Lancelot Blanchard}
+I first approached this project quite confidently as I already had some prior knowledge 
+and experience in C. However, I realised that the project was challenging really early in 
+the development. I found the first three tasks of the project to be genuinely interesting 
+and I enjoyed finding a solution to the problem we were assigned. I feel like the first two 
+tasks helped bringing some light on my understanding of this year's C113 Architecture course. 
+Furthermore, I felt like this project was a fun substitute to the usual lab sessions of the 
+first two terms and it taught me C programming in a different but enjoyable way. I also 
+painstakingly developed my debugging skills and learned how to use common debugging tools such 
+as GDB and Valgrind, during intense and sometimes lengthy debugging sessions. 
+
+One subtle regret I have is that I found the first three tasks of the project to be very 
+challenging such that we had to spend much effort on them, and hence had to rush through the 
+implementation of our extension which I was very excited about. Overall, I still believe this has 
+genuinely been an incredibly informative experience. This project taught me not only helpful skills in 
+C programming, which I am certain will be useful in the near future, but it also made me experience 
+working as part of a team and collaborating efficiently. 
+
 \subsubsection{Nico D'Cotta}
 Personally, I believe I have learnt a great deal working on this project, not
 only about C but also about good and common coding practices like makefiles and
@@ -145,7 +178,7 @@ far future, and am overall satisfied with the work we have produced.
 I think we had good group cohesion and cooperation in general. I perticularly
 liked structuring the project and splitting tasks, although the project has
 taught me I could communicate better in that regard as it is important everyone
-understands fully not only what they're but also what others are doing. I also
+understands fully not only what they're working on but also what others are doing. I also
 learned a lot about using git in a team through the use of branching and
 merging. The project also taught me to use some very useful tools such as
 Valgrind and gdb which proved to be instrumental in debugging code and making
@@ -153,6 +186,17 @@ sure it's leak-free. Ultimately, I think our group worked very well and everyone
 played a good part in the making of the project.
 
 \subsection{Final thoughts}
-Talk about struggles how we overcame them like OGs etc
+Overall, we all agree we found this project very eye-opening in how 
+groups work in in our field and on tool usage (such as GDB, Make,
+Valgrind, Git, etc) that enable us to work towards getting what we 
+wanted out of our code. \\
+We aimed towards finishing parts I, II and III so we could spend time
+working on our extension and be ambitious about it. We regret not being
+able to do that to the extend we would have wished, but we found that 
+instead we spent the necessary time on the first parts to produce 
+efficient and encapsulated quality code. Our extension, although not
+as ambitious as we had hoped at first, was a lot of hard work and we 
+would like to think is interesting and original enough to stand out.
+
 
 \end{document}

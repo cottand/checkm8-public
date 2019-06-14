@@ -1,8 +1,14 @@
 
-Error: <_Rendezvous of RPC that terminated with:
-	status = StatusCode.UNAVAILABLE
-	details = "failed to connect to all addresses"
-	debug_error_string = "{"created":"@1560513712.849029000","description":"Failed to pick subchannel","file":"src/core/ext/filters/client_channel/client_channel.cc","file_line":3381,"referenced_errors":[{"created":"@1560513712.849023000","description":"failed to connect to all addresses","file":"src/core/ext/filters/client_channel/lb_policy/pick_first/pick_first.cc","file_line":453,"grpc_status":14}]}"
->
-If you want to see full Traceback then run:
-snet --print-traceback [parameters]
+uid: "checkm8"
+board: "    a b c d e f g h
+-------------------
+8 | r n b q k b n r
+7 | p p . p p p p p
+6 | . . . . . . . .
+5 | . . p . . . . .
+4 | . . . . . . . .
+3 | . . . . . N . .
+2 | P P P P P P P P
+1 | R N B Q K B . R
+"
+status: "game_running: c7c5"
