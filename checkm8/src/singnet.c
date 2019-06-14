@@ -3,12 +3,18 @@
 #include "singnet.h"
 #include <string.h>
 
-#define max_cmd_length 200
-#define max_response_length 300
-#define empty_string "\0"
-#define game_id "checkm8"
+#define MAX_CMD_LENGTH 200
+#define MAX_RESPONSE_LENGTH 300
+#define MAX_RES_LINE_LENGTH 30
 
-void alpha_make_move(char *move)
+#define GAME_ID "checkm8"
+#define ALPHA_OUT "../resources/alpha_out.txt"
+#define MOVE_OFFSET 23
+#define ERROR_PATTERN "status: \"move_error\"\n"
+#define MOVE_PATTERN "status: \"game_running: "
+
+
+char *alpha_make_move(char *move)
 {
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
@@ -17,28 +23,33 @@ void alpha_make_move(char *move)
 
   FILE *res_file = snet_alpha_request(request); 
 
-  char *res_buffer = calloc(sizeof(char), max_response_length);
+  char *res_buffer = calloc(sizeof(char), MAX_RESPONSE_LENGTH);
   if(res_file == NULL)
   {
     perror("Error: response is NULL");
   }
 
-  char res_move[4];
-  if(fscanf(res_file, "status: \"move_error\""))
-  {
-    perror("Invalid move, please enter again: ");
-  }
-  else if(fscanf(res_file, "status: \"game_running: %s\"", res_move))
-  {
-    printf("\n\nyou've made this move: %s\n\n", res_move);
-  }
-  else{
-    printf("pattern match failed\n");
-  }
+  char *res_move = calloc(sizeof(char), 4);
   
+  char buffer[MAX_RES_LINE_LENGTH];
+  
+  while (fgets(buffer, MAX_RES_LINE_LENGTH, res_file))
+  {
+    if(strcmp(ERROR_PATTERN, buffer) == 0)
+    {
+      printf("Error: Alpha move error\n");
+    }
+    else if(strncmp(MOVE_PATTERN  , buffer, MOVE_OFFSET) == 0)
+    {
+      strncpy(res_move, buffer + MOVE_OFFSET, 4);
+    }
+  }
+
   fclose(res_file);
   free(res_buffer);
   free(request);
+
+  return res_move;
 }
 
 void alpha_reset(void)
@@ -48,9 +59,8 @@ void alpha_reset(void)
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
   
-  request->cmd = "reset";
+  request->cmd = "restart";
   FILE *res_file = snet_alpha_request(request);
-  
 
   if(res_file == NULL)
   {
@@ -62,36 +72,33 @@ void alpha_reset(void)
 
 FILE *snet_alpha_request(Alpha_Request *request)
 {
-  char *alpha_out = "../resources/alpha_out.txt";
-
   char *call = "snet client call -y snet zeta36-chess-alpha-zero play";
-  char *json = calloc(sizeof(char), max_cmd_length);
+  char *json = calloc(sizeof(char), MAX_CMD_LENGTH);
 
-  snprintf(json, max_cmd_length,
+  snprintf(json, MAX_CMD_LENGTH,
    "{\"uid\": \"%s\", \"move\": \"%s\", \"cmd\": \"%s\"}",
    request->uid, request->move, request->cmd);
-  printf("\n\n%s\n\n", json);
-  char *cmd = calloc(sizeof(char), max_cmd_length);
+  char *cmd = calloc(sizeof(char), MAX_CMD_LENGTH);
 
-  snprintf(cmd, max_cmd_length,
+  snprintf(cmd, MAX_CMD_LENGTH,
    "{ printf \"\n$(%s '%s')\n\"; } > %s",
-   call, json, alpha_out);
+   call, json, ALPHA_OUT);
 
   if(system(cmd) == -1)
   {
     perror("Error: failed to send request");
   }
-  
-  FILE *res_file = fopen(alpha_out, "r");
-  
-  free(cmd); 
+
+  FILE *res_file = fopen(ALPHA_OUT, "r");
+
+  free(cmd);
   free(json);
   return res_file;
 }
 
 void init_alpha_request(Alpha_Request *request)
 {
-  request->uid = game_id;
+  request->uid = GAME_ID;
   request->move = "\0";
   request->cmd = "\0";
 }

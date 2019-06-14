@@ -20,11 +20,10 @@ instruction system. It is an abstract representation of an instruction that is
 well adapted for both parts: the emulator reads 32 bits and fills the abstracted
 instruction structure and passes it to the executor. On the other hand, the
 assembler reads the written instructions and fills the very same structure which
-is then easily converted to 32 bits. \\ Applying separation of concerns when writing
-the emulator made reusing and adapting the code rather painless. 
-Although the assembler does resuse the
-instrution system, the general structure around it is rather different from the emulator's, we
-detail it below.
+is then easily converted to 32 bits. \\ Applying separation of concerns when
+writing the emulator made reusing and adapting the code rather painless.
+Although the assembler does resuse the instruction system, the general structure
+around it is rather different from the emulator's, we detail it below.
 
 \subsection{Structure}
 
@@ -42,9 +41,9 @@ perticular instruction type. Once this structure has been filled out, it is very
 easy to encode it as 32 bits using bit shifting operations. The 32-bit
 instructions are written sequentially to an output buffer which is then written
 to the output file. \\ \\
-Some of the challenges or bugs we faced included expanding the emulator's 
-memory to be able to emulate I/O, and writing very similar code to what we did
-in emulator but 'backwards' was not always easy.
+Some of the challenges or bugs we faced included expanding the emulator's memory
+to be able to emulate I/O, and writing very similar code to what we did in
+emulator but 'backwards' was not always easy.
 
 \section{Extension: Checkm8 chess player}
 
@@ -92,6 +91,8 @@ AlphaZero algorithm developped by Google's DeepMind in 2018. After processing
 the image of the board, we determine which move the opponent did and send that
 information to the AI which in turn gives us back what move it made.
 
+\subsection{Usage and testing}
+\subsection{Results}
 \section{Conclusion}
 \subsection{Reflection on group work}
 We mainly communicated through Slack which proved very effective as we were able
@@ -117,22 +118,31 @@ organisation and communication.
 \subsection{Individual reflections}
 \subsubsection{Lancelot Blanchard}
 \subsubsection{Nico D'Cotta}
-Personally, I believe I have learnt a great deal working on this project,
-not only about C but also about good and common coding practices
-like makefiles and version control.
-It was my first time coding in a group and I think we managed
-to attain a pretty pleasant and efficient group dynamic. Not having 
-covered every single part of the project, I think specialising on certain bits
-that each of us can do well is what makes group work work. Small challenges
-like cross compiling and linking third party libraries accross operating systems
-has allowed me to get a glimpse at what actual software developers have to deal
-with on a daily basis. \\
+Personally, I believe I have learnt a great deal working on this project, not
+only about C but also about good and common coding practices like makefiles and
+version control.
+It was my first time coding in a group and I think we managed to attain a pretty
+pleasant and efficient group dynamic. Not having covered every single part of
+the project, I think specialising on certain bits that each of us can do well is
+what makes group work work. Small challenges like cross compiling and linking
+third party libraries accross operating systems has allowed me to get a glimpse
+at what actual software developers have to deal with on a daily basis. \\
 I am sure that a lot of what I have learnt will be useful to me in the not too
 far future, and am overall satisfied with the work we have produced.
 
 
 \subsubsection{Kacper Kazaniecki}
 \subsubsection{William Profit}
+I think we had good group cohesion and cooperation in general. I perticularly
+liked structuring the project and splitting tasks, although the project has
+taught me I could communicate better in that regard as it is important everyone
+understands fully not only what they're but also what others are doing. I also
+learned a lot about using git in a team through the use of branching and
+merging. The project also taught me to use some very useful tools such as
+Valgrind and gdb which proved to be instrumental in debugging code and making
+sure it's leak-free. Ultimately, I think our group worked very well and everyone
+played a good part in the making of the project.
+
 \subsection{Final thoughts}
 Talk about struggles how we overcame them like OGs etc
 

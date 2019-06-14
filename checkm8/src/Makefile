@@ -1,16 +1,17 @@
 CC       = gcc
-CFLAGS   =  -Wall -g -std=c99 -Werror -pedantic -Ofast -lm
+CFLAGS   = $(CLIBS) -Wall -g -Werror -std=c99 -pedantic -Ofast 
 HEADERS  = -I/usr/local/include/opencv/ -I/usr/include/opencv2/
-CLIBS		 = $(HEADERS) -L/usr/local/lib64 -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc
+CLIBS	 = $(HEADERS) 
+VFLAGS =  -lopencv_core -lopencv_highgui -lopencv_imgcodecs -lopencv_imgproc -L/usr/local/lib64
 
 .SUFFIXES: .c .o
 
 .PHONY: clean
 
-all: vision
+all: checkm8
 
-checkm8: main.c checkm8.o board.o cell.o board.o
-	$(CC) $(CFLAGS) $^ -o $@
+checkm8: main.c checkm8.o board.o cell.o board.o vision.o snet.o
+	$(CC) $(CFLAGS) $(VFLAGS) $^ -o $@
 
 ptest: ptest.c snet.o
 	$(CC) $(CFLAGS) $^ -o $@
@@ -24,7 +25,7 @@ board.o: board.c
 cell.o: cell.c
 	$(CC) $(CFLAGS)  -c $^ -o $@
 
-vision: vision.c
+vision.o: vision.c
 	$(CC) $(CFLAGS) -c $^ -o $@
 
 snet.o: singnet.c
