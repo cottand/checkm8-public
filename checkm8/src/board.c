@@ -84,7 +84,6 @@ void board_set_from_vision(Board *board, Vision *vision)
       {
         board_set_cell_coord(board, x, y, None, White);
       }
-      
     }
   }
   printf("Detected %d pieces\n", count);
@@ -121,11 +120,11 @@ void board_set_cell_coord(Board *board, uint8_t x, uint8_t y, Piece_Type type, C
   board->cells[8 * y + x].piece.color = color;
 }
 
-Move get_move(Board *prev, Board *curr)
+int get_move(Board *prev, Board *curr, Move *move)
 {
-  Move move;
-  board_print(prev);
-  board_print(curr);
+  /* How many moves we detect, useful for error handling */
+  int nb_missing = 0;
+  int nb_new = 0;
 
   for (int y = 0; y < 8; y++)
   {
@@ -136,18 +135,28 @@ Move get_move(Board *prev, Board *curr)
 
       if (prev_cell->piece.type != None && curr_cell->piece.type == None)
       {
-        move.from = *curr_cell;
-        move.piece = prev_cell->piece;
+        move->from = *curr_cell;
+        move->piece = prev_cell->piece;
+
+        nb_missing++;
       }
 
       if (prev_cell->piece.type == None && curr_cell->piece.type != None)
       {
-        move.to = *curr_cell;
+        move->to = *curr_cell;
+
+        nb_new++;
       }
     }
   }
 
-  return move;
+  /* If we've lost more than one piece */
+  if (abs(nb_missing - nb_new) > 1)
+  {
+    printf("Error in detecting move, board is incoherent\n");
+  }
+
+  return MAX(nb_missing, nb_new);
 }
 
 Move move_piece(Cell *from, Cell *to)
@@ -162,6 +171,19 @@ Move move_piece(Cell *from, Cell *to)
   from->piece.type = None;
 
   return move;
+}
+
+Move move_piece_str(Board *board, char *str)
+{
+  int from_x = str[0] - 'a';
+  int from_y = str[1] - '0';
+  int to_x   = str[2] - 'a';
+  int to_y   = str[3] - '0';
+
+  Cell *from = board_get_cell_coord(board, from_x, from_y);
+  Cell *to = board_get_cell_coord(board, to_x, to_y);
+
+  return move_piece(from, to);
 }
 
 void do_move(Board *board, Move *move)
@@ -221,12 +243,18 @@ void move_to_str(Move *move, char **str)
 
   char to_x = move->to.x + 'a';
   int to_y = move->to.y + 1;
-/*
-  *str[0] = from_x;
-  snprintf(*str + 1 * sizeof(char), 1, "%d", from_y);
-
-  *str[2] = to_x;
-  snprintf(*str + 3 * sizeof(char), 1, "%d", to_y);*/
 
   snprintf(*str, 5, "%c%d%c%d", from_x, from_y, to_x, to_y);
+}
+
+void str_to_move(Board *board, Move *move, char *str)
+{
+  int from_x = str[0] - 'a';
+  int from_y = str[1] - '0';
+  int to_x   = str[2] - 'a';
+  int to_y   = str[3] - '0';
+
+  move->from  = *board_get_cell_coord(board, from_x, from_y);
+  move->to    = *board_get_cell_coord(board, to_x, to_y);
+  move->piece = move->from.piece;
 }
