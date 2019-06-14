@@ -55,9 +55,25 @@ void algo_turn(Board *board, Vision *vision)
 {
   printf("* Algo's turn now *\n");
 
-  char *move = detect_player_move(board, vision);
+  char *move = NULL;
+  char *algo_move = NULL;
 
-  char *algo_move = alpha_make_move(move);
+  bool success = false;
+  while (!success)
+  {
+    char *move = detect_player_move(board, vision);
+    success = alpha_make_move(move, &algo_move);
+
+    if (!success)
+    {
+      printf("AlphaZero detected an illegal move, please redo move\n");
+    }
+  }
+
+  /* Carry out player's move */
+  move_piece_str(board, move);
+
+  /* Carry out algo's move */
   move_piece_str(board, algo_move);
 
   printf("AlphaZero move: %s\n", algo_move);
@@ -122,9 +138,6 @@ char *detect_player_move(Board *board, Vision *vision)
 
     board_free(&next);
   }
-
-  /* Carry out the move on the board */
-  do_move(board, &move);
 
   return move_str;
 }

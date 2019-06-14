@@ -14,12 +14,12 @@
 #define MOVE_PATTERN "status: \"game_running: "
 
 
-char *alpha_make_move(char *move)
+bool alpha_make_move(char *player_move, char **alpha_move)
 {
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
 
-  request->move = move;
+  request->move = player_move;
 
   FILE *res_file = snet_alpha_request(request); 
 
@@ -29,19 +29,21 @@ char *alpha_make_move(char *move)
     perror("Error: response is NULL");
   }
 
-  char *res_move = calloc(sizeof(char), 4);
-  
+  *alpha_move = calloc(sizeof(char), 4);
+
   char buffer[MAX_RES_LINE_LENGTH];
-  
+
   while (fgets(buffer, MAX_RES_LINE_LENGTH, res_file))
   {
     if(strcmp(ERROR_PATTERN, buffer) == 0)
     {
       printf("Error: Alpha move error\n");
+      free(*alpha_move);
+      return false;
     }
     else if(strncmp(MOVE_PATTERN  , buffer, MOVE_OFFSET) == 0)
     {
-      strncpy(res_move, buffer + MOVE_OFFSET, 4);
+      strncpy(*alpha_move, buffer + MOVE_OFFSET, 4);
     }
   }
 
@@ -49,7 +51,7 @@ char *alpha_make_move(char *move)
   free(res_buffer);
   free(request);
 
-  return res_move;
+  return true;
 }
 
 void alpha_reset(void)
@@ -58,7 +60,7 @@ void alpha_reset(void)
 
   Alpha_Request *request = malloc(sizeof(Alpha_Request));
   init_alpha_request(request);
-  
+
   request->cmd = "restart";
   FILE *res_file = snet_alpha_request(request);
 
