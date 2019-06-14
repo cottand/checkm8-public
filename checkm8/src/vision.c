@@ -11,6 +11,12 @@
 
 #define PADDING 0.03
 
+#define DELTA_LINE_ERROR 2
+#define DELTA_LINE 3
+
+#define THRESH_STD_DEV 16
+#define THRESH_CIRCLES 25
+
 static IplImage *get_image_from_camera(void)
 {
   char python_request[60];
@@ -65,6 +71,22 @@ static void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
   }
 }
 
+void get_lines(CvSeq *lines, CvSeq *h_lines, CvSeq *v_lines)
+{
+  for (int i = 0; i < lines->total; i++)
+  {
+    CvPoint *line = (CvPoint *)cvGetSeqElem(lines, i);
+    if (abs(line[1].y - line[0].y) < DELTA_LINE)
+    {
+      cvSeqPush(h_lines, line);
+    }
+    else if (abs(line[1].x - line[0].x) < DELTA_LINE)
+    {
+      cvSeqPush(v_lines, line);
+    }
+  }
+}
+
 static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
 {
   CvRect **cells = malloc(8 * sizeof(CvRect *));
@@ -104,6 +126,10 @@ static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
         int min_length = wid < hei ? wid : hei;
         min_length -= 0.5 * min_length;
         lines = cvHoughLines2(image1, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 35, min_length, 40, 0, 360);
+        
+        CvSeq *h_lines = cvCreateSeq(0, sizeof(CvSeq), sizeof(CvPoint) * 2, storage);
+        CvSeq *v_lines = cvCreateSeq(0, sizeof(CvSeq), sizeof(CvPoint) * 2, storage);
+        get_lines(lines, h_lines, v_lines);
         /*
         for (int z = 0; z < lines->total; z++)
         {
@@ -117,20 +143,56 @@ static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
         char name[11];
         snprintf(name, 11, "cell[%d][%d]", i, j);
         cvShowImage(name, image1);
-        cvWaitKey(0);
-        printf("Cell[%d][%d]: %d\n", i, j, lines->total);*/
-
-        lines_remain = lines->total != 0;
-
-        if (lines_remain)
+        cvWaitKey(0);*/
+        printf("Cell[%d][%d]: %d\n", i, j, lines->total);
+      
+        printf("Found %d h lines\n", h_lines->total);
+        printf("Found %d v lines\n", v_lines->total);
+        float padding_top = 0, padding_bot = 0;
+        float center_y = hei / 2;
+        for (int h = 0; h < h_lines->total; h++)
         {
-          pos_x += padding_x;
-          pos_y += padding_y;
-          wid -= 2 * padding_x;
-          hei -= 2 * padding_y;
-          
-          cells[i][j] = cvRect(pos_x, pos_y , wid, hei);
+          CvPoint *line = (CvPoint *)cvGetSeqElem(h_lines, h);
+          if (line[0].y > center_y)
+          {
+            float new_padding_bot = hei - MIN(line[0].y, line[1].y);
+            padding_bot = MAX(padding_bot, new_padding_bot) + DELTA_LINE_ERROR;
+          }
+          else
+          {
+            float new_padding_top = MAX(line[0].y, line[1].y);
+            padding_top = MAX(padding_top, new_padding_top) + DELTA_LINE_ERROR;
+          }
         }
+
+        float padding_left = 0, padding_right = 0;
+        float center_x = wid / 2;
+        for (int v = 0; v < v_lines->total; v++)
+        {
+          CvPoint *line = (CvPoint *)cvGetSeqElem(v_lines, v);
+          if (line[0].x > center_x)
+          {
+            float new_padding_right = wid - MIN(line[0].x, line[1].x);
+            padding_right = MAX(padding_right, new_padding_right) + DELTA_LINE_ERROR;
+          }
+          else
+          {
+            float new_padding_left = MAX(line[0].x, line[1].x);
+            padding_left = MAX(padding_left, new_padding_left) + DELTA_LINE_ERROR;
+          }
+        }
+
+        pos_x += padding_left;
+        pos_y += padding_top;
+        wid -= padding_right + padding_left;
+        hei -= padding_top + padding_bot;
+        printf("Padding left : %f\n", padding_left);
+        printf("Padding right : %f\n", padding_right);
+        printf("Padding top : %f\n", padding_top);
+        printf("Padding bot : %f\n", padding_bot);
+        cells[i][j] = cvRect(pos_x, pos_y , wid, hei);
+
+        lines_remain = !(padding_left < 1 && padding_right < 1 && padding_top < 1 && padding_bot < 1);
       }
     }
   }
@@ -184,7 +246,7 @@ bool is_cell_empty_std_dev(Vision_State *vision_state, int row, int column)
 {
   float std_dev_cell = get_cell_std_dev(vision_state, row, column);
 
-  return fabs(std_dev_cell - vision_state->std_dev_empty) <= 05;
+  return fabs(std_dev_cell - vision_state->std_dev_empty) <= THRESH_STD_DEV;
 }
 
 bool is_cell_empty_circles(Vision_State *vision_state, int row, int column)
@@ -195,7 +257,7 @@ bool is_cell_empty_circles(Vision_State *vision_state, int row, int column)
   CvSeq *circles = NULL;
 
   IplImage *image = get_cell(vision_state, row, column);
-  circles = cvHoughCircles(image, storage, CV_HOUGH_GRADIENT, 1, 100, 25, 27, 5, 20);
+  circles = cvHoughCircles(image, storage, CV_HOUGH_GRADIENT, 1, 100, 25, THRESH_CIRCLES, 5, 20);
 
   // Code to draw circle
   //printf("total : %d\n", circles->total);
@@ -212,7 +274,7 @@ bool is_cell_empty_substraction(Vision_State *vision_state, int row, int column)
 
 bool is_cell_empty(Vision_State *vision_state, int row, int column)
 {
-  return is_cell_empty_std_dev(vision_state, row, column);
+  return is_cell_empty_circles(vision_state, row, column) && is_cell_empty_std_dev(vision_state, row, column);
 }
 
 static void vision_state_init(IplImage *file, Vision_State *vision_state)
@@ -239,7 +301,7 @@ static void vision_state_init(IplImage *file, Vision_State *vision_state)
 
   vision_state->board_empty = board;
   vision_state->cells = cells;
-  //vision_state->std_dev_empty = get_empty_std_dev(vision_state);
+  vision_state->std_dev_empty = get_empty_std_dev(vision_state);
 
   // Clear Memory
   cvClearSeq(markers);
@@ -405,6 +467,40 @@ int main(int argc, char **argv)
   {
     for (int j = 0; j < 8; j++)
     {
+      if (is_cell_empty(&vision_state, i, j))
+      {
+        printf(".");
+      }
+      else
+      {
+        printf("O");
+        count++;
+      }
+      //cvShowImage("Cell", get_cell(board, cells, i, j));
+      //cvWaitKey(0);
+    }
+    printf("\n");
+  }
+  printf("%d\n\n", count);
+
+/*
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
+      char name[11];   
+      snprintf(name, 11, "cell[%d][%d]", i, j);
+      cvShowImage(name, get_cell(&vision_state, i, j));
+      cvWaitKey(0);
+      cvDestroyAllWindows();
+    }
+  }*/
+
+  /*int count = 0;
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < 8; j++)
+    {
       float dev = get_cell_std_dev(&vision_state, i, j);
       if (dev < 10)
       {
@@ -420,7 +516,7 @@ int main(int argc, char **argv)
     }
     printf("\n");
   }
-  printf("%d\n\n", count);
+  printf("%d\n\n", count);*/
 /*
   for(int i = 0; i < 8; i++)
   {
@@ -475,11 +571,11 @@ int main(int argc, char **argv)
 
   //Vision_State vision_state;
   //vision_state_init(get_image_from_path("images/chessboard.jpg"), &vision_state);
-/*
-  printf("std_dev_empty : %f\n", vision_state.std_dev_empty);
-  printf("cell 7 7 : %f\n", get_cell_std_dev(&vision_state, 0, 0));
-  printf("Cell[6][6] empty : %d\n", is_cell_empty(&vision_state, 0, 0));
 
+  /* printf("std_dev_empty : %f\n", vision_state.std_dev_empty);
+  printf("cell 7 7 : %f\n", get_cell_std_dev(&vision_state, 0, 0));
+  printf("Cell[6][6] empty : %d\n", is_cell_empty(&vision_state, 0, 0));*/
+/*
   for (int i = 0; i < 8; i++)
   {
     for (int j = 0; j < 8; j++)
@@ -489,8 +585,8 @@ int main(int argc, char **argv)
     }
     printf("\n");
   }
-  printf("\n\n");
-
+  printf("\n\n");*/
+/*
   int count = 0;
   for (int i = 0; i < 8; i++)
   {
