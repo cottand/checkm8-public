@@ -3,21 +3,11 @@
 
 #include <opencv2/core/core_c.h>
 
-typedef struct s_Vision_State
-{
-  IplImage *board;
-  IplImage *board_empty;
-  CvRect **cells;
-  CvRect **cells_empty;
-  float std_dev_empty;
-  float std_dev_pieces;
-} Vision_State;
-
-
 typedef struct s_Vision
 {
-  Vision_State *prev;
-  Vision_State *curr;
+  float std_dev_empty;
+  IplImage *board;
+  CvRect **cells;
 } Vision;
 
 typedef struct s_Vision_Change
@@ -25,6 +15,8 @@ typedef struct s_Vision_Change
   int emptied_cell[2];
   int filled_cell[2];
 } Vision_Change;
+
+bool is_cell_empty(Vision *vision, int row, int column);
 
 void vision_init(Vision *vision);
 void vision_update(Vision *vision);
