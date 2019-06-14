@@ -18,7 +18,7 @@ void checkm8_run(char *ip_cam)
 
   if (!success)
   {
-    printf("Error in initializing vision. Abroting.\n");
+    printf("Error in initializing vision. Aborting.\n");
     return;
   }
 
@@ -80,23 +80,30 @@ char *detect_player_move(Board *board, Vision *vision)
 
     Board next;
     board_init(&next);
-    board_set_from_vision(&next, vision);
 
-    int nb_moves = get_move(board, &next, &move);
+    int nb_moves = 0;
+    if (vis_success)
+    {
+      board_set_from_vision(&next, vision);
+      nb_moves = get_move(board, &next, &move);
 
-    move_to_str(&move, &move_str);
-    printf("Detected move: %s\n", move_str);
+      move_to_str(&move, &move_str);
+      printf("Detected move: %s\n", move_str);
+    }
 
     if (nb_moves != 1 || !vis_success)
     {
-      free(move_str);
+      if (vis_success)
+      {
+        free(move_str);
+      }
 
       char *answer = calloc(1, sizeof(char) * 5);
       printf("There was an error in detecting the player's move. Press enter to retry or input the move directly: ");
-      fgets(answer, 4, stdin);
+      fgets(answer, 5, stdin);
 
       /* The user has inputed an anser eg c2c4 */
-      if (strcmp(answer, ""))
+      if (strlen(answer) == 4)
       {
         successful = true;
         move_str = answer;

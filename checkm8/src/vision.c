@@ -15,8 +15,8 @@
 #define DELTA_LINE_ERROR 2
 #define DELTA_LINE 3
 
-#define THRESH_STD_DEV 14
-#define THRESH_CIRCLES 22
+#define THRESH_STD_DEV 16
+#define THRESH_CIRCLES 24
 
 #define CAMERA 1
 
