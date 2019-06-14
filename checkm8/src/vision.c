@@ -10,6 +10,9 @@
 // TODO: pass URL as argument of main function
 #define URL "http://146.169.218.9:8080"
 
+#define MIN_HUE 77
+#define MAX_HUE 87
+
 #define PADDING 0.03
 
 #define DELTA_LINE_ERROR 2
@@ -20,6 +23,7 @@
 
 #define CAMERA 0
 
+/* Reads an image from the camera */
 static IplImage *get_image_from_camera(void)
 {
   char python_request[60];
@@ -29,12 +33,14 @@ static IplImage *get_image_from_camera(void)
   return image;
 }
 
+/* Reads an image from a given path */
 static IplImage *get_image_from_path(char *path)
 {
   IplImage *image = cvLoadImage(path, CV_WINDOW_AUTOSIZE);
   return image;
 }
 
+/* Depending on the CAMERA constant, get the image from Camera or Path */
 static IplImage *get_image()
 {
   if (CAMERA)
@@ -47,6 +53,7 @@ static IplImage *get_image()
   }
 }
 
+/* Isolates the markers on the board */
 static IplImage *get_thresholded_image(IplImage *img)
 {
   IplImage *imgHSV = cvCreateImage(cvGetSize(img), 8, 3);
@@ -54,13 +61,14 @@ static IplImage *get_thresholded_image(IplImage *img)
 
   IplImage *thresholded_img = cvCreateImage(cvGetSize(img), 8, 1);
 
-  cvInRangeS(imgHSV, cvScalar(77, 100, 100, 0), cvScalar(87, 255, 255, 0), thresholded_img);
+  cvInRangeS(imgHSV, cvScalar(MIN_HUE, 100, 100, 0), cvScalar(MAX_HUE, 255, 255, 0), thresholded_img);
 
   cvReleaseImage(&imgHSV);
   return thresholded_img;
 }
 
-static void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
+/* Finds top left corner and bottom right corner */
+static void get_corners(CvSeq *elems, float **top_left, float **bottom_right)
 {
   float *point1 = (float *)cvGetSeqElem(elems, 0);
   float *point2 = (float *)cvGetSeqElem(elems, 1);
@@ -71,8 +79,8 @@ static void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
     point2[0] -= point2[2];
     point2[1] -= point2[2];
 
-    *topLeft = point1;
-    *bottomRight = point2;
+    *top_left = point1;
+    *bottom_right = point2;
   }
   else
   {
@@ -81,11 +89,12 @@ static void get_corners(CvSeq *elems, float **topLeft, float **bottomRight)
     point1[0] -= point1[2];
     point1[1] -= point1[2];
 
-    *topLeft = point2;
-    *bottomRight = point1;
+    *top_left = point2;
+    *bottom_right = point1;
   }
 }
 
+/* Finds horizontal and vertical lines */
 static void get_lines(CvSeq *lines, CvSeq *h_lines, CvSeq *v_lines)
 {
   for (int i = 0; i < lines->total; i++)
@@ -102,15 +111,19 @@ static void get_lines(CvSeq *lines, CvSeq *h_lines, CvSeq *v_lines)
   }
 }
 
-static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
+/* Calculates the coordinates of each cell on the board */
+static CvRect **get_cells(float *top_left, float *bottom_right, IplImage *board)
 {
+  // Allocate memory for the 2D array
   CvRect **cells = malloc(8 * sizeof(CvRect *));
 
-  int width = bottomRight[0] - topLeft[0];
-  int height = bottomRight[1] - topLeft[1];
+  // We calculate the board dimensions and the cell dimensions
+  int width = bottom_right[0] - top_left[0];
+  int height = bottom_right[1] - top_left[1];
   int cell_width = width / 8;
   int cell_height = height / 8;
 
+  // We calculate an initial padding to remove potential errors
   float padding_x = PADDING * cell_width;
   float padding_y = PADDING * cell_height;
 
@@ -122,39 +135,47 @@ static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
     cells[i] = malloc(8 * sizeof(CvRect));
     for (int j = 0; j < 8; j++)
     {
-      int pos_x = topLeft[0] + j * cell_width + padding_x;
-      int pos_y = topLeft[1] + i * cell_height + padding_y;
+      // Apply the initial padding
+      int pos_x = top_left[0] + j * cell_width + padding_x;
+      int pos_y = top_left[1] + i * cell_height + padding_y;
       int wid = cell_width - 2 * padding_x;
       int hei = cell_height - 2 * padding_y;
-
       cells[i][j] = cvRect(pos_x, pos_y, wid, hei);
 
+      // Detect if lines are found in the cells
       bool lines_remain = true;
       while (lines_remain)
       {
+        // We use Canny edge detector to find the contours in our cell
         IplImage *image1 = cvCreateImage(cvGetSize(board), 8, 1);
-
         cvCanny(board, image1, 50, 200, 3);
 
+        // Focus the board image on the cell
         cvSetImageROI(image1, cells[i][j]);
-        int min_length = wid < hei ? wid : hei;
+        
+        // Find lines in the cell
+        int min_length = MIN(wid, hei);
         min_length -= 0.5 * min_length;
         lines = cvHoughLines2(image1, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 35, min_length, 40, 0, 360);
 
+        // Get horizontal and vertical lines
         CvSeq *h_lines = cvCreateSeq(0, sizeof(CvSeq), sizeof(CvPoint) * 2, storage);
         CvSeq *v_lines = cvCreateSeq(0, sizeof(CvSeq), sizeof(CvPoint) * 2, storage);
         get_lines(lines, h_lines, v_lines);
 
+        // If line is horizontal, we will crop the top or the bottom
         float padding_top = 0, padding_bot = 0;
         float center_y = hei / 2;
         for (int h = 0; h < h_lines->total; h++)
         {
           CvPoint *line = (CvPoint *)cvGetSeqElem(h_lines, h);
+          // If line is at the bottom, we crop the bottom
           if (line[0].y > center_y)
           {
             float new_padding_bot = hei - MIN(line[0].y, line[1].y);
             padding_bot = MAX(padding_bot, new_padding_bot) + DELTA_LINE_ERROR;
           }
+          // If line is at the top, we crop the top
           else
           {
             float new_padding_top = MAX(line[0].y, line[1].y);
@@ -162,16 +183,19 @@ static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
           }
         }
 
+        // If line is vertical, we will crop the left or the right
         float padding_left = 0, padding_right = 0;
         float center_x = wid / 2;
         for (int v = 0; v < v_lines->total; v++)
         {
           CvPoint *line = (CvPoint *)cvGetSeqElem(v_lines, v);
+          // If line is at the right, we will crop the right
           if (line[0].x > center_x)
           {
             float new_padding_right = wid - MIN(line[0].x, line[1].x);
             padding_right = MAX(padding_right, new_padding_right) + DELTA_LINE_ERROR;
           }
+          // If line is at the left, we will crop the left
           else
           {
             float new_padding_left = MAX(line[0].x, line[1].x);
@@ -179,17 +203,22 @@ static CvRect **get_cells(float *topLeft, float *bottomRight, IplImage *board)
           }
         }
 
+        // Apply the paddings that has been calculated
         pos_x += padding_left;
         pos_y += padding_top;
         wid -= padding_right + padding_left;
         hei -= padding_top + padding_bot;
         cells[i][j] = cvRect(pos_x, pos_y, wid, hei);
 
+        // If no padding has been found, the cell has no more line
         lines_remain = !(padding_left < 1 && padding_right < 1 && padding_top < 1 && padding_bot < 1);
       }
     }
   }
+  // Free the memory
+  cvClearSeq(lines);
   cvReleaseMemStorage(&storage);
+
   return cells;
 }
 
@@ -200,6 +229,7 @@ static IplImage *get_cell(Vision *vision, int row, int column)
   return vision->board;
 }
 
+/* Returns an average of the standard deviations of known empty cells on an initial state */
 static float get_empty_std_dev(Vision *vision)
 {
   float dev = 0.0f;
@@ -227,6 +257,7 @@ static float get_empty_std_dev(Vision *vision)
   return dev;
 }
 
+/* Returns the standard deviation of the cell */
 static float get_cell_std_dev(Vision *vision, int row, int col)
 {
   CvScalar mean, std_dev;
@@ -235,6 +266,7 @@ static float get_cell_std_dev(Vision *vision, int row, int col)
   return std_dev.val[0];
 }
 
+/* Detects if the cell is empty by comparing the standard deviation to the one of an empty cell */
 static bool is_cell_empty_std_dev(Vision *vision, int row, int column)
 {
   float std_dev_cell = get_cell_std_dev(vision, row, column);
@@ -242,6 +274,7 @@ static bool is_cell_empty_std_dev(Vision *vision, int row, int column)
   return fabs(std_dev_cell - vision->std_dev_empty) <= THRESH_STD_DEV;
 }
 
+/* Detects if the cell is empty by trying to find circles in the cell */
 static bool is_cell_empty_circles(Vision *vision, int row, int column)
 {
   CvMemStorage *storage = cvCreateMemStorage(0);
@@ -254,33 +287,38 @@ static bool is_cell_empty_circles(Vision *vision, int row, int column)
   return circles->total == 0;
 }
 
+/* Detects if the cell is empty */
 bool is_cell_empty(Vision *vision, int row, int column)
 {
+  // Combination of two detection algorithms
   return is_cell_empty_circles(vision, row, column) && is_cell_empty_std_dev(vision, row, column);
 }
 
+/* Detects markers on board and calculates corresponding cells coordinates */
 static void process_image(IplImage *file, Vision *vision)
 {
-  // Create images
+  // Isolate markers on board
   IplImage *thresholded = get_thresholded_image(file);
+
+  // Convert board image to greyscale
   IplImage *board = cvCreateImage(cvGetSize(file), 8, 1);
   cvCvtColor(file, board, CV_BGR2GRAY);
 
   // Allocate temporary memory storage
   CvMemStorage *tmp_storage = cvCreateMemStorage(0);
 
+  // Detect the circle markers
   CvSeq *markers = NULL;
   markers = cvHoughCircles(thresholded, tmp_storage, CV_HOUGH_GRADIENT, 1, 50, 10, 10, 0, 500);
-  printf("Found %d markers\n", markers->total);
 
+  // Get coordinates of markers
   float *top_left;
   float *bottom_right;
   get_corners(markers, &top_left, &bottom_right);
 
+  // Set the values of the vision struct
   vision->board = board;
-
   CvRect **cells = get_cells(top_left, bottom_right, vision->board);
-
   vision->cells = cells;
 
   // Clear Memory
@@ -290,6 +328,7 @@ static void process_image(IplImage *file, Vision *vision)
   cvReleaseImage(&file);
 }
 
+/* Initialises Vision struct */
 // Pre: Board is in initial state
 void vision_init(Vision *vision)
 {
@@ -299,6 +338,7 @@ void vision_init(Vision *vision)
   vision->std_dev_empty = get_empty_std_dev(vision);
 }
 
+/* Updates image and cells coordinates */
 void vision_update(Vision *vision)
 {
   cvReleaseImage(&vision->board);
@@ -311,6 +351,7 @@ void vision_update(Vision *vision)
   process_image(image, vision);
 }
 
+/* Frees Vision struct */
 void vision_free(Vision *vision)
 {
   cvReleaseImage(&vision->board);
