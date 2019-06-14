@@ -8,7 +8,7 @@ typedef struct s_Alpha_Request
   char *cmd;
 } Alpha_Request;
 
-void alpha_make_move(char *move);
+char *alpha_make_move(char *move);
 void alpha_reset(void);
 FILE *snet_alpha_request(Alpha_Request *request);
 void init_alpha_request(Alpha_Request *request);
