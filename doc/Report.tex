@@ -3,7 +3,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{indentfirst}
 \usepackage[compact]{titlesec}
-\usepackage[margin=1in]{geometry}
+\usepackage[margin=1.1in]{geometry}
 
 %\usepackage{fullpage}
 
@@ -102,15 +102,26 @@ tests, we observed that detection errors can often be attributed to shadows or
 glare on the board.\\
 
 \subsection{AlphaZero and SingularityNET}
+Earlier in the academic year, the CEO of SingularityNET came to Imperial to give a lecture.
+Two of our group members attended the event, giving us the inspiration to try out the platform
+for our project. The main selling point for us was being able to use advanced AI algorithms
+such as AlphaZero for a very small fee (around a few pence for a few hundred service requests).
 
 SingularityNET is a decentralised protocol based on the Ethereum blockchain that
 allows to run AI algorithms on the network. Using their AGI token we can query
 services of AIs running there and use their answer in our application.It is
 believed that AlphaZero has over 3500 elo in chess, compared to about 2800 for
-the current human world champion Magnus Carlsen.\\
+the current human world champion Magnus Carlsen.
+SingularityNET only provides an SDK for Python and JavaScript at the moment. So we had to think 
+of a work around by invoking terminal commands from C which in turn use their command line
+interface. 
+Currently SingularityNET is in Beta since early March. So although we were using 
+cutting edge technology the downside was that the documentation was severely 
+lacking in some places and therefore we had to experiment ourselves with 
+various commands and also research around on forums.
 
-We therefore make use of the
-AlphaZero algorithm developped by Google's DeepMind in 2018. After processing
+We therefore make use of the AlphaZero algorithm developped by Google's DeepMind 
+in 2018. After processing
 the image of the board, we determine which move the opponent did and send that
 information to the AI which in turn gives us back what move it made.\\
 
@@ -233,6 +244,14 @@ far future, and am overall satisfied with the work we have produced.\\
 
 
 \subsubsection{Kacper Kazaniecki}
+I'm a very practical learner so I really enjoyed getting good hands on experience with C. 
+I found that being able to tie in our knowledge from other courses throughout the year, 
+such as Architecture, was really useful in seeing how both the theory and practice come together. 
+Along the way I've learnt how to apply the programming tools tips from lectures such as GDB, Valgrind and Makefiles. 
+I'm sure those skills will come in handy many times throughout my career. Working in a group has allowed us to share our 
+knowledge and clear up any misconceptions/misunderstandings we had about the topics covered. I'm proud of how as a team 
+we've managed to maintain a high level of communication and support and were able to deliver an interesting project.\\
+
 \subsubsection{William Profit}
 I think we had good group cohesion and cooperation in general. I perticularly
 liked structuring the project and splitting tasks, although the project has
@@ -248,7 +267,7 @@ played a good part in the making of the project.\\
 Overall, we all agree we found this project very eye-opening in how 
 groups work in in our field and on tool usage (such as GDB, Make,
 Valgrind, Git, etc) that enable us to work towards getting what we 
-wanted out of our code. \\
+wanted out of our code.
 
 We aimed towards finishing parts I, II and III as quickly as possible so we could spend time
 working on our extension and be ambitious about it. We regret not being
