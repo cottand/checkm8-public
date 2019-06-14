@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 
 Please create your first identity by running 'snet identity create'.
 
@@ -11,3 +12,18 @@ The available identity types are:
     - 'ledger' (yields to a required ledger nano s device for signing using a given wallet
           index)
     - 'trezor' (yields to a required trezor device for signing using a given wallet index)
+=======
+uid: "checkm8"
+board: "    a b c d e f g h
+-------------------
+8 | r n b q k b n r
+7 | p p p p . p p p
+6 | . . . . . . . .
+5 | . . . . p . . .
+4 | . P . . . . . .
+3 | . . . . . . . .
+2 | P . P P P P P P
+1 | R N B Q K B N R
+"
+status: "game_running: e7e5"
+>>>>>>> singularity_net_integration
