@@ -6,7 +6,7 @@ It consists of basic implementations of an ARM emulator and an assembler, and of
 
 Unfortunately, because some of our solution is relevant to future students, by making it public the team risks being accused of allowing plagiarism. Because of this, only the extension is public.
 
- However, if you are not an Imperial Computing 1st year student, you are welcome to request access to the whole solution (which is big and therefore shows code quality a better). You can do this by getting in touch with any of us.
+ However, if you are not an Imperial Computing 1st year student, you are welcome to request access to the whole solution (which is big and therefore shows code quality better). You can do this by getting in touch with any of us.
 
 Team members were:
 
