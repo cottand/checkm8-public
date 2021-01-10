@@ -13,5 +13,4 @@ Team members were:
 - [Willam Profit](https://github.com/williamprofit)
 - [Lancelot Blanchard](https://www.linkedin.com/in/lancelotblanchard)
 - [Kacper Kazaniecki](https://www.linkedin.com/in/kacperkazaniecki)
-
- And me, [Nico D'Cotta](https://www.linkedin.com/in/ndcotta)
+- [Nico D'Cotta](https://www.linkedin.com/in/ndcotta)
